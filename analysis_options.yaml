@@ -1,0 +1,14 @@
+include: package:pedantic/analysis_options.yaml
+
+analyzer:
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.gr.dart"
+    - "**/*.freezed.dart"
+
+# Customize rules
+#
+linter:
+  rules:
+    empty_catches: false
+    prefer_const_constructors: true

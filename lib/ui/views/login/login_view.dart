@@ -3,8 +3,10 @@ import 'package:stacked/stacked.dart';
 
 import 'package:flutter/material.dart';
 import 'package:stacked_hooks/stacked_hooks.dart';
+import 'package:taxiapp/localization/keys.dart';
 import 'package:taxiapp/theme/pallete_color.dart';
 import 'package:taxiapp/ui/views/login/login_viewmodel.dart';
+import 'package:taxiapp/extensions/string_extension.dart';
 
 class LoginView extends StatelessWidget {
   @override
@@ -34,10 +36,10 @@ class _BodyLogin extends HookViewModelWidget<LoginViewModel> {
   Widget buildViewModelWidget(BuildContext context, LoginViewModel model) {
     final usernameController = useTextEditingController();
     final passwordController = useTextEditingController();
-    return const Center(
+    return Center(
       child: Text(
-        'Sample',
-        style: TextStyle(color: Colors.white),
+        Keys.accept.localize(),
+        style: const TextStyle(color: Colors.white),
       ),
     );
   }

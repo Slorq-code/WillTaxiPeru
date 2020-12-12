@@ -1,6 +1,7 @@
 enum UserType {
-  User,
   Client,
+  Driver,
+  Admin
 }
 
 class UserTypeHelper {

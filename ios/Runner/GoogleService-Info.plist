@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>1073232408069-vqn5h9dcoqktsufk08rdn76ajcjdbqtp.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.1073232408069-vqn5h9dcoqktsufk08rdn76ajcjdbqtp</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>1073232408069-b9dp9eej1ti699s0uppqef60cfvj3fs9.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCAZvaHbdQzHRZ36wrcONsr0aBRV9FB8es</string>
+	<key>GCM_SENDER_ID</key>
+	<string>1073232408069</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>pe.rdg.taxiapp</string>
+	<key>PROJECT_ID</key>
+	<string>webeo-maps</string>
+	<key>STORAGE_BUCKET</key>
+	<string>webeo-maps.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:1073232408069:ios:e8d601aeb5a9ff7363b66c</string>
+	<key>DATABASE_URL</key>
+	<string>https://webeo-maps.firebaseio.com</string>
+</dict>
+</plist>

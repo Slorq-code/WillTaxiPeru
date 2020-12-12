@@ -1,4 +1,4 @@
-package com.example.taxiapp
+package pe.rdg.taxiapp
 
 import io.flutter.embedding.android.FlutterActivity
 

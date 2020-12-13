@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Taxi uber</string>
+    <string name="facebook_app_id">669490793725861</string>
+    <string name="fb_login_protocol_scheme">fb669490793725861</string>
+</resources>

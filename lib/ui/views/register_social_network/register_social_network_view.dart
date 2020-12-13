@@ -4,13 +4,13 @@ import 'package:stacked/stacked.dart';
 import 'package:flutter/material.dart';
 import 'package:stacked_hooks/stacked_hooks.dart';
 import 'package:taxiapp/theme/pallete_color.dart';
-import 'package:taxiapp/ui/views/registro_redsocial/registro_redsocial_viewmodel.dart';
+import 'package:taxiapp/ui/views/register_social_network/register_social_network_viewmodel.dart';
 
-class RegistroRedsocialView extends StatelessWidget {
+class RegisterSocialNetworkView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ViewModelBuilder<RegistroRedsocialViewModel>.nonReactive(
-      viewModelBuilder: () => RegistroRedsocialViewModel(),
+    return ViewModelBuilder<RegisterSocialNetworkViewModel>.nonReactive(
+      viewModelBuilder: () => RegisterSocialNetworkViewModel(),
       onModelReady: (model) => model.initial(),
       builder: (context, model, child) => SafeArea(
         child: Scaffold(
@@ -26,17 +26,17 @@ class RegistroRedsocialView extends StatelessWidget {
   }
 }
 
-class _BodyRegistro extends HookViewModelWidget<RegistroRedsocialViewModel> {
+class _BodyRegistro extends HookViewModelWidget<RegisterSocialNetworkViewModel> {
   _BodyRegistro({
     Key key,
   }) : super(key: key);
 
   @override
-  Widget buildViewModelWidget(BuildContext context, RegistroRedsocialViewModel model) {
+  Widget buildViewModelWidget(BuildContext context, RegisterSocialNetworkViewModel model) {
     return _crearFormulario(model, context);
   }
   
-  Widget _crearFormulario(RegistroRedsocialViewModel model, context) {
+  Widget _crearFormulario(RegisterSocialNetworkViewModel model, context) {
 
     return SafeArea(
         child: Column(
@@ -71,7 +71,7 @@ class _BodyRegistro extends HookViewModelWidget<RegistroRedsocialViewModel> {
                     SizedBox(height: 10.0,),
 
                     TextFormField(
-                      initialValue: model.celular,
+                      initialValue: model.phone,
                       inputFormatters: [new LengthLimitingTextInputFormatter(50),],
                       keyboardType: TextInputType.phone,
                       decoration: InputDecoration(
@@ -97,7 +97,7 @@ class _BodyRegistro extends HookViewModelWidget<RegistroRedsocialViewModel> {
                       ),
                       textInputAction: TextInputAction.next,
                       onFieldSubmitted: (_) => FocusScope.of(context).nextFocus(),
-                      onChanged: (value) => model.celular = value,
+                      onChanged: (value) => model.phone = value,
                     ),
                     
                     SizedBox(height: 20.0,),
@@ -117,7 +117,7 @@ class _BodyRegistro extends HookViewModelWidget<RegistroRedsocialViewModel> {
                           ),
                           onPressed: () {
                             if (!model.isBusy) {
-                              model.registrarme();
+                              model.signin();
                             }
                           },
                         ),

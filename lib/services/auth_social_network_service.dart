@@ -14,34 +14,49 @@ class AuthSocialNetwork {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   bool isLoggedIn = false;
-  UserModel user = new UserModel();
+  UserModel user = UserModel();
 
   void logout() async{
-    if (isLoggedIn) {
-      if (user.userType.index == AuthType.User) {
-      } else if (user.userType.index == AuthType.Google) {
-        _googleSignIn.signOut();
 
-        if (user.userType.index == AuthType.Facebook) {}
+    if (isLoggedIn) {
+
+      if (user.userType.index == AuthType.Google.index) {
+
+        if (_googleSignIn != null) {
+          await _googleSignIn.signOut();
+        }
+
+      } else if (user.userType.index == AuthType.Facebook.index) {
+
       }
+
     }
+
+    isLoggedIn = false;
+    user = UserModel();
   }
 
   void login(String email, String password, AuthType authType) async {
     if (isLoggedIn) {
-      _googleSignIn.signOut();
-      isLoggedIn = false;
+      
+      print('THE USER IS ALREADY LOGGED IN');
+
     } else {
+      
       UserCredential userCredential;
+      user = UserModel();
 
       if (authType.index == AuthType.User.index) {
+
         userCredential = await FirebaseAuth.instance
             .signInWithEmailAndPassword(email: email, password: password);
+
       } else if (authType.index == AuthType.Google.index) {
-        GoogleSignInAccount googleSignInAccount = await _googleSignIn.signIn();
+
+        var googleSignInAccount = await _googleSignIn.signIn();
 
         if (googleSignInAccount != null) {
-          final GoogleSignInAuthentication googleAuth =
+          final googleAuth =
               await googleSignInAccount.authentication;
 
           final GoogleAuthCredential googleCredential =
@@ -52,24 +67,32 @@ class AuthSocialNetwork {
 
           userCredential = await _auth.signInWithCredential(googleCredential);
         }
+        
       } else if (authType.index == AuthType.Facebook.index) {}
 
-      DateTime now = new DateTime.now();
+      if (userCredential != null) {
 
-      DateFormat dateFormat = DateFormat("yyyyMMdd");
-      DateFormat timeFormat = DateFormat("HHmmss");
+        // SI LA AUTENTICACION FUE EXITOSA
+        var now = DateTime.now();
 
-      await _databaseReference.collection('login').add({
-        'email': userCredential.user.email,
-        'date': dateFormat.format(now),
-        'hour': timeFormat.format(now),
-      });
+        var dateFormat = DateFormat('yyyyMMdd');
+        var timeFormat = DateFormat('HHmmss');
 
-      user = new UserModel(
-          name: userCredential.user.displayName,
-          email: userCredential.user.email);
+        await _databaseReference.collection('login').add({
+          'email': userCredential.user.email,
+          'date': dateFormat.format(now),
+          'hour': timeFormat.format(now),
+        });
 
-      isLoggedIn = true;
+        user.name =  userCredential.user.displayName;
+        user.email = userCredential.user.email;
+        user.uid = userCredential.user.uid;
+        user.authType = authType;
+
+        isLoggedIn = true;
+
+      }
+
     }
   }
 }

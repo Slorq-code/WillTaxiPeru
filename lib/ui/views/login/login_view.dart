@@ -4,8 +4,12 @@ import 'package:stacked/stacked.dart';
 
 import 'package:flutter/material.dart';
 import 'package:stacked_hooks/stacked_hooks.dart';
+import 'package:taxiapp/models/enums/auth_type.dart';
 import 'package:taxiapp/theme/pallete_color.dart';
 import 'package:taxiapp/ui/views/login/login_viewmodel.dart';
+
+import 'package:flutter_svg/avd.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class LoginView extends StatelessWidget {
   @override
@@ -34,8 +38,6 @@ class _BodyLogin extends HookViewModelWidget<LoginViewModel> {
 
   @override
   Widget buildViewModelWidget(BuildContext context, LoginViewModel model) {
-    final usernameController = useTextEditingController();
-    final passwordController = useTextEditingController();
     /*
     return Center(
       child: Text(
@@ -84,7 +86,7 @@ class _BodyLogin extends HookViewModelWidget<LoginViewModel> {
                     SizedBox(height: 10.0,),
 
                     TextFormField(
-                      initialValue: model.usuario,
+                      initialValue: model.user,
                       inputFormatters: [new LengthLimitingTextInputFormatter(50),],
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
@@ -110,7 +112,7 @@ class _BodyLogin extends HookViewModelWidget<LoginViewModel> {
                       ),
                       textInputAction: TextInputAction.next,
                       onFieldSubmitted: (_) => FocusScope.of(context).nextFocus(),
-                      onChanged: (value) => model.usuario = value,
+                      onChanged: (value) => model.user = value,
                     ),
                     
                     SizedBox(height: 15.0,),
@@ -124,7 +126,6 @@ class _BodyLogin extends HookViewModelWidget<LoginViewModel> {
 
                     Focus(
                       child: TextFormField(
-                        controller: model.controllerClave,
                         obscureText: model.passwordOfuscado,
                         inputFormatters: [new LengthLimitingTextInputFormatter(12),],
                         keyboardType: TextInputType.emailAddress,
@@ -174,7 +175,7 @@ class _BodyLogin extends HookViewModelWidget<LoginViewModel> {
                         ),
                         textInputAction: TextInputAction.done,
                         onFieldSubmitted: (_) => FocusScope.of(context).unfocus(),
-                        onChanged: (value) => model.clave = value,
+                        onChanged: (value) => model.password = value,
                       ),
                     ),
 
@@ -183,27 +184,29 @@ class _BodyLogin extends HookViewModelWidget<LoginViewModel> {
                     Align(
                       alignment: Alignment.center,
                       child: SizedBox(
-                        width: 200,
+                        width: 130,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
                             FloatingActionButton(
                               heroTag: 'btnGoogle',
-                              child: Icon(Icons.ac_unit),
+                              backgroundColor: Colors.transparent,
+                              child: SvgPicture.asset(
+                                "assets/icons/ic_google.svg",
+                                fit: BoxFit.fitWidth,
+                              ),
                               onPressed: () {
-                                model.ingresarGoogle();
+                                model.login(AuthType.Google);
                               },
                             ), FloatingActionButton(
                               heroTag: 'btnFacebook',
-                              child: Icon(Icons.ac_unit_outlined),
+                              backgroundColor: Colors.transparent,
+                              child: SvgPicture.asset(
+                                "assets/icons/ic_facebook.svg",
+                                fit: BoxFit.fitWidth,
+                              ),
                               onPressed: () {
-                                model.ingresarFacebook();
-                              },
-                            ), FloatingActionButton(
-                              heroTag: 'btnTwitter',
-                              child: Icon(Icons.ac_unit_rounded),
-                              onPressed: () {
-                                
+                                model.login(AuthType.Facebook);
                               },
                             ),
                           ],
@@ -228,7 +231,7 @@ class _BodyLogin extends HookViewModelWidget<LoginViewModel> {
                           ),
                           onPressed: () {
                             if (!model.isBusy) {
-                              model.iniciarSesion();
+                              model.login(AuthType.User);
                             }
                           },
                         ),

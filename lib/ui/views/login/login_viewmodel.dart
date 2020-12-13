@@ -1,15 +1,13 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:taxiapp/app/locator.dart';
 import 'package:taxiapp/app/router.gr.dart';
 import 'package:taxiapp/models/enums/auth_type.dart';
+import 'package:taxiapp/models/enums/user_type.dart';
 import 'package:taxiapp/services/auth_social_network_service.dart';
-import 'package:taxiapp/services/token.dart';
+import 'package:taxiapp/services/firestore_user_service.dart';
 
 class LoginViewModel extends BaseViewModel {
   final NavigationService _navigationService = locator<NavigationService>();
@@ -22,43 +20,33 @@ class LoginViewModel extends BaseViewModel {
   // * Functions
 
   final AuthSocialNetwork _authSocialNetwork = locator<AuthSocialNetwork>();
+  final FirestoreUser _firestoreUser = locator<FirestoreUser>();
 
   void goToEnrollPage() async {
     await _navigationService.navigateTo(Routes.loginViewRoute);
   }
 
   void initial() async {
-    usuario = 'apaz@prueba.com';
-    clave = '111111';
-    controllerClave.text = clave;
+    user = '';
+    password = '';
     passwordOfuscado = true;
   }
 
-  String _usuario;
-  String _clave;
+  String _user;
+  String _password;
   bool _passwordOfuscado;
 
-  TextEditingController controllerClave = new TextEditingController();
+  get user => _user;
 
-  List<int> listNumberSortRandom = new List<int>();
-
-  get usuario => _usuario;
-
-  set usuario(usuario) {
-    _usuario = usuario;
+  set user(user) {
+    _user = user;
     notifyListeners();
   }
 
-  get clave => _clave;
+  get password => _password;
 
-  set clave(clave) {
-    _clave = clave;
-    notifyListeners();
-  }
-
-  void actualizarClave([clave]) {
-    _clave = clave;
-    controllerClave.text = _clave;
+  set password(password) {
+    _password = password;
     notifyListeners();
   }
 
@@ -69,30 +57,43 @@ class LoginViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  void ingresarGoogle() async {
+  void login(AuthType authType) async {
     try {
-      print('isLoggedIn1: ' + _authSocialNetwork.isLoggedIn.toString());
-      await _authSocialNetwork.login('', '', AuthType.Google);
+      
+      await _authSocialNetwork.login(user.toString().trim(), password.toString().trim(), authType);
 
-      print('isLoggedIn2: ' + _authSocialNetwork.isLoggedIn.toString());
+      if (_authSocialNetwork.isLoggedIn) {
+
+        var userFounded = await _firestoreUser.userFind(_authSocialNetwork.user.email);
+
+        if (userFounded != null) {
+
+          _authSocialNetwork.user = userFounded;
+
+          // LOGIN SUCESSFULL, NAVIGATE TO PRINCIPAL PAGE
+          await ExtendedNavigator.root.push(Routes.principalViewRoute);
+
+        } else {
+
+          if (AuthType.User.index != authType.index) {
+
+            // IF USER DONT EXISTS, COMPLETE REGISTER
+            _authSocialNetwork.user.userType = UserType.Client;
+
+            await ExtendedNavigator.root.push(Routes.registerSocialNetworkViewRoute);
+
+          }
+
+        }
+
+      }
+
     } catch (err) {
       print(err);
     }
   }
 
-  void ingresarFacebook() async {}
-
-  void ingresarTwitter() async {}
-
-  void iniciarSesion() async {
-    print('isLoggedIn1: ' + _authSocialNetwork.isLoggedIn.toString());
-    await _authSocialNetwork.login(usuario, clave, AuthType.User);
-
-    print('isLoggedIn2: ' + _authSocialNetwork.isLoggedIn.toString());
-  }
-
   void irRegistroUsuario() async {
-    // _navigationService .navigateTo(Routes.registroViewRoute);
-    ExtendedNavigator.root.push(Routes.registroViewRoute);
+    await ExtendedNavigator.root.push(Routes.registerViewRoute);
   }
 }

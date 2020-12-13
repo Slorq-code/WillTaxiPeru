@@ -1,17 +1,16 @@
 import 'package:flutter/services.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:stacked/stacked.dart';
 
 import 'package:flutter/material.dart';
 import 'package:stacked_hooks/stacked_hooks.dart';
 import 'package:taxiapp/theme/pallete_color.dart';
-import 'package:taxiapp/ui/views/registro/registro_viewmodel.dart';
+import 'package:taxiapp/ui/views/register/register_viewmodel.dart';
 
-class RegistroView extends StatelessWidget {
+class RegisterView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ViewModelBuilder<RegistroViewModel>.nonReactive(
-      viewModelBuilder: () => RegistroViewModel(),
+    return ViewModelBuilder<RegisterViewModel>.nonReactive(
+      viewModelBuilder: () => RegisterViewModel(),
       onModelReady: (model) => model.initial(),
       builder: (context, model, child) => SafeArea(
         child: Scaffold(
@@ -27,17 +26,17 @@ class RegistroView extends StatelessWidget {
   }
 }
 
-class _BodyRegistro extends HookViewModelWidget<RegistroViewModel> {
+class _BodyRegistro extends HookViewModelWidget<RegisterViewModel> {
   _BodyRegistro({
     Key key,
   }) : super(key: key);
 
   @override
-  Widget buildViewModelWidget(BuildContext context, RegistroViewModel model) {
+  Widget buildViewModelWidget(BuildContext context, RegisterViewModel model) {
     return _crearFormulario(model, context);
   }
   
-  Widget _crearFormulario(RegistroViewModel model, context) {
+  Widget _crearFormulario(RegisterViewModel model, context) {
 
     return SafeArea(
         child: Column(
@@ -72,7 +71,7 @@ class _BodyRegistro extends HookViewModelWidget<RegistroViewModel> {
                     SizedBox(height: 10.0,),
 
                     TextFormField(
-                      initialValue: model.nombre,
+                      initialValue: model.name,
                       inputFormatters: [new LengthLimitingTextInputFormatter(50),],
                       keyboardType: TextInputType.text,
                       decoration: InputDecoration(
@@ -98,48 +97,9 @@ class _BodyRegistro extends HookViewModelWidget<RegistroViewModel> {
                       ),
                       textInputAction: TextInputAction.next,
                       onFieldSubmitted: (_) => FocusScope.of(context).nextFocus(),
-                      onChanged: (value) => model.nombre = value,
-                    ),
-                    
-                    SizedBox(height: 15.0,),
-
-                    Text(
-                      "Apellidos",
-                      style: TextStyle(color: Color.fromRGBO(130, 130, 130, 1.0), fontSize: 15),
+                      onChanged: (value) => model.name = value,
                     ),
 
-                    SizedBox(height: 10.0,),
-
-                    TextFormField(
-                      initialValue: model.apellido,
-                      inputFormatters: [new LengthLimitingTextInputFormatter(50),],
-                      keyboardType: TextInputType.text,
-                      decoration: InputDecoration(
-                        labelText: "",
-                        fillColor: Colors.white,
-                        contentPadding: new EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color.fromRGBO(40, 180, 245, 1.0),
-                          ),
-                          borderRadius: BorderRadius.circular(0.5),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color.fromRGBO(130, 130, 130, 1.0),
-                          ),
-                          borderRadius: BorderRadius.circular(0.5),
-                        ),
-                      ),
-                      style: TextStyle(
-                        color: Color.fromRGBO(130, 130, 130, 1.0),
-                        fontSize: 14.0,
-                      ),
-                      textInputAction: TextInputAction.next,
-                      onFieldSubmitted: (_) => FocusScope.of(context).nextFocus(),
-                      onChanged: (value) => model.apellido = value,
-                    ),
-                    
                     SizedBox(height: 15.0,),
 
                     Text(
@@ -150,7 +110,7 @@ class _BodyRegistro extends HookViewModelWidget<RegistroViewModel> {
                     SizedBox(height: 10.0,),
 
                     TextFormField(
-                      initialValue: model.correo,
+                      initialValue: model.email,
                       inputFormatters: [new LengthLimitingTextInputFormatter(50),],
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
@@ -176,7 +136,7 @@ class _BodyRegistro extends HookViewModelWidget<RegistroViewModel> {
                       ),
                       textInputAction: TextInputAction.next,
                       onFieldSubmitted: (_) => FocusScope.of(context).nextFocus(),
-                      onChanged: (value) => model.correo = value,
+                      onChanged: (value) => model.email = value,
                     ),
 
                     SizedBox(height: 15.0,),
@@ -189,7 +149,7 @@ class _BodyRegistro extends HookViewModelWidget<RegistroViewModel> {
                     SizedBox(height: 10.0,),
 
                     TextFormField(
-                      initialValue: model.celular,
+                      initialValue: model.cellphone,
                       inputFormatters: [new LengthLimitingTextInputFormatter(50),],
                       keyboardType: TextInputType.phone,
                       decoration: InputDecoration(
@@ -215,7 +175,7 @@ class _BodyRegistro extends HookViewModelWidget<RegistroViewModel> {
                       ),
                       textInputAction: TextInputAction.next,
                       onFieldSubmitted: (_) => FocusScope.of(context).nextFocus(),
-                      onChanged: (value) => model.celular = value,
+                      onChanged: (value) => model.cellphone = value,
                     ),
                     
                     SizedBox(height: 15.0,),
@@ -266,7 +226,7 @@ class _BodyRegistro extends HookViewModelWidget<RegistroViewModel> {
                         ),
                         textInputAction: TextInputAction.done,
                         onFieldSubmitted: (_) => FocusScope.of(context).unfocus(),
-                        onChanged: (value) => model.clave = value,
+                        onChanged: (value) => model.password = value,
                       ),
                     ),
 
@@ -318,7 +278,7 @@ class _BodyRegistro extends HookViewModelWidget<RegistroViewModel> {
                         ),
                         textInputAction: TextInputAction.done,
                         onFieldSubmitted: (_) => FocusScope.of(context).unfocus(),
-                        onChanged: (value) => model.repiteClave = value,
+                        onChanged: (value) => model.repeatPassword= value,
                       ),
                     ),
 
@@ -339,7 +299,7 @@ class _BodyRegistro extends HookViewModelWidget<RegistroViewModel> {
                           ),
                           onPressed: () {
                             if (!model.isBusy) {
-                              model.registrarme();
+                              model.signin();
                             }
                           },
                         ),

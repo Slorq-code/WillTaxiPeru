@@ -7,7 +7,7 @@ class UserModel {
   String uid;
   String phone;
   String email;
-  String image;
+  String image = '';
   UserType userType;
   AuthType authType;
 
@@ -22,4 +22,5 @@ class UserModel {
     userType = UserType.values[data['userType'] ?? 0];
     authType = AuthType.values[data['authType'] ?? 0];
   }
+  
 }

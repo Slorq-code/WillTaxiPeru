@@ -3,8 +3,11 @@ import 'package:stacked/stacked.dart';
 
 import 'package:flutter/material.dart';
 import 'package:stacked_hooks/stacked_hooks.dart';
+import 'package:taxiapp/localization/keys.dart';
 import 'package:taxiapp/theme/pallete_color.dart';
 import 'package:taxiapp/ui/views/register_social_network/register_social_network_viewmodel.dart';
+
+import 'package:taxiapp/extensions/string_extension.dart';
 
 class RegisterSocialNetworkView extends StatelessWidget {
   @override
@@ -41,57 +44,45 @@ class _BodyRegistro extends HookViewModelWidget<RegisterSocialNetworkViewModel> 
     return SafeArea(
         child: Column(
           children: [
-            /*
-            Container(
-              alignment: Alignment.center, 
-              child: Image.asset(
-                  'assets/images/img_background.jpg',
-                  height: 120.0,
-                  width: double.infinity,
-                  //width: 150.0,
-                  fit: BoxFit.fill,
-              ),
-              color: Colors.white,
-            ),
-            */
             Expanded(
               child: Container(
                 color: Colors.white,
                 child: ListView(
-                  padding: EdgeInsets.symmetric(horizontal: 30.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 30.0),
                   children: <Widget>[
 
-                    SizedBox(height: 10.0,),
+                    const SizedBox(height: 10.0,),
 
                     Text(
-                      "Celular",
-                      style: TextStyle(color: Color.fromRGBO(130, 130, 130, 1.0), fontSize: 15),
+                      Keys.sign_up.localize(),
+                      style: const TextStyle(color: Color.fromRGBO(130, 130, 130, 1.0), fontSize: 15, fontWeight: FontWeight.bold),
                     ),
 
-                    SizedBox(height: 10.0,),
+                    const SizedBox(height: 20.0,),
 
                     TextFormField(
                       initialValue: model.phone,
-                      inputFormatters: [new LengthLimitingTextInputFormatter(50),],
+                      inputFormatters: [LengthLimitingTextInputFormatter(50),],
                       keyboardType: TextInputType.phone,
                       decoration: InputDecoration(
-                        labelText: "",
+                        labelText: Keys.mobile_phone.localize(),
+                        labelStyle: const TextStyle(color: Color.fromRGBO(130, 130, 130, 1.0)),
                         fillColor: Colors.white,
-                        contentPadding: new EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
                         focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
+                          borderSide: const BorderSide(
                             color: Color.fromRGBO(40, 180, 245, 1.0),
                           ),
-                          borderRadius: BorderRadius.circular(0.5),
+                          borderRadius: BorderRadius.circular(15),
                         ),
                         enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
+                          borderSide: const BorderSide(
                             color: Color.fromRGBO(130, 130, 130, 1.0),
                           ),
-                          borderRadius: BorderRadius.circular(0.5),
+                          borderRadius: BorderRadius.circular(15),
                         ),
                       ),
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Color.fromRGBO(130, 130, 130, 1.0),
                         fontSize: 14.0,
                       ),
@@ -100,7 +91,7 @@ class _BodyRegistro extends HookViewModelWidget<RegisterSocialNetworkViewModel> 
                       onChanged: (value) => model.phone = value,
                     ),
                     
-                    SizedBox(height: 20.0,),
+                    const SizedBox(height: 20.0,),
 
                     Align(
                       alignment: Alignment.center,
@@ -111,9 +102,9 @@ class _BodyRegistro extends HookViewModelWidget<RegisterSocialNetworkViewModel> 
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16.0),
                           ),
-                          color: Color.fromRGBO(12, 128, 206, 1.0),
+                          color: const Color.fromRGBO(255, 165, 0, 1.0),
                           child: Container(
-                            child: Text('REGISTRARME', style: TextStyle(color: Colors.white),),
+                            child: Text(Keys.continue_label.localize(), style: const TextStyle(color: Colors.white),),
                           ),
                           onPressed: () {
                             if (!model.isBusy) {
@@ -124,7 +115,7 @@ class _BodyRegistro extends HookViewModelWidget<RegisterSocialNetworkViewModel> 
                       ),
                     ),
 
-                    SizedBox(height: 10.0,),
+                    const SizedBox(height: 10.0,),
 
                   ],
                 ),

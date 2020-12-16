@@ -3,5 +3,16 @@
 	"accept_terms_and_references": "Acepto términos y referencias",
 	"addr_line": "Dirección",
 	"address": "Domicilio",
-	"test_key_2": "Hola"
+	"hello": "Hola",
+	"test_key_1": "Me llamo {%1$s}",
+	"test_key_2": "Hola",
+	"email": "Correo electrónico",
+	"password": "Contraseña",
+	"repeat_password": "Confirmar contraseña",
+	"continue_label": "Continuar",
+	"login_dont_have_account": "Si no tienes una cuenta",
+	"sign_up": "Registrate",
+	"login": "Iniciar sesión",
+	"first_name_and_surname": "Nombres y apellidos",
+	"mobile_phone": "Teléfono movil"
 }

@@ -40,13 +40,13 @@ class RegisterSocialNetworkViewModel extends BaseViewModel {
 
   void signin() async {
     try {
-
+      
       if (_authSocialNetwork.isLoggedIn) {
-
+        
         _authSocialNetwork.user.phone = phone.toString().trim();
 
         var userRegister = await _firestoreUser.userRegister(_authSocialNetwork.user);
-
+        print(userRegister);
         if (userRegister) {
 
           await ExtendedNavigator.root.push(Routes.principalViewRoute);

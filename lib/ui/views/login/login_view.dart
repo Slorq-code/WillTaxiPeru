@@ -1,15 +1,17 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:stacked/stacked.dart';
 
 import 'package:flutter/material.dart';
 import 'package:stacked_hooks/stacked_hooks.dart';
+import 'package:taxiapp/localization/keys.dart';
 import 'package:taxiapp/models/enums/auth_type.dart';
 import 'package:taxiapp/theme/pallete_color.dart';
 import 'package:taxiapp/ui/views/login/login_viewmodel.dart';
 
-import 'package:flutter_svg/avd.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+
+import 'package:taxiapp/extensions/string_extension.dart';
 
 class LoginView extends StatelessWidget {
   @override
@@ -73,40 +75,41 @@ class _BodyLogin extends HookViewModelWidget<LoginViewModel> {
               child: Container(
                 color: Colors.white,
                 child: ListView(
-                  padding: EdgeInsets.symmetric(horizontal: 30.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 30.0),
                   children: <Widget>[
 
-                    SizedBox(height: 10.0,),
+                    const SizedBox(height: 10.0,),
                     
                     Text(
-                      "Correo",
-                      style: TextStyle(color: Color.fromRGBO(130, 130, 130, 1.0), fontSize: 15),
+                      Keys.login.localize(),
+                      style: const TextStyle(color: Color.fromRGBO(130, 130, 130, 1.0), fontSize: 15, fontWeight: FontWeight.bold),
                     ),
 
-                    SizedBox(height: 10.0,),
+                    const SizedBox(height: 20.0,),
 
                     TextFormField(
                       initialValue: model.user,
-                      inputFormatters: [new LengthLimitingTextInputFormatter(50),],
+                      inputFormatters: [LengthLimitingTextInputFormatter(50),],
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
-                        labelText: "",
+                        labelText: Keys.email.localize(),
+                        labelStyle: const TextStyle(color: Color.fromRGBO(130, 130, 130, 1.0)),
                         fillColor: Colors.white,
-                        contentPadding: new EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
                         focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
+                          borderSide: const BorderSide(
                             color: Color.fromRGBO(40, 180, 245, 1.0),
                           ),
-                          borderRadius: BorderRadius.circular(0.5),
+                          borderRadius: BorderRadius.circular(15),
                         ),
                         enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
+                          borderSide: const BorderSide(
                             color: Color.fromRGBO(130, 130, 130, 1.0),
                           ),
-                          borderRadius: BorderRadius.circular(0.5),
+                          borderRadius: BorderRadius.circular(15),
                         ),
                       ),
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Color.fromRGBO(130, 130, 130, 1.0),
                         fontSize: 14.0,
                       ),
@@ -115,42 +118,45 @@ class _BodyLogin extends HookViewModelWidget<LoginViewModel> {
                       onChanged: (value) => model.user = value,
                     ),
                     
-                    SizedBox(height: 15.0,),
+                    const SizedBox(height: 15.0,),
 
+                    /*
                     Text(
-                      "Contraseña",
+                      labelText: Keys.email.localize(),
                       style: TextStyle(color: Color.fromRGBO(130, 130, 130, 1.0), fontSize: 15),
                     ),
 
                     SizedBox(height: 10.0,),
+                    */
 
                     Focus(
                       child: TextFormField(
                         obscureText: model.passwordOfuscado,
-                        inputFormatters: [new LengthLimitingTextInputFormatter(12),],
+                        inputFormatters: [LengthLimitingTextInputFormatter(12),],
                         keyboardType: TextInputType.emailAddress,
                         decoration: InputDecoration(
-                          labelText: "",
+                          labelText: Keys.password.localize(),
+                          labelStyle: const TextStyle(color: Color.fromRGBO(130, 130, 130, 1.0)),
                           fillColor: Colors.white,
-                          contentPadding: new EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
+                          contentPadding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
                           focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
+                            borderSide: const BorderSide(
                               color: Color.fromRGBO(40, 180, 245, 1.0),
                             ),
-                            borderRadius: BorderRadius.circular(0.5),
+                            borderRadius: BorderRadius.circular(15),
                           ),
                           enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
+                            borderSide: const BorderSide(
                               color: Color.fromRGBO(130, 130, 130, 1.0),
                             ),
-                            borderRadius: BorderRadius.circular(0.5),
+                            borderRadius: BorderRadius.circular(15),
                           ),
                           suffixIcon: IconButton(
                             icon: Icon(
                               model.passwordOfuscado
                               ? Icons.visibility_off
                               : Icons.visibility,
-                              color: Color.fromRGBO(130, 130, 130, 1.0),
+                              color: const Color.fromRGBO(130, 130, 130, 1.0),
                             ),
                             onPressed: () {
 
@@ -161,7 +167,7 @@ class _BodyLogin extends HookViewModelWidget<LoginViewModel> {
                               // Disable text field's focus node request
                               textFieldFocusNodePassword.canRequestFocus = false;
                               //Enable the text field's focus node request after some delay
-                              Future.delayed(Duration(milliseconds: 100), () {
+                              Future.delayed(const Duration(milliseconds: 100), () {
                                 textFieldFocusNodePassword.canRequestFocus = true;
                               });
                               /*FIN CODIGO*/
@@ -169,7 +175,7 @@ class _BodyLogin extends HookViewModelWidget<LoginViewModel> {
                             },
                           ),
                         ),
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Color.fromRGBO(130, 130, 130, 1.0),
                           fontSize: 14.0,
                         ),
@@ -179,7 +185,7 @@ class _BodyLogin extends HookViewModelWidget<LoginViewModel> {
                       ),
                     ),
 
-                    SizedBox(height: 20.0,),
+                    const SizedBox(height: 20.0,),
 
                     Align(
                       alignment: Alignment.center,
@@ -192,7 +198,7 @@ class _BodyLogin extends HookViewModelWidget<LoginViewModel> {
                               heroTag: 'btnGoogle',
                               backgroundColor: Colors.transparent,
                               child: SvgPicture.asset(
-                                "assets/icons/ic_google.svg",
+                                'assets/icons/ic_google.svg',
                                 fit: BoxFit.fitWidth,
                               ),
                               onPressed: () {
@@ -202,7 +208,7 @@ class _BodyLogin extends HookViewModelWidget<LoginViewModel> {
                               heroTag: 'btnFacebook',
                               backgroundColor: Colors.transparent,
                               child: SvgPicture.asset(
-                                "assets/icons/ic_facebook.svg",
+                                'assets/icons/ic_facebook.svg',
                                 fit: BoxFit.fitWidth,
                               ),
                               onPressed: () {
@@ -214,7 +220,7 @@ class _BodyLogin extends HookViewModelWidget<LoginViewModel> {
                       ),
                     ),
 
-                    SizedBox(height: 20.0,),
+                    const SizedBox(height: 20.0,),
 
                     Align(
                       alignment: Alignment.center,
@@ -225,9 +231,9 @@ class _BodyLogin extends HookViewModelWidget<LoginViewModel> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16.0),
                           ),
-                          color: Color.fromRGBO(12, 128, 206, 1.0),
+                          color: const Color.fromRGBO(255, 165, 0, 1.0),
                           child: Container(
-                            child: Text('INGRESAR', style: TextStyle(color: Colors.white),),
+                            child: Text(Keys.continue_label.localize(), style: const TextStyle(color: Colors.white),),
                           ),
                           onPressed: () {
                             if (!model.isBusy) {
@@ -238,31 +244,37 @@ class _BodyLogin extends HookViewModelWidget<LoginViewModel> {
                       ),
                     ),
 
-                    SizedBox(height: 20.0,),
+                    const SizedBox(height: 20.0,),
 
                     Align(
                       alignment: Alignment.center,
                       child: SizedBox(
-                        width: 200,
                         height: 40,
-                        child: RaisedButton(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16.0),
+                        child: RichText(
+                          text: TextSpan(
+                            text: Keys.login_dont_have_account.localize(),
+                            style: const TextStyle(color: Color.fromRGBO(130, 130, 130, 1.0)),
+                            children: <TextSpan>[
+                              const TextSpan(
+                                text: ', ',
+                                style: TextStyle(color: Color.fromRGBO(130, 130, 130, 1.0)),
+                              ),
+                              TextSpan(
+                                text: Keys.sign_up.localize(),
+                                style: const TextStyle(decoration: TextDecoration.underline, fontWeight: FontWeight.bold, color: Color.fromRGBO(130, 130, 130, 1.0)),
+                                recognizer: TapGestureRecognizer()
+                                    ..onTap = () {
+                                      if (!model.isBusy) {
+                                        model.irRegistroUsuario();
+                                      }
+                                    }),
+                            ],
                           ),
-                          color: Color.fromRGBO(12, 128, 206, 1.0),
-                          child: Container(
-                            child: Text('CREAR USUARIO', style: TextStyle(color: Colors.white),),
-                          ),
-                          onPressed: () {
-                            if (!model.isBusy) {
-                              model.irRegistroUsuario();
-                            }
-                          },
                         ),
                       ),
                     ),
 
-                    SizedBox(height: 10.0,),
+                    const SizedBox(height: 10.0,),
 
                   ],
                 ),

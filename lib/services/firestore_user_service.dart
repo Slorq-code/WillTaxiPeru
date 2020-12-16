@@ -1,11 +1,5 @@
-import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:injectable/injectable.dart';
-import 'package:intl/intl.dart';
-import 'package:taxiapp/models/enums/auth_type.dart';
 import 'package:taxiapp/models/userModel.dart';
 
 @lazySingleton
@@ -17,13 +11,14 @@ class FirestoreUser {
 
   Future<bool> userRegister(UserModel user) async {
     try{
-      await databaseReference.collection(collectionUser).doc(user.email).set({
+      await databaseReference.collection(collectionUser).doc(user.uid).set({
             'name': user.name,
             'email': user.email.toLowerCase(),
             'phone': user.phone,
             'uid': user.uid,
             'authType': user.authType.index,
-            'userType': user.userType.index
+            'userType': user.userType.index,
+            'image': user.image,
           });
       return true;
     } catch (err) {
@@ -32,14 +27,14 @@ class FirestoreUser {
     }
   }
 
-  Future<bool> userExists(String email) async {
-    var documentSnapshot = await databaseReference.collection(collectionUser).doc(email).get();
+  Future<bool> userExists(String uid) async {
+    var documentSnapshot = await databaseReference.collection(collectionUser).doc(uid).get();
     return documentSnapshot.exists;
   }
 
-  Future<UserModel> userFind(String email) async {
+  Future<UserModel> userFind(String uid) async {
     try{
-      var documentSnapshot = await databaseReference.collection(collectionUser).doc(email).get();
+      var documentSnapshot = await databaseReference.collection(collectionUser).doc(uid).get();
 
       if (documentSnapshot.exists) {
         var data = documentSnapshot.data();

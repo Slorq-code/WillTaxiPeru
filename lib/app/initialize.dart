@@ -82,7 +82,8 @@ class _MyApp extends StatelessWidget {
                   child: extendedNav),
             ),
             supportedLocales: localizationDelegate.supportedLocales,
-            locale: localizationDelegate.currentLocale,
+            // locale: localizationDelegate.currentLocale,
+            locale: const Locale('es'),
           ),
         ));
   }

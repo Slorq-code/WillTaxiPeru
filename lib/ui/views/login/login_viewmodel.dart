@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
@@ -59,13 +60,21 @@ class LoginViewModel extends BaseViewModel {
 
   void login(AuthType authType) async {
     try {
-      
+
+      if (AuthType.User.index == authType.index) {
+        
+        if (user.toString().trim() == '' || password.toString().trim() == '') {
+          print('USERNAME AND PASSWORD REQUIRED');
+          return;
+        }
+      }
+
       await _authSocialNetwork.login(user.toString().trim(), password.toString().trim(), authType);
 
       if (_authSocialNetwork.isLoggedIn) {
 
-        var userFounded = await _firestoreUser.userFind(_authSocialNetwork.user.email);
-
+        var userFounded = await _firestoreUser.userFind(_authSocialNetwork.user.uid);
+        
         if (userFounded != null) {
 
           _authSocialNetwork.user = userFounded;
@@ -88,8 +97,17 @@ class LoginViewModel extends BaseViewModel {
 
       }
 
-    } catch (err) {
-      print(err);
+    } catch(signUpError) {
+
+      if(signUpError is FirebaseAuthException) {
+
+        if(signUpError.code == 'account-exists-with-different-credential') {
+          
+          print('THE USER IS ALREADY REGISTERED WITH ANOTHER SOCIAL NETWORK');
+
+        }
+
+      }      
     }
   }
 

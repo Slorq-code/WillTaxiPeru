@@ -49,7 +49,7 @@ class AuthSocialNetwork {
       user = UserModel();
 
       if (authType.index == AuthType.User.index) {
-
+        
         userCredential = await FirebaseAuth.instance
             .signInWithEmailAndPassword(email: email, password: password);
 

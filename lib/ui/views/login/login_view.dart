@@ -17,7 +17,7 @@ class LoginView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<LoginViewModel>.nonReactive(
-      viewModelBuilder: () => LoginViewModel(),
+      viewModelBuilder: () => LoginViewModel(context),
       onModelReady: (model) => model.initial(),
       builder: (context, model, child) => SafeArea(
         child: Scaffold(
@@ -202,7 +202,9 @@ class _BodyLogin extends HookViewModelWidget<LoginViewModel> {
                                 fit: BoxFit.fitWidth,
                               ),
                               onPressed: () {
-                                model.login(AuthType.Google);
+                                if (!model.isBusy) {
+                                  model.login(AuthType.Google);
+                                }
                               },
                             ), FloatingActionButton(
                               heroTag: 'btnFacebook',
@@ -212,7 +214,9 @@ class _BodyLogin extends HookViewModelWidget<LoginViewModel> {
                                 fit: BoxFit.fitWidth,
                               ),
                               onPressed: () {
-                                model.login(AuthType.Facebook);
+                                if (!model.isBusy) {
+                                  model.login(AuthType.Facebook);
+                                }
                               },
                             ),
                           ],

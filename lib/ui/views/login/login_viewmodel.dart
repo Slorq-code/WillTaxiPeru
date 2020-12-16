@@ -9,8 +9,17 @@ import 'package:taxiapp/models/enums/auth_type.dart';
 import 'package:taxiapp/models/enums/user_type.dart';
 import 'package:taxiapp/services/auth_social_network_service.dart';
 import 'package:taxiapp/services/firestore_user_service.dart';
+import 'package:taxiapp/ui/widgets/loader/color_loader_widget.dart';
+import 'package:taxiapp/utils/navigator_util.dart';
 
 class LoginViewModel extends BaseViewModel {
+
+  BuildContext context;
+
+  LoginViewModel(BuildContext context) {
+    this.context = context;
+  }
+
   final NavigationService _navigationService = locator<NavigationService>();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -44,14 +53,14 @@ class LoginViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  get password => _password;
+  String get password => _password;
 
   set password(password) {
     _password = password;
     notifyListeners();
   }
 
-  get passwordOfuscado => _passwordOfuscado;
+  bool get passwordOfuscado => _passwordOfuscado;
 
   set passwordOfuscado(passwordOfuscado) {
     _passwordOfuscado = passwordOfuscado;
@@ -59,18 +68,22 @@ class LoginViewModel extends BaseViewModel {
   }
 
   void login(AuthType authType) async {
+    setBusy(true);
     try {
 
       if (AuthType.User.index == authType.index) {
-        
+
+        NavigatorUtil.showPage(context, ColorLoaderWidget());
+
         if (user.toString().trim() == '' || password.toString().trim() == '') {
           print('USERNAME AND PASSWORD REQUIRED');
+          NavigatorUtil.hidePage(context);
           return;
         }
       }
 
       await _authSocialNetwork.login(user.toString().trim(), password.toString().trim(), authType);
-
+      print(_authSocialNetwork.isLoggedIn);
       if (_authSocialNetwork.isLoggedIn) {
 
         var userFounded = await _firestoreUser.userFind(_authSocialNetwork.user.uid);
@@ -78,6 +91,10 @@ class LoginViewModel extends BaseViewModel {
         if (userFounded != null) {
 
           _authSocialNetwork.user = userFounded;
+
+          if (AuthType.User.index == authType.index) {
+            NavigatorUtil.hidePage(context);
+          }
 
           // LOGIN SUCESSFULL, NAVIGATE TO PRINCIPAL PAGE
           await ExtendedNavigator.root.push(Routes.principalViewRoute);
@@ -95,19 +112,44 @@ class LoginViewModel extends BaseViewModel {
 
         }
 
+      } else {
+
+        if (AuthType.User.index == authType.index) {
+          NavigatorUtil.hidePage(context);
+        }
+
       }
 
     } catch(signUpError) {
-
+      
       if(signUpError is FirebaseAuthException) {
-
+        
         if(signUpError.code == 'account-exists-with-different-credential') {
           
           print('THE USER IS ALREADY REGISTERED WITH ANOTHER SOCIAL NETWORK');
 
+        } else if(signUpError.code == 'wrong-password' || signUpError.code == 'user-not-found') {
+
+          print('INVALID PASSWORD');
+
+        } else if(signUpError.code == 'invalid-email') {
+
+          print('INVALID EMAIL');
+
+        } else {
+
+          print(signUpError.code);
+
         }
 
-      }      
+      }
+
+    } finally {
+      setBusy(false);
+
+      if (AuthType.User.index == authType.index) {
+          NavigatorUtil.hidePage(context);
+      }
     }
   }
 

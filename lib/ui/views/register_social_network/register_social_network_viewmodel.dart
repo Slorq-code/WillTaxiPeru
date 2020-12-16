@@ -31,7 +31,7 @@ class RegisterSocialNetworkViewModel extends BaseViewModel {
 
   String _phone;
 
-  get phone => _phone;
+  String get phone => _phone;
 
   set phone(phone) {
     _phone = phone;
@@ -39,6 +39,7 @@ class RegisterSocialNetworkViewModel extends BaseViewModel {
   }
 
   void signin() async {
+    setBusy(true);
     try {
       
       if (_authSocialNetwork.isLoggedIn) {
@@ -74,6 +75,8 @@ class RegisterSocialNetworkViewModel extends BaseViewModel {
         }
 
       }      
+    } finally {
+      setBusy(false);
     }
   }
 

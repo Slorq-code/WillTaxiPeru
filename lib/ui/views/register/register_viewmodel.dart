@@ -47,49 +47,49 @@ class RegisterViewModel extends BaseViewModel {
   bool _passwordOfuscado;
   bool _repitePasswordOfuscado;
 
-  get repeatPassword => _repeatPassword;
+  String get repeatPassword => _repeatPassword;
 
   set repeatPassword(repeatPassword) {
     _repeatPassword = repeatPassword;
     notifyListeners();
   }
 
-  get email => _email;
+  String get email => _email;
 
   set email(email) {
     _email = email;
     notifyListeners();
   }
 
-  get name => _name;
+  String get name => _name;
 
   set name(name) {
     _name = name;
     notifyListeners();
   }
 
-  get cellphone => _cellphone;
+  String get cellphone => _cellphone;
 
   set cellphone(cellphone) {
     _cellphone = cellphone;
     notifyListeners();
   }
 
-  get password => _password;
+  String get password => _password;
 
   set password(password) {
     _password = password;
     notifyListeners();
   }
 
-  get passwordOfuscado => _passwordOfuscado;
+  bool get passwordOfuscado => _passwordOfuscado;
 
   set passwordOfuscado(passwordOfuscado) {
     _passwordOfuscado = passwordOfuscado;
     notifyListeners();
   }
 
-  get repitePasswordOfuscado => _repitePasswordOfuscado;
+  bool get repitePasswordOfuscado => _repitePasswordOfuscado;
 
   set repitePasswordOfuscado(repitePasswordOfuscado) {
     _repitePasswordOfuscado = repitePasswordOfuscado;
@@ -97,6 +97,7 @@ class RegisterViewModel extends BaseViewModel {
   }
 
   void signin() async {
+    setBusy(true);
     try {
 
       if (password.toString().trim() != repeatPassword.toString().trim()) {
@@ -149,10 +150,9 @@ class RegisterViewModel extends BaseViewModel {
 
       }
 
+    } finally {
+      setBusy(false);
     }
-
-    
-
   }
 
 }

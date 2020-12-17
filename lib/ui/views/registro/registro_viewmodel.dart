@@ -4,13 +4,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:stacked/stacked.dart';
-import 'package:stacked_services/stacked_services.dart';
 import 'package:taxiapp/app/locator.dart';
 import 'package:taxiapp/app/router.gr.dart';
 
 class RegistroViewModel extends BaseViewModel {
-  final NavigationService _navigationService = locator<NavigationService>();
-
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   // * Getters
@@ -18,11 +15,7 @@ class RegistroViewModel extends BaseViewModel {
 
   // * Functions
 
-  void goToEnrollPage() async {
-    await _navigationService.navigateTo(Routes.registroViewRoute);
-  }
-
-  void initial() async{
+  void initial() async {
     correo = '';
     clave = '';
     repiteClave = '';
@@ -102,50 +95,29 @@ class RegistroViewModel extends BaseViewModel {
 
   void registrarme() async {
     try {
-
       if (clave.toString().trim() != repiteClave.toString().trim()) {
         print('las claves son distintas');
         return;
       }
 
-      UserCredential user = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: correo, password: clave);
+      UserCredential user = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: correo, password: clave);
 
       if (user != null) {
-
-        await databaseReference.collection('user').add({
-          'nombre': nombre,
-          'apellido': apellido,
-          'correo': correo,
-          'celular': celular,
-          'uid': user.user.uid
-        });
+        await databaseReference.collection('user').add({'nombre': nombre, 'apellido': apellido, 'correo': correo, 'celular': celular, 'uid': user.user.uid});
 
         print('registrado: ' + user.user.uid);
         ExtendedNavigator.root.push(Routes.loginViewRoute);
-        
       } else {
-
         print('error al registrar');
-
       }
-      
-    } catch(signUpError) {
-      if(signUpError is FirebaseAuthException) {
-
-        if(signUpError.code == 'email-already-in-use') {
+    } catch (signUpError) {
+      if (signUpError is FirebaseAuthException) {
+        if (signUpError.code == 'email-already-in-use') {
           print('El correo ya fue registrado anteriormente');
         }
-
       }
-
     }
-
-    
-
   }
 
-  void irRegistroUsuario() async {
-    
-  }
+  void irRegistroUsuario() async {}
 }

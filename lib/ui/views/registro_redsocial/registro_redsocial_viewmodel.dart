@@ -3,13 +3,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
-import 'package:stacked_services/stacked_services.dart';
 import 'package:taxiapp/app/locator.dart';
 import 'package:taxiapp/app/router.gr.dart';
 
 class RegistroRedsocialViewModel extends BaseViewModel {
-  final NavigationService _navigationService = locator<NavigationService>();
-
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   // * Getters
@@ -17,11 +14,7 @@ class RegistroRedsocialViewModel extends BaseViewModel {
 
   // * Functions
 
-  void goToEnrollPage() async {
-    await _navigationService.navigateTo(Routes.registroViewRoute);
-  }
-
-  void initial() async{
+  void initial() async {
     celular = '';
   }
 
@@ -70,5 +63,4 @@ class RegistroRedsocialViewModel extends BaseViewModel {
     }
     */
   }
-
 }

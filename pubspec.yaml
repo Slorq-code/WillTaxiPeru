@@ -22,9 +22,8 @@ dependencies:
   flutter_hooks: ^0.12.0
   # navigation
   auto_route: ^0.6.9
-  stacked_services: ^0.5.2
   # inversion of control
-  get_it: ^5.0.1
+  get_it: ^5.0.3
   injectable: ^1.0.5
 
   dio: ^3.0.10
@@ -33,7 +32,6 @@ dependencies:
   toast: ^0.1.5
   path_provider: ^1.6.11
   retry: ^3.0.1
-  overlay_support: ^1.0.5
   esys_flutter_share: ^1.0.2
   shared_preferences: ^0.5.12+4
   package_info: ^0.4.3+2
@@ -57,6 +55,9 @@ dependencies:
   # flutter_facebook_login: ^3.0.0
   # firebase_ui: ^1.0.8
 
+  google_maps_flutter: ^1.0.6
+  geolocator: ^5.3.2+2
+
   intl: ^0.16.1
 
 dev_dependencies:
@@ -74,3 +75,5 @@ flutter:
   uses-material-design: true
   assets:
     - assets/i18n/
+    - assets/icons/
+    - assets/map_theme/

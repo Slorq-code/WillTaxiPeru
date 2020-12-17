@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_translate/localization_provider.dart';
 import 'package:flutter_translate/localized_app.dart';
-import 'package:overlay_support/overlay_support.dart';
 import 'package:taxiapp/app/router.gr.dart' as auto_router;
 import 'package:taxiapp/localization/localization_helper.dart';
 import 'package:taxiapp/services/api.dart';
@@ -60,30 +59,29 @@ class _MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     var localizationDelegate = LocalizedApp.of(context).delegate;
     return LocalizationProvider(
-        state: LocalizationProvider.of(context).state,
-        child: OverlaySupport(
-          child: MaterialApp(
-            debugShowCheckedModeBanner: false,
-            localizationsDelegates: [
-              GlobalMaterialLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              localizationDelegate
-            ],
-            builder: ExtendedNavigator.builder(
-              router: auto_router.Router(),
-              initialRoute: home,
-              builder: (context, extendedNav) => Theme(
-                  data: ThemeData(
-                    fontFamily: 'WhyteTrial',
-                    primaryColor: const Color(0xFF2f3640),
-                    accentColor: const Color(0xFF353b48),
-                  ),
-                  child: extendedNav),
-            ),
-            supportedLocales: localizationDelegate.supportedLocales,
-            locale: localizationDelegate.currentLocale,
-          ),
-        ));
+      state: LocalizationProvider.of(context).state,
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        localizationsDelegates: [
+          GlobalMaterialLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          localizationDelegate
+        ],
+        builder: ExtendedNavigator.builder(
+          router: auto_router.Router(),
+          initialRoute: home,
+          builder: (context, extendedNav) => Theme(
+              data: ThemeData(
+                fontFamily: 'WhyteTrial',
+                primaryColor: const Color(0xFF2f3640),
+                accentColor: const Color(0xFF353b48),
+              ),
+              child: extendedNav),
+        ),
+        supportedLocales: localizationDelegate.supportedLocales,
+        locale: localizationDelegate.currentLocale,
+      ),
+    );
   }
 }

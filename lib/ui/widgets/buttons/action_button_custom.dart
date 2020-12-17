@@ -4,7 +4,7 @@ class ActionButtonCustom extends StatelessWidget {
   final VoidCallback action;
   final String label;
 
-  ActionButtonCustom({Key key, @required this.action, @required this.label}) : super(key: key);
+  const ActionButtonCustom({Key key, @required this.action, @required this.label}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

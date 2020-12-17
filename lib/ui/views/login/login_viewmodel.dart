@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:stacked/stacked.dart';
-import 'package:stacked_services/stacked_services.dart';
 import 'package:taxiapp/app/locator.dart';
 import 'package:taxiapp/app/router.gr.dart';
 import 'package:taxiapp/models/enums/auth_type.dart';
@@ -12,8 +11,6 @@ import 'package:taxiapp/services/auth_social_network_service.dart';
 import 'package:taxiapp/services/token.dart';
 
 class LoginViewModel extends BaseViewModel {
-  final NavigationService _navigationService = locator<NavigationService>();
-
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   // * Getters
@@ -22,10 +19,6 @@ class LoginViewModel extends BaseViewModel {
   // * Functions
 
   final AuthSocialNetwork _authSocialNetwork = locator<AuthSocialNetwork>();
-
-  void goToEnrollPage() async {
-    await _navigationService.navigateTo(Routes.loginViewRoute);
-  }
 
   void initial() async {
     usuario = 'apaz@prueba.com';

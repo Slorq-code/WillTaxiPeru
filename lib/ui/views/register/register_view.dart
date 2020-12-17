@@ -1,17 +1,19 @@
 import 'package:flutter/services.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:stacked/stacked.dart';
 
 import 'package:flutter/material.dart';
 import 'package:stacked_hooks/stacked_hooks.dart';
+import 'package:taxiapp/localization/keys.dart';
 import 'package:taxiapp/theme/pallete_color.dart';
-import 'package:taxiapp/ui/views/registro/registro_viewmodel.dart';
+import 'package:taxiapp/ui/views/register/register_viewmodel.dart';
 
-class RegistroView extends StatelessWidget {
+import 'package:taxiapp/extensions/string_extension.dart';
+
+class RegisterView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ViewModelBuilder<RegistroViewModel>.nonReactive(
-      viewModelBuilder: () => RegistroViewModel(),
+    return ViewModelBuilder<RegisterViewModel>.nonReactive(
+      viewModelBuilder: () => RegisterViewModel(),
       onModelReady: (model) => model.initial(),
       builder: (context, model, child) => SafeArea(
         child: Scaffold(
@@ -27,302 +29,227 @@ class RegistroView extends StatelessWidget {
   }
 }
 
-class _BodyRegistro extends HookViewModelWidget<RegistroViewModel> {
+class _BodyRegistro extends HookViewModelWidget<RegisterViewModel> {
   _BodyRegistro({
     Key key,
   }) : super(key: key);
 
   @override
-  Widget buildViewModelWidget(BuildContext context, RegistroViewModel model) {
+  Widget buildViewModelWidget(BuildContext context, RegisterViewModel model) {
     return _crearFormulario(model, context);
   }
   
-  Widget _crearFormulario(RegistroViewModel model, context) {
+  Widget _crearFormulario(RegisterViewModel model, context) {
 
     return SafeArea(
         child: Column(
           children: [
-            /*
-            Container(
-              alignment: Alignment.center, 
-              child: Image.asset(
-                  'assets/images/img_background.jpg',
-                  height: 120.0,
-                  width: double.infinity,
-                  //width: 150.0,
-                  fit: BoxFit.fill,
-              ),
-              color: Colors.white,
-            ),
-            */
             Expanded(
               child: Container(
                 color: Colors.white,
                 child: ListView(
-                  padding: EdgeInsets.symmetric(horizontal: 30.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 30.0),
                   children: <Widget>[
 
-                    SizedBox(height: 10.0,),
+                    const SizedBox(height: 10.0,),
                     
                     Text(
-                      "Nombres",
-                      style: TextStyle(color: Color.fromRGBO(130, 130, 130, 1.0), fontSize: 15),
+                      Keys.sign_up.localize(),
+                      style: const TextStyle(color: Color.fromRGBO(130, 130, 130, 1.0), fontSize: 15, fontWeight: FontWeight.bold),
                     ),
 
-                    SizedBox(height: 10.0,),
+                    const SizedBox(height: 20.0,),
 
                     TextFormField(
-                      initialValue: model.nombre,
-                      inputFormatters: [new LengthLimitingTextInputFormatter(50),],
+                      initialValue: model.name,
+                      inputFormatters: [LengthLimitingTextInputFormatter(50),],
                       keyboardType: TextInputType.text,
                       decoration: InputDecoration(
-                        labelText: "",
+                        labelText: Keys.first_name_and_surname.localize(),
+                        labelStyle: const TextStyle(color: Color.fromRGBO(130, 130, 130, 1.0)),
                         fillColor: Colors.white,
-                        contentPadding: new EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
                         focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
+                          borderSide: const BorderSide(
                             color: Color.fromRGBO(40, 180, 245, 1.0),
                           ),
-                          borderRadius: BorderRadius.circular(0.5),
+                          borderRadius: BorderRadius.circular(15),
                         ),
                         enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
+                          borderSide: const BorderSide(
                             color: Color.fromRGBO(130, 130, 130, 1.0),
                           ),
-                          borderRadius: BorderRadius.circular(0.5),
+                          borderRadius: BorderRadius.circular(15),
                         ),
                       ),
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Color.fromRGBO(130, 130, 130, 1.0),
                         fontSize: 14.0,
                       ),
                       textInputAction: TextInputAction.next,
                       onFieldSubmitted: (_) => FocusScope.of(context).nextFocus(),
-                      onChanged: (value) => model.nombre = value,
-                    ),
-                    
-                    SizedBox(height: 15.0,),
-
-                    Text(
-                      "Apellidos",
-                      style: TextStyle(color: Color.fromRGBO(130, 130, 130, 1.0), fontSize: 15),
+                      onChanged: (value) => model.name = value,
                     ),
 
-                    SizedBox(height: 10.0,),
+                    const SizedBox(height: 15.0,),
 
                     TextFormField(
-                      initialValue: model.apellido,
-                      inputFormatters: [new LengthLimitingTextInputFormatter(50),],
-                      keyboardType: TextInputType.text,
-                      decoration: InputDecoration(
-                        labelText: "",
-                        fillColor: Colors.white,
-                        contentPadding: new EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color.fromRGBO(40, 180, 245, 1.0),
-                          ),
-                          borderRadius: BorderRadius.circular(0.5),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color.fromRGBO(130, 130, 130, 1.0),
-                          ),
-                          borderRadius: BorderRadius.circular(0.5),
-                        ),
-                      ),
-                      style: TextStyle(
-                        color: Color.fromRGBO(130, 130, 130, 1.0),
-                        fontSize: 14.0,
-                      ),
-                      textInputAction: TextInputAction.next,
-                      onFieldSubmitted: (_) => FocusScope.of(context).nextFocus(),
-                      onChanged: (value) => model.apellido = value,
-                    ),
-                    
-                    SizedBox(height: 15.0,),
-
-                    Text(
-                      "Correo",
-                      style: TextStyle(color: Color.fromRGBO(130, 130, 130, 1.0), fontSize: 15),
-                    ),
-
-                    SizedBox(height: 10.0,),
-
-                    TextFormField(
-                      initialValue: model.correo,
-                      inputFormatters: [new LengthLimitingTextInputFormatter(50),],
+                      initialValue: model.email,
+                      inputFormatters: [LengthLimitingTextInputFormatter(50),],
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
-                        labelText: "",
+                        labelText: Keys.email.localize(),
+                        labelStyle: const TextStyle(color: Color.fromRGBO(130, 130, 130, 1.0)),
                         fillColor: Colors.white,
-                        contentPadding: new EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
                         focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
+                          borderSide: const BorderSide(
                             color: Color.fromRGBO(40, 180, 245, 1.0),
                           ),
-                          borderRadius: BorderRadius.circular(0.5),
+                          borderRadius: BorderRadius.circular(15),
                         ),
                         enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
+                          borderSide: const BorderSide(
                             color: Color.fromRGBO(130, 130, 130, 1.0),
                           ),
-                          borderRadius: BorderRadius.circular(0.5),
+                          borderRadius: BorderRadius.circular(15),
                         ),
                       ),
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Color.fromRGBO(130, 130, 130, 1.0),
                         fontSize: 14.0,
                       ),
                       textInputAction: TextInputAction.next,
                       onFieldSubmitted: (_) => FocusScope.of(context).nextFocus(),
-                      onChanged: (value) => model.correo = value,
+                      onChanged: (value) => model.email = value,
                     ),
 
-                    SizedBox(height: 15.0,),
-
-                    Text(
-                      "Celular",
-                      style: TextStyle(color: Color.fromRGBO(130, 130, 130, 1.0), fontSize: 15),
-                    ),
-
-                    SizedBox(height: 10.0,),
+                    const SizedBox(height: 15.0,),
 
                     TextFormField(
-                      initialValue: model.celular,
-                      inputFormatters: [new LengthLimitingTextInputFormatter(50),],
+                      initialValue: model.cellphone,
+                      inputFormatters: [LengthLimitingTextInputFormatter(50),],
                       keyboardType: TextInputType.phone,
                       decoration: InputDecoration(
-                        labelText: "",
+                        labelText: Keys.mobile_phone.localize(),
+                        labelStyle: const TextStyle(color: Color.fromRGBO(130, 130, 130, 1.0)),
                         fillColor: Colors.white,
-                        contentPadding: new EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
                         focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
+                          borderSide: const BorderSide(
                             color: Color.fromRGBO(40, 180, 245, 1.0),
                           ),
-                          borderRadius: BorderRadius.circular(0.5),
+                          borderRadius: BorderRadius.circular(15),
                         ),
                         enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
+                          borderSide: const BorderSide(
                             color: Color.fromRGBO(130, 130, 130, 1.0),
                           ),
-                          borderRadius: BorderRadius.circular(0.5),
+                          borderRadius: BorderRadius.circular(15),
                         ),
                       ),
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Color.fromRGBO(130, 130, 130, 1.0),
                         fontSize: 14.0,
                       ),
                       textInputAction: TextInputAction.next,
                       onFieldSubmitted: (_) => FocusScope.of(context).nextFocus(),
-                      onChanged: (value) => model.celular = value,
+                      onChanged: (value) => model.cellphone = value,
                     ),
                     
-                    SizedBox(height: 15.0,),
-
-                    Text(
-                      "Contraseña",
-                      style: TextStyle(color: Color.fromRGBO(130, 130, 130, 1.0), fontSize: 15),
-                    ),
-
-                    SizedBox(height: 10.0,),
+                    const SizedBox(height: 15.0,),
 
                     Focus(
                       child: TextFormField(
                         obscureText: model.passwordOfuscado,
-                        inputFormatters: [new LengthLimitingTextInputFormatter(12),],
+                        inputFormatters: [LengthLimitingTextInputFormatter(12),],
                         keyboardType: TextInputType.text,
                         decoration: InputDecoration(
-                          labelText: "",
+                          labelText: Keys.password.localize(),
+                          labelStyle: const TextStyle(color: Color.fromRGBO(130, 130, 130, 1.0)),
                           fillColor: Colors.white,
-                          contentPadding: new EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
+                          contentPadding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
                           focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
+                            borderSide: const BorderSide(
                               color: Color.fromRGBO(40, 180, 245, 1.0),
                             ),
-                            borderRadius: BorderRadius.circular(0.5),
+                            borderRadius: BorderRadius.circular(15),
                           ),
                           enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
+                            borderSide: const BorderSide(
                               color: Color.fromRGBO(130, 130, 130, 1.0),
                             ),
-                            borderRadius: BorderRadius.circular(0.5),
+                            borderRadius: BorderRadius.circular(15),
                           ),
                           suffixIcon: IconButton(
                             icon: Icon(
                               model.passwordOfuscado
                               ? Icons.visibility_off
                               : Icons.visibility,
-                              color: Color.fromRGBO(130, 130, 130, 1.0),
+                              color: const Color.fromRGBO(130, 130, 130, 1.0),
                             ),
                             onPressed: () {
                               model.passwordOfuscado = !model.passwordOfuscado;
                             },
                           ),
                         ),
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Color.fromRGBO(130, 130, 130, 1.0),
                           fontSize: 14.0,
                         ),
                         textInputAction: TextInputAction.done,
                         onFieldSubmitted: (_) => FocusScope.of(context).unfocus(),
-                        onChanged: (value) => model.clave = value,
+                        onChanged: (value) => model.password = value,
                       ),
                     ),
 
-                    SizedBox(height: 15.0,),
-
-                    Text(
-                      "Repita Contraseña",
-                      style: TextStyle(color: Color.fromRGBO(130, 130, 130, 1.0), fontSize: 15),
-                    ),
-
-                    SizedBox(height: 10.0,),
+                    const SizedBox(height: 15.0,),
 
                     Focus(
                       child: TextFormField(
                         obscureText: model.repitePasswordOfuscado,
-                        inputFormatters: [new LengthLimitingTextInputFormatter(12),],
+                        inputFormatters: [LengthLimitingTextInputFormatter(12),],
                         keyboardType: TextInputType.text,
                         decoration: InputDecoration(
-                          labelText: "",
+                          labelText: Keys.repeat_password.localize(),
+                          labelStyle: const TextStyle(color: Color.fromRGBO(130, 130, 130, 1.0)),
                           fillColor: Colors.white,
-                          contentPadding: new EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
+                          contentPadding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
                           focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
+                            borderSide: const BorderSide(
                               color: Color.fromRGBO(40, 180, 245, 1.0),
                             ),
-                            borderRadius: BorderRadius.circular(0.5),
+                            borderRadius: BorderRadius.circular(15),
                           ),
                           enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
+                            borderSide: const BorderSide(
                               color: Color.fromRGBO(130, 130, 130, 1.0),
                             ),
-                            borderRadius: BorderRadius.circular(0.5),
+                            borderRadius: BorderRadius.circular(15),
                           ),
                           suffixIcon: IconButton(
                             icon: Icon(
                               model.repitePasswordOfuscado
                               ? Icons.visibility_off
                               : Icons.visibility,
-                              color: Color.fromRGBO(130, 130, 130, 1.0),
+                              color: const Color.fromRGBO(130, 130, 130, 1.0),
                             ),
                             onPressed: () {
                               model.repitePasswordOfuscado = !model.repitePasswordOfuscado;
                             },
                           ),
                         ),
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Color.fromRGBO(130, 130, 130, 1.0),
                           fontSize: 14.0,
                         ),
                         textInputAction: TextInputAction.done,
                         onFieldSubmitted: (_) => FocusScope.of(context).unfocus(),
-                        onChanged: (value) => model.repiteClave = value,
+                        onChanged: (value) => model.repeatPassword= value,
                       ),
                     ),
 
-                    SizedBox(height: 20.0,),
+                    const SizedBox(height: 20.0,),
 
                     Align(
                       alignment: Alignment.center,
@@ -333,20 +260,20 @@ class _BodyRegistro extends HookViewModelWidget<RegistroViewModel> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16.0),
                           ),
-                          color: Color.fromRGBO(12, 128, 206, 1.0),
+                          color: const Color.fromRGBO(255, 165, 0, 1.0),
                           child: Container(
-                            child: Text('REGISTRARME', style: TextStyle(color: Colors.white),),
+                            child: Text(Keys.continue_label.localize(), style: const TextStyle(color: Colors.white),),
                           ),
                           onPressed: () {
                             if (!model.isBusy) {
-                              model.registrarme();
+                              model.signin();
                             }
                           },
                         ),
                       ),
                     ),
 
-                    SizedBox(height: 10.0,),
+                    const SizedBox(height: 10.0,),
 
                   ],
                 ),

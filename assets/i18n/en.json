@@ -3,5 +3,16 @@
 	"accept_terms_and_references": "I accept terms and references",
 	"addr_line": "Addr. Line",
 	"address": "Address",
-	"test_key_2": "Hello"
+	"hello": "Hello",
+	"test_key_1": "My name is {%1$s}",
+	"test_key_2": "Hello",
+	"email": "E-mail",
+	"password": "Password",
+	"repeat_password": "Repeat password",
+	"continue_label": "Continue",
+	"login_dont_have_account": "If you don't have an account",
+	"sign_up": "Sign up",
+	"login": "Login",
+	"first_name_and_surname": "First name and surname",
+	"mobile_phone": "Mobile phone"
 }

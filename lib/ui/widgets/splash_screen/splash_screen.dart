@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class SplashScreen extends StatefulWidget {
   final Widget child;
 
-  SplashScreen({this.child}) : assert(child != null);
+  SplashScreen({@required this.child}) : assert(child != null);
 
   @override
   _SplashScreenState createState() => _SplashScreenState();

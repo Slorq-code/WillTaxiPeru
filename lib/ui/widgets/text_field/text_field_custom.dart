@@ -67,10 +67,10 @@ class _TextFieldCustomState extends State<TextFieldCustom> {
           },
           decoration: InputDecoration(
             enabledBorder: const OutlineInputBorder(
-              borderSide: const BorderSide(color: PalleteColor.textFieldBorderColor, width: 1.2),
+              borderSide: BorderSide(color: PalleteColor.textFieldBorderColor, width: 1.2),
             ),
             focusedBorder: const OutlineInputBorder(
-              borderSide: const BorderSide(color: PalleteColor.actionButtonColor, width: 1.2),
+              borderSide: BorderSide(color: PalleteColor.actionButtonColor, width: 1.2),
             ),
             focusedErrorBorder: const OutlineInputBorder(
               borderSide: BorderSide(color: Colors.red, width: 1.2),

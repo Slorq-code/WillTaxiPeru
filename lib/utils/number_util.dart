@@ -1,23 +1,21 @@
 import 'dart:math';
 
 class NumberUtil {
+  static List<int> randomizeArray(List<int> array) {
+    var rgen = Random(); // Random number generator
 
-  static List<int> randomizeArray(List<int> array){
-		Random rgen = new Random();  // Random number generator			
- 
-		for (int i=0; i<array.length; i++) {
-		    int randomPosition = rgen.nextInt(array.length);
-		    int temp = array[i];
-		    array[i] = array[randomPosition];
-		    array[randomPosition] = temp;
-		}
- 
-		return array;
-	}
+    for (var i = 0; i < array.length; i++) {
+      var randomPosition = rgen.nextInt(array.length);
+      var temp = array[i];
+      array[i] = array[randomPosition];
+      array[randomPosition] = temp;
+    }
+
+    return array;
+  }
 
   static List<int> getListNumberSortRandom() {
-
-    List<int> listNumber = new List<int>();
+    var listNumber = <int>[];
     listNumber.add(3);
     listNumber.add(5);
     listNumber.add(7);
@@ -28,10 +26,9 @@ class NumberUtil {
     listNumber.add(6);
     listNumber.add(8);
     listNumber.add(0);
-    
-    List<int> listaNumberSortRandom = NumberUtil.randomizeArray(listNumber);
-    
+
+    var listaNumberSortRandom = NumberUtil.randomizeArray(listNumber);
+
     return listaNumberSortRandom;
   }
-
 }

@@ -16,7 +16,7 @@ class PNetworkImage extends StatelessWidget {
           decoration: const BoxDecoration(
             color: Colors.black,
           ),
-          child: const Center(child: const CircularProgressIndicator())),
+          child: const Center(child: CircularProgressIndicator())),
       errorWidget: (context, url, error) => Container(
         height: 200.0,
         child: Image.asset(

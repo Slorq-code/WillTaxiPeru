@@ -33,6 +33,7 @@ class Api {
     };
   }
 
+  // ignore: unused_element
   Future<dynamic> _get(String method, {Map query}) async {
     var response = await dio.get(method,
         queryParameters: query,

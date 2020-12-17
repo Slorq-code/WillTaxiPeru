@@ -9,12 +9,10 @@ class ColorLoaderWidget extends StatefulWidget {
   ColorLoaderWidget({this.colors, this.duration, this.colorBackground});
 
   @override
-  _ColorLoaderState createState() =>
-      _ColorLoaderState(this.colors, this.duration, this.colorBackground);
+  _ColorLoaderState createState() => _ColorLoaderState(colors, duration, colorBackground);
 }
 
-class _ColorLoaderState extends State<ColorLoaderWidget>
-    with SingleTickerProviderStateMixin {
+class _ColorLoaderState extends State<ColorLoaderWidget> with SingleTickerProviderStateMixin {
   List<Color> colors;
   Duration duration;
   Color colorBackground;
@@ -34,34 +32,29 @@ class _ColorLoaderState extends State<ColorLoaderWidget>
   void initState() {
     super.initState();
 
-    if (colors == null) {
-      colors = [Colors.blue, Colors.amber, Colors.pink, Colors.red, Colors.green,];
-    }
-    if (duration == null) {
-      duration = new Duration(milliseconds: 1200);
-    }
-    if (colorBackground == null) {
-      colorBackground = Color.fromRGBO(0, 0, 0, 0.3);
-    }
+    colors ??= [Colors.blue, Colors.amber, Colors.pink, Colors.red, Colors.green];
+    duration ??= const Duration(milliseconds: 1200);
+    colorBackground ??= const Color.fromRGBO(0, 0, 0, 0.3);
 
-    controller = new AnimationController(
+    controller = AnimationController(
       vsync: this,
       duration: duration,
     );
 
-    for (int i = 0; i < colors.length - 1; i++) {
+    for (var i = 0; i < colors.length - 1; i++) {
       tweenAnimations.add(ColorTween(begin: colors[i], end: colors[i + 1]));
     }
 
-    tweenAnimations
-        .add(ColorTween(begin: colors[colors.length - 1], end: colors[0]));
+    tweenAnimations.add(ColorTween(begin: colors[colors.length - 1], end: colors[0]));
 
-    for (int i = 0; i < colors.length; i++) {
-      Animation<Color> animation = tweenAnimations[i].animate(CurvedAnimation(
+    for (var i = 0; i < colors.length; i++) {
+      var animation = tweenAnimations[i].animate(CurvedAnimation(
           parent: controller,
-          curve: Interval((1 / colors.length) * (i + 1) - 0.05,
-              (1 / colors.length) * (i + 1),
-              curve: Curves.linear)));
+          curve: Interval(
+            (1 / colors.length) * (i + 1) - 0.05,
+            (1 / colors.length) * (i + 1),
+            curve: Curves.linear,
+          )));
 
       colorAnimations.add(animation);
     }

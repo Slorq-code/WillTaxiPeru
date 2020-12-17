@@ -1,4 +1,3 @@
-
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
@@ -26,7 +25,7 @@ class Utils {
     return _dateFormatter;
   }
 
-  static showToast(BuildContext context, String msg, {int duration = 5, Color color = const Color(0xFFe74c3c)}) {
+  static void showToast(BuildContext context, String msg, {int duration = 5, Color color = const Color(0xFFe74c3c)}) {
     Toast.show(msg, context, duration: duration, gravity: Toast.BOTTOM, backgroundColor: color);
   }
 
@@ -47,18 +46,15 @@ class Utils {
     return age;
   }
 
-  static orderMap({@required Map map, List<String> eliminateFields}) {
+  static SplayTreeMap orderMap({@required Map map, List<String> eliminateFields}) {
     eliminateFields.forEach((element) {
       map.removeWhere((key, value) => key == element);
     });
 
-    final sorted = SplayTreeMap.from(map, (a, b) => a.compareTo(b));
-    return sorted;
+    return SplayTreeMap.from(map, (a, b) => a.compareTo(b));
   }
 
   static Color hexToColor(String code) {
     return Color(int.parse(code.substring(4, 10), radix: 16) + 0xFF000000);
   }
-
-  
 }

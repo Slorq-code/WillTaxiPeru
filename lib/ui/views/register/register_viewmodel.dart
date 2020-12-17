@@ -1,5 +1,4 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
@@ -29,7 +28,7 @@ class RegisterViewModel extends BaseViewModel {
     await _navigationService.navigateTo(Routes.registerViewRoute);
   }
 
-  void initial() async{
+  void initial() async {
     _email = '';
     password = '';
     repeatPassword = '';
@@ -99,17 +98,14 @@ class RegisterViewModel extends BaseViewModel {
   void signin() async {
     setBusy(true);
     try {
-
       if (password.toString().trim() != repeatPassword.toString().trim()) {
         print('PASSWORDS DO NOT MATCH');
         return;
       }
 
-      var userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: email, password: password);
+      var userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
 
       if (userCredential != null) {
-        
         _authSocialNetwork.user = UserModel();
         _authSocialNetwork.user.email = email.toString().toLowerCase().trim();
         _authSocialNetwork.user.name = name.toString().trim();
@@ -121,38 +117,23 @@ class RegisterViewModel extends BaseViewModel {
         var userRegister = await _firestoreUser.userRegister(_authSocialNetwork.user);
 
         if (userRegister) {
-
           await ExtendedNavigator.root.push(Routes.principalViewRoute);
-
         } else {
-
           print('THE USER DID NOT REGISTER');
-
         }
 
         await ExtendedNavigator.root.push(Routes.loginViewRoute);
-        
       } else {
-
         print('THE USER DID NOT REGISTER');
-
       }
-      
-    } catch(signUpError) {
-
-      if(signUpError is FirebaseAuthException) {
-
-        if(signUpError.code == 'email-already-in-use') {
-
+    } catch (signUpError) {
+      if (signUpError is FirebaseAuthException) {
+        if (signUpError.code == 'email-already-in-use') {
           print('THE USER IS ALREADY REGISTERED');
-
         }
-
       }
-
     } finally {
       setBusy(false);
     }
   }
-
 }

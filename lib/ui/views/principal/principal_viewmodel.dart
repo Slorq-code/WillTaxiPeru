@@ -1,5 +1,4 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
@@ -23,7 +22,7 @@ class PrincipalViewModel extends BaseViewModel {
 
   final AuthSocialNetwork _authSocialNetwork = locator<AuthSocialNetwork>();
 
-  void initial() async{
+  void initial() async {
     print(_authSocialNetwork.user.authType.index);
     print(_authSocialNetwork.user.userType.index);
     print(_authSocialNetwork.user.email);
@@ -32,7 +31,7 @@ class PrincipalViewModel extends BaseViewModel {
     print(_authSocialNetwork.user.uid);
   }
 
-  void logout() async{
+  void logout() async {
     await _authSocialNetwork.logout();
     await ExtendedNavigator.root.push(Routes.loginViewRoute);
   }

@@ -37,9 +37,9 @@ class _BodyRegistro extends HookViewModelWidget<PrincipalViewModel> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16.0),
         ),
-        color: Color.fromRGBO(12, 128, 206, 1.0),
+        color: const Color.fromRGBO(12, 128, 206, 1.0),
         child: Container(
-          child: Text(
+          child: const Text(
             'LOGOUT',
             style: TextStyle(color: Colors.white),
           ),

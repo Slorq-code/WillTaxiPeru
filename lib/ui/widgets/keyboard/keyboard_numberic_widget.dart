@@ -17,8 +17,8 @@ class KeyboardNumericWidget extends StatelessWidget {
 
   Widget _designKeyboard(List<int> listNumber) {
     return Container(
-                color: Color.fromRGBO(249, 249, 249, 1.0),
-                padding: new EdgeInsets.symmetric(vertical: 10.0),
+                color: const Color.fromRGBO(249, 249, 249, 1.0),
+                padding: const EdgeInsets.symmetric(vertical: 10.0),
                 child: Column(
                   children: <Widget>[
 
@@ -32,17 +32,17 @@ class KeyboardNumericWidget extends StatelessWidget {
                           height: 40,
                           child: RaisedButton(
                             // INICIO CODIGO PARA EVITAR EL EFECTO AL PRESIONAR EL BOTON
-                            splashColor: Color.fromRGBO(231, 231, 231, 1.0),
-                            highlightColor: Color.fromRGBO(231, 231, 231, 1.0),
+                            splashColor: const Color.fromRGBO(231, 231, 231, 1.0),
+                            highlightColor: const Color.fromRGBO(231, 231, 231, 1.0),
                             highlightElevation: 0,
                             elevation: 0,
                             // FIN CODIGO
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(7.0),
                             ),
-                            color: Color.fromRGBO(231, 231, 231, 1.0),
+                            color: const Color.fromRGBO(231, 231, 231, 1.0),
                             child: Container(
-                              child: Text(listNumber[0].toString(), style: TextStyle(color: Color.fromRGBO(80, 80, 80, 1.0)),),
+                              child: Text(listNumber[0].toString(), style: const TextStyle(color: Color.fromRGBO(80, 80, 80, 1.0)),),
                             ),
                             onPressed: () {
                               valueChanged(value + listNumber[0].toString());
@@ -50,22 +50,22 @@ class KeyboardNumericWidget extends StatelessWidget {
                           ),
                         ),
 
-                        SizedBox(width: 10.0,),
+                        const SizedBox(width: 10.0,),
 
                         SizedBox(
                           width: 90,
                           height: 40,
                           child: RaisedButton(
-                            splashColor: Color.fromRGBO(231, 231, 231, 1.0),
-                            highlightColor: Color.fromRGBO(231, 231, 231, 1.0),
+                            splashColor: const Color.fromRGBO(231, 231, 231, 1.0),
+                            highlightColor: const Color.fromRGBO(231, 231, 231, 1.0),
                             highlightElevation: 0,
                             elevation: 0,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(7.0),
                             ),
-                            color: Color.fromRGBO(231, 231, 231, 1.0),
+                            color: const Color.fromRGBO(231, 231, 231, 1.0),
                             child: Container(
-                              child: Text(listNumber[1].toString(), style: TextStyle(color: Color.fromRGBO(80, 80, 80, 1.0)),),
+                              child: Text(listNumber[1].toString(), style: const TextStyle(color: Color.fromRGBO(80, 80, 80, 1.0)),),
                             ),
                             onPressed: () {
                               valueChanged(value + listNumber[1].toString());
@@ -73,22 +73,22 @@ class KeyboardNumericWidget extends StatelessWidget {
                           ),
                         ),
 
-                        SizedBox(width: 10.0,),
+                        const SizedBox(width: 10.0,),
 
                         SizedBox(
                           width: 90,
                           height: 40,
                           child: RaisedButton(
-                            splashColor: Color.fromRGBO(231, 231, 231, 1.0),
-                            highlightColor: Color.fromRGBO(231, 231, 231, 1.0),
+                            splashColor: const Color.fromRGBO(231, 231, 231, 1.0),
+                            highlightColor: const Color.fromRGBO(231, 231, 231, 1.0),
                             highlightElevation: 0,
                             elevation: 0,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(7.0),
                             ),
-                            color: Color.fromRGBO(231, 231, 231, 1.0),
+                            color: const Color.fromRGBO(231, 231, 231, 1.0),
                             child: Container(
-                              child: Text(listNumber[2].toString(), style: TextStyle(color: Color.fromRGBO(80, 80, 80, 1.0)),),
+                              child: Text(listNumber[2].toString(), style: const TextStyle(color: Color.fromRGBO(80, 80, 80, 1.0)),),
                             ),
                             onPressed: () {
                               valueChanged(value + listNumber[2].toString());
@@ -98,7 +98,7 @@ class KeyboardNumericWidget extends StatelessWidget {
                       ],
                     ),
 
-                    SizedBox(height: 10.0,),
+                    const SizedBox(height: 10.0,),
                     
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center, // Center Row contents horizontally,
@@ -109,16 +109,16 @@ class KeyboardNumericWidget extends StatelessWidget {
                           width: 90,
                           height: 40,
                           child: RaisedButton(
-                            splashColor: Color.fromRGBO(231, 231, 231, 1.0),
-                            highlightColor: Color.fromRGBO(231, 231, 231, 1.0),
+                            splashColor: const Color.fromRGBO(231, 231, 231, 1.0),
+                            highlightColor: const Color.fromRGBO(231, 231, 231, 1.0),
                             highlightElevation: 0,
                             elevation: 0,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(7.0),
                             ),
-                            color: Color.fromRGBO(231, 231, 231, 1.0),
+                            color: const Color.fromRGBO(231, 231, 231, 1.0),
                             child: Container(
-                              child: Text(listNumber[3].toString(), style: TextStyle(color: Color.fromRGBO(80, 80, 80, 1.0)),),
+                              child: Text(listNumber[3].toString(), style: const TextStyle(color: Color.fromRGBO(80, 80, 80, 1.0)),),
                             ),
                             onPressed: () {
                               valueChanged(value + listNumber[3].toString());
@@ -126,22 +126,22 @@ class KeyboardNumericWidget extends StatelessWidget {
                           ),
                         ),
 
-                        SizedBox(width: 10.0,),
+                        const SizedBox(width: 10.0,),
 
                         SizedBox(
                           width: 90,
                           height: 40,
                           child: RaisedButton(
-                            splashColor: Color.fromRGBO(231, 231, 231, 1.0),
-                            highlightColor: Color.fromRGBO(231, 231, 231, 1.0),
+                            splashColor: const Color.fromRGBO(231, 231, 231, 1.0),
+                            highlightColor: const Color.fromRGBO(231, 231, 231, 1.0),
                             highlightElevation: 0,
                             elevation: 0,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(7.0),
                             ),
-                            color: Color.fromRGBO(231, 231, 231, 1.0),
+                            color: const Color.fromRGBO(231, 231, 231, 1.0),
                             child: Container(
-                              child: Text(listNumber[4].toString(), style: TextStyle(color: Color.fromRGBO(80, 80, 80, 1.0)),),
+                              child: Text(listNumber[4].toString(), style: const TextStyle(color: Color.fromRGBO(80, 80, 80, 1.0)),),
                             ),
                             onPressed: () {
                               valueChanged(value + listNumber[4].toString());
@@ -149,22 +149,22 @@ class KeyboardNumericWidget extends StatelessWidget {
                           ),
                         ),
 
-                        SizedBox(width: 10.0,),
+                        const SizedBox(width: 10.0,),
 
                         SizedBox(
                           width: 90,
                           height: 40,
                           child: RaisedButton(
-                            splashColor: Color.fromRGBO(231, 231, 231, 1.0),
-                            highlightColor: Color.fromRGBO(231, 231, 231, 1.0),
+                            splashColor: const Color.fromRGBO(231, 231, 231, 1.0),
+                            highlightColor: const Color.fromRGBO(231, 231, 231, 1.0),
                             highlightElevation: 0,
                             elevation: 0,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(7.0),
                             ),
-                            color: Color.fromRGBO(231, 231, 231, 1.0),
+                            color: const Color.fromRGBO(231, 231, 231, 1.0),
                             child: Container(
-                              child: Text(listNumber[5].toString(), style: TextStyle(color: Color.fromRGBO(80, 80, 80, 1.0)),),
+                              child: Text(listNumber[5].toString(), style: const TextStyle(color: Color.fromRGBO(80, 80, 80, 1.0)),),
                             ),
                             onPressed: () {
                               valueChanged(value + listNumber[5].toString());
@@ -174,7 +174,7 @@ class KeyboardNumericWidget extends StatelessWidget {
                       ],
                     ),
 
-                    SizedBox(height: 10.0,),
+                    const SizedBox(height: 10.0,),
                     
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center, // Center Row contents horizontally,
@@ -185,16 +185,16 @@ class KeyboardNumericWidget extends StatelessWidget {
                           width: 90,
                           height: 40,
                           child: RaisedButton(
-                            splashColor: Color.fromRGBO(231, 231, 231, 1.0),
-                            highlightColor: Color.fromRGBO(231, 231, 231, 1.0),
+                            splashColor: const Color.fromRGBO(231, 231, 231, 1.0),
+                            highlightColor: const Color.fromRGBO(231, 231, 231, 1.0),
                             highlightElevation: 0,
                             elevation: 0,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(7.0),
                             ),
-                            color: Color.fromRGBO(231, 231, 231, 1.0),
+                            color: const Color.fromRGBO(231, 231, 231, 1.0),
                             child: Container(
-                              child: Text(listNumber[6].toString(), style: TextStyle(color: Color.fromRGBO(80, 80, 80, 1.0)),),
+                              child: Text(listNumber[6].toString(), style: const TextStyle(color: Color.fromRGBO(80, 80, 80, 1.0)),),
                             ),
                             onPressed: () {
                               valueChanged(value + listNumber[6].toString());
@@ -202,22 +202,22 @@ class KeyboardNumericWidget extends StatelessWidget {
                           ),
                         ),
 
-                        SizedBox(width: 10.0,),
+                        const SizedBox(width: 10.0,),
 
                         SizedBox(
                           width: 90,
                           height: 40,
                           child: RaisedButton(
-                            splashColor: Color.fromRGBO(231, 231, 231, 1.0),
-                            highlightColor: Color.fromRGBO(231, 231, 231, 1.0),
+                            splashColor: const Color.fromRGBO(231, 231, 231, 1.0),
+                            highlightColor: const Color.fromRGBO(231, 231, 231, 1.0),
                             highlightElevation: 0,
                             elevation: 0,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(7.0),
                             ),
-                            color: Color.fromRGBO(231, 231, 231, 1.0),
+                            color: const Color.fromRGBO(231, 231, 231, 1.0),
                             child: Container(
-                              child: Text(listNumber[7].toString(), style: TextStyle(color: Color.fromRGBO(80, 80, 80, 1.0)),),
+                              child: Text(listNumber[7].toString(), style: const TextStyle(color: Color.fromRGBO(80, 80, 80, 1.0)),),
                             ),
                             onPressed: () {
                               valueChanged(value + listNumber[7].toString());
@@ -225,22 +225,22 @@ class KeyboardNumericWidget extends StatelessWidget {
                           ),
                         ),
 
-                        SizedBox(width: 10.0,),
+                        const SizedBox(width: 10.0,),
 
                         SizedBox(
                           width: 90,
                           height: 40,
                           child: RaisedButton(
-                            splashColor: Color.fromRGBO(231, 231, 231, 1.0),
-                            highlightColor: Color.fromRGBO(231, 231, 231, 1.0),
+                            splashColor: const Color.fromRGBO(231, 231, 231, 1.0),
+                            highlightColor: const Color.fromRGBO(231, 231, 231, 1.0),
                             highlightElevation: 0,
                             elevation: 0,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(7.0),
                             ),
-                            color: Color.fromRGBO(231, 231, 231, 1.0),
+                            color: const Color.fromRGBO(231, 231, 231, 1.0),
                             child: Container(
-                              child: Text(listNumber[8].toString(), style: TextStyle(color: Color.fromRGBO(80, 80, 80, 1.0)),),
+                              child: Text(listNumber[8].toString(), style: const TextStyle(color: Color.fromRGBO(80, 80, 80, 1.0)),),
                             ),
                             onPressed: () {
                               valueChanged(value + listNumber[8].toString());
@@ -250,34 +250,34 @@ class KeyboardNumericWidget extends StatelessWidget {
                       ],
                     ),
 
-                    SizedBox(height: 10.0,),
+                    const SizedBox(height: 10.0,),
 
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center, // Center Row contents horizontally,
                       crossAxisAlignment: CrossAxisAlignment.center, // Center Row contents vertically,
                       children: <Widget>[
 
-                        SizedBox(
+                        const SizedBox(
                           width: 90,
                           height: 40,
                         ),
 
-                        SizedBox(width: 10.0,),
+                        const SizedBox(width: 10.0,),
 
                         SizedBox(
                           width: 90,
                           height: 40,
                           child: RaisedButton(
-                            splashColor: Color.fromRGBO(231, 231, 231, 1.0),
-                            highlightColor: Color.fromRGBO(231, 231, 231, 1.0),
+                            splashColor: const Color.fromRGBO(231, 231, 231, 1.0),
+                            highlightColor: const Color.fromRGBO(231, 231, 231, 1.0),
                             highlightElevation: 0,
                             elevation: 0,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(7.0),
                             ),
-                            color: Color.fromRGBO(231, 231, 231, 1.0),
+                            color: const Color.fromRGBO(231, 231, 231, 1.0),
                             child: Container(
-                              child: Text(listNumber[9].toString(), style: TextStyle(color: Color.fromRGBO(80, 80, 80, 1.0)),),
+                              child: Text(listNumber[9].toString(), style: const TextStyle(color: Color.fromRGBO(80, 80, 80, 1.0)),),
                             ),
                             onPressed: () {
                               valueChanged(value + listNumber[9].toString());
@@ -285,15 +285,15 @@ class KeyboardNumericWidget extends StatelessWidget {
                           ),
                         ),
 
-                        SizedBox(width: 10.0,),
+                        const SizedBox(width: 10.0,),
 
                         SizedBox(
                           width: 90,
                           height: 40,
                           child: IconButton(
-                            icon: Icon(Icons.cancel, color: Color.fromRGBO(0, 122, 209, 1),),
+                            icon: const Icon(Icons.cancel, color: Color.fromRGBO(0, 122, 209, 1),),
                             onPressed: () {
-                              if (value.length > 0) {
+                              if (value.isNotEmpty) {
                                 valueChanged(value.substring(0, value.length - 1));
                               }
                             }

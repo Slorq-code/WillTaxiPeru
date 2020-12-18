@@ -13,7 +13,7 @@ class RegisterView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<RegisterViewModel>.nonReactive(
-      viewModelBuilder: () => RegisterViewModel(),
+      viewModelBuilder: () => RegisterViewModel(context),
       onModelReady: (model) => model.initial(),
       builder: (context, model, child) => SafeArea(
         child: Scaffold(

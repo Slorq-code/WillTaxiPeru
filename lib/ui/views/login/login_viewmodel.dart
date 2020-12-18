@@ -4,20 +4,22 @@ import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
 import 'package:taxiapp/app/locator.dart';
 import 'package:taxiapp/app/router.gr.dart';
+import 'package:taxiapp/localization/keys.dart';
 import 'package:taxiapp/models/enums/auth_type.dart';
 import 'package:taxiapp/models/enums/user_type.dart';
 import 'package:taxiapp/services/auth_social_network_service.dart';
 import 'package:taxiapp/services/firestore_user_service.dart';
 import 'package:taxiapp/utils/alerts.dart';
+import 'package:taxiapp/utils/utils.dart';
+
+import 'package:taxiapp/extensions/string_extension.dart';
 
 class LoginViewModel extends BaseViewModel {
 
   BuildContext context;
-  var alertLoading;
 
   LoginViewModel(BuildContext context) {
     this.context = context;
-    alertLoading = Alert(context: context);
   }
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -64,18 +66,15 @@ class LoginViewModel extends BaseViewModel {
     notifyListeners();
   }
 
+  bool get enableBtnLogin {
+    return !Utils.isNullOrEmpty(user) && !Utils.isNullOrEmpty(password) && Utils.isValidEmail(user) && Utils.isValidPasswordLength(password);
+  }
+
   void login(AuthType authType) async {
     setBusy(true);
     try {
       if (AuthType.User.index == authType.index) {
-        alertLoading.loading('Cargando');
-
-        if (user.toString().trim() == '' || password.toString().trim() == '') {
-          
-          print('USERNAME AND PASSWORD REQUIRED');
-          ExtendedNavigator.root.pop();
-          return;
-        }
+        Alert(context: context).loading(Keys.loading.localize());
       }
 
       await _authSocialNetwork.login(user.toString().trim(), password.toString().trim(), authType);
@@ -106,29 +105,30 @@ class LoginViewModel extends BaseViewModel {
         }
       }
     } catch (signUpError) {
-      print(signUpError.toString());
-      if (signUpError is FirebaseAuthException) {
-        if (signUpError.code == 'account-exists-with-different-credential') {
-          print('THE USER IS ALREADY REGISTERED WITH ANOTHER SOCIAL NETWORK');
-        } else if (signUpError.code == 'wrong-password' || signUpError.code == 'user-not-found') {
-          print('INVALID PASSWORD');
-        } else if (signUpError.code == 'invalid-email') {
-          print('INVALID EMAIL');
-        } else {
-          print(signUpError.code);
-        }
-      }
-
       if (AuthType.User.index == authType.index) {
         ExtendedNavigator.root.pop();
       }
-      
+      if (signUpError is FirebaseAuthException) {
+        print(signUpError.code.toString());
+        var packageInfo = await Utils.getPackageInfo();
+        if (signUpError.code == 'account-exists-with-different-credential') {
+          Alert(context: context, title: packageInfo.appName, label: Keys.email_already_registered_another_social_network.localize()).alertMessage();
+        } else if (signUpError.code == 'wrong-password' || signUpError.code == 'user-not-found' || signUpError.code == 'invalid-email') {
+          Alert(context: context, title: packageInfo.appName, label: Keys.login_invalid_username_or_password.localize()).alertMessage();
+        } else if (signUpError.code == 'too-many-requests') {
+          Alert(context: context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();
+        } else {
+          Alert(context: context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();
+        }
+      }
     } finally {
       setBusy(false);
     }
   }
 
-  void irRegistroUsuario() async {
+  void goToRegisterUser() async {
+    setBusy(true);
     await ExtendedNavigator.root.push(Routes.registerViewRoute);
+    setBusy(false);
   }
 }

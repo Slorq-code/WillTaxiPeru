@@ -1,5 +1,6 @@
 {
 	"accept": "Aceptar",
+	"cancel": "Cancelar",
 	"accept_terms_and_references": "Acepto términos y referencias",
 	"addr_line": "Dirección",
 	"address": "Domicilio",
@@ -14,5 +15,10 @@
 	"sign_up": "Registrate",
 	"login": "Iniciar sesión",
 	"first_name_and_surname": "Nombres y apellidos",
-	"mobile_phone": "Teléfono movil"
+	"mobile_phone": "Teléfono movil",
+	"loading": "Cargando",
+	"login_invalid_username_or_password": "Usuario o contraseña incorrecta",
+	"request_not_processed_correctly": "Lo sentimos, su solicitud no se proceso correctamente",
+	"email_already_registered_another_social_network": "El correo electrónico ingresado ya se encuentra registrado con otra red social",
+	"user_created_successfully": "Usuario creado satisfactoriamente"
 }

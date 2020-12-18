@@ -4,13 +4,25 @@ import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
 import 'package:taxiapp/app/locator.dart';
 import 'package:taxiapp/app/router.gr.dart';
+import 'package:taxiapp/localization/keys.dart';
 import 'package:taxiapp/models/enums/auth_type.dart';
 import 'package:taxiapp/models/enums/user_type.dart';
 import 'package:taxiapp/models/userModel.dart';
 import 'package:taxiapp/services/auth_social_network_service.dart';
 import 'package:taxiapp/services/firestore_user_service.dart';
+import 'package:taxiapp/utils/alerts.dart';
+
+import 'package:taxiapp/extensions/string_extension.dart';
 
 class RegisterViewModel extends BaseViewModel {
+
+  BuildContext context;
+
+  RegisterViewModel(BuildContext context) {
+    this.context = context;
+  }
+
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   // * Getters
@@ -25,7 +37,7 @@ class RegisterViewModel extends BaseViewModel {
   }
 
   void initial() async {
-    _email = '';
+    email = '';
     password = '';
     repeatPassword = '';
     cellphone = '';
@@ -94,6 +106,8 @@ class RegisterViewModel extends BaseViewModel {
   void signin() async {
     setBusy(true);
     try {
+      // Alert(context: context).loading(Keys.loading.localize());
+      
       if (password.toString().trim() != repeatPassword.toString().trim()) {
         print('PASSWORDS DO NOT MATCH');
         return;
@@ -113,7 +127,10 @@ class RegisterViewModel extends BaseViewModel {
         var userRegister = await _firestoreUser.userRegister(_authSocialNetwork.user);
 
         if (userRegister) {
+
+          // ExtendedNavigator.root.pop();
           await ExtendedNavigator.root.push(Routes.principalViewRoute);
+
         } else {
           print('THE USER DID NOT REGISTER');
         }

@@ -1,5 +1,6 @@
 {
 	"accept": "Accept",
+	"cancel": "Cancel",
 	"accept_terms_and_references": "I accept terms and references",
 	"addr_line": "Addr. Line",
 	"address": "Address",
@@ -14,5 +15,10 @@
 	"sign_up": "Sign up",
 	"login": "Login",
 	"first_name_and_surname": "First name and surname",
-	"mobile_phone": "Mobile phone"
+	"mobile_phone": "Mobile phone",
+	"loading": "Loading",
+	"login_invalid_username_or_password": "Invalid username or password",
+	"request_not_processed_correctly": "Sorry, your request was not processed correctly",
+	"email_already_registered_another_social_network": "The email entered is already registered with another social network",
+	"user_created_successfully": "User created successfully"
 }

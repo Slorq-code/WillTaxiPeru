@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
+import 'package:package_info/package_info.dart';
 import 'package:toast/toast.dart';
 import 'package:intl/intl.dart';
 
@@ -57,4 +58,25 @@ class Utils {
   static Color hexToColor(String code) {
     return Color(int.parse(code.substring(4, 10), radix: 16) + 0xFF000000);
   }
+
+  static bool isNullOrEmpty(String value) {
+    if (value == null || value.trim().isEmpty) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  static bool isValidEmail(String email) {
+    return RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(email);
+  }
+
+  static bool isValidPasswordLength(String password) {
+    return (password.trim().length > 5 && password.trim().length < 21);
+  }
+
+  static Future<PackageInfo> getPackageInfo() async{
+    return await PackageInfo.fromPlatform();
+  }
+  
 }

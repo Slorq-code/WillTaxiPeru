@@ -134,7 +134,7 @@ class Alert {
             ),
             actions: <Widget>[
               FlatButton(
-                  child: Text('Cancelar', style: const TextStyle(color: Colors.orange)),
+                  child: Text(Keys.cancel.localize(), style: const TextStyle(color: Colors.orange)),
                   onPressed: () {
                     Navigator.of(context).pop();
                   }),

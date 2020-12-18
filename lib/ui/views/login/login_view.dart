@@ -132,7 +132,7 @@ class _BodyLogin extends HookViewModelWidget<LoginViewModel> {
                     Focus(
                       child: TextFormField(
                         obscureText: model.passwordOfuscado,
-                        inputFormatters: [LengthLimitingTextInputFormatter(12),],
+                        inputFormatters: [LengthLimitingTextInputFormatter(20),],
                         keyboardType: TextInputType.emailAddress,
                         decoration: InputDecoration(
                           labelText: Keys.password.localize(),
@@ -236,14 +236,15 @@ class _BodyLogin extends HookViewModelWidget<LoginViewModel> {
                             borderRadius: BorderRadius.circular(16.0),
                           ),
                           color: const Color.fromRGBO(255, 165, 0, 1.0),
+                          disabledColor: const Color.fromRGBO(255, 200, 120, 1.0),
                           child: Container(
                             child: Text(Keys.continue_label.localize(), style: const TextStyle(color: Colors.white),),
                           ),
-                          onPressed: () {
+                          onPressed: (!model.enableBtnLogin ? null : () {
                             if (!model.isBusy) {
                               model.login(AuthType.User);
                             }
-                          },
+                          }),
                         ),
                       ),
                     ),
@@ -269,7 +270,7 @@ class _BodyLogin extends HookViewModelWidget<LoginViewModel> {
                                 recognizer: TapGestureRecognizer()
                                     ..onTap = () {
                                       if (!model.isBusy) {
-                                        model.irRegistroUsuario();
+                                        model.goToRegisterUser();
                                       }
                                     }),
                             ],

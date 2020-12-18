@@ -22,7 +22,6 @@ dependencies:
   flutter_hooks: ^0.12.0
   # navigation
   auto_route: ^0.6.9
-  stacked_services: ^0.5.2
   # inversion of control
   get_it: ^5.0.1
   injectable: ^1.0.5
@@ -73,3 +72,4 @@ flutter:
   assets:
     - assets/i18n/
     - assets/icons/
+    - assets/icons/principal/

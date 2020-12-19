@@ -5,6 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_hooks/stacked_hooks.dart';
+
 import 'package:taxiapp/ui/views/principal/principal_viewmodel.dart';
 
 class PrincipalView extends StatelessWidget {
@@ -35,9 +36,9 @@ class _HomeMap extends ViewModelWidget<PrincipalViewModel> {
   Widget build(BuildContext context, PrincipalViewModel model) {
     return Stack(
       children: [
-        model.existLocation
+        model.userLocation.existLocation
             ? GoogleMap(
-                initialCameraPosition: CameraPosition(target: model.currentLocation, zoom: 15),
+                initialCameraPosition: CameraPosition(target: model.userLocation.location, zoom: 15),
                 myLocationEnabled: true,
                 myLocationButtonEnabled: false,
                 zoomControlsEnabled: false,
@@ -54,21 +55,59 @@ class _HomeMap extends ViewModelWidget<PrincipalViewModel> {
           child: Container(
             color: Colors.white,
             width: MediaQuery.of(context).size.width,
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
+            child: Column(
               children: [
-                Column(
+                Row(
+                  mainAxisSize: MainAxisSize.max,
                   children: [
-                    const _OriginLocationField(),
-                    const _DestinationLocationField(),
+                    Column(
+                      children: [
+                        const _OriginLocationField(),
+                        const _DestinationLocationField(),
+                      ],
+                    ),
+                    Expanded(
+                      child: CircleAvatar(
+                        backgroundColor: const Color(0xffFFA500),
+                        radius: MediaQuery.of(context).size.width * .07,
+                      ),
+                    ),
                   ],
                 ),
-                Expanded(
-                  child: CircleAvatar(
-                    backgroundColor: const Color(0xffFFA500),
-                    radius: MediaQuery.of(context).size.width * .07,
+                Visibility(
+                  visible: model.isSearching,
+                  child: Container(
+                    height: MediaQuery.of(context).size.height,
+                    width: double.infinity,
+                    color: Colors.white,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text('Pick in map'),
+                        ),
+                        ...model.placesFound.map((place) => Material(
+                              type: MaterialType.transparency,
+                              child: InkWell(
+                                onTap: () => model.makeRoute(place),
+                                child: Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(place.name),
+                                      Text(place.address),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ))
+                      ],
+                    ),
                   ),
-                ),
+                )
               ],
             ),
           ),
@@ -113,7 +152,11 @@ class _OriginLocationField extends HookViewModelWidget<PrincipalViewModel> {
 
   @override
   Widget buildViewModelWidget(BuildContext context, PrincipalViewModel model) {
-    var searchController = useTextEditingController();
+    final searchController = useTextEditingController();
+    useEffect(() {
+      searchController.text = model.userLocation.descriptionAddress;
+      return null;
+    }, [model.userLocation]);
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
@@ -141,28 +184,51 @@ class _OriginLocationField extends HookViewModelWidget<PrincipalViewModel> {
                       decoration: InputDecoration(
                         enabledBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.transparent, width: 0.1)),
                         focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.transparent, width: 0.1)),
-                        border:
-                            OutlineInputBorder(borderRadius: BorderRadius.circular(10.0), borderSide: const BorderSide(color: Colors.transparent, width: 0.1)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                          borderSide: const BorderSide(color: Colors.transparent, width: 0.1),
+                        ),
                         contentPadding: const EdgeInsets.all(0),
                         alignLabelWithHint: true,
                       ),
                     ),
                   ),
-                  GestureDetector(
-                    onTap: () {},
-                    child: SvgPicture.asset(
-                      'assets/icons/destination.svg',
-                      height: 20,
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {},
-                    child: SvgPicture.asset('assets/icons/start_location.svg', height: 20),
-                  ),
+                  _OriginButton(icon: 'assets/icons/destination.svg', onTap: () {}),
+                  _OriginButton(icon: 'assets/icons/start_location.svg', onTap: () {}),
                 ],
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _OriginButton extends StatelessWidget {
+  const _OriginButton({
+    Key key,
+    @required this.icon,
+    @required this.onTap,
+  })  : assert(icon != null),
+        assert(onTap != null),
+        super(key: key);
+
+  final VoidCallback onTap;
+  final String icon;
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      type: MaterialType.transparency,
+      child: InkWell(
+        customBorder: const CircleBorder(),
+        onTap: onTap,
+        child: Container(
+          width: 30,
+          child: SvgPicture.asset(
+            icon,
+            height: 20,
+          ),
         ),
       ),
     );
@@ -176,7 +242,11 @@ class _DestinationLocationField extends HookViewModelWidget<PrincipalViewModel> 
 
   @override
   Widget buildViewModelWidget(BuildContext context, PrincipalViewModel model) {
-    var searchController = useTextEditingController();
+    final searchController = useTextEditingController();
+    // useEffect(() {
+    //   searchController.text = model.userLocation.descriptionAddress;
+    //   return null;
+    // }, [model.userLocation]);
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
@@ -199,16 +269,21 @@ class _DestinationLocationField extends HookViewModelWidget<PrincipalViewModel> 
                     child: TextField(
                       controller: searchController,
                       autofocus: false,
+                      onTap: () => model.updateSearching(true),
+                      onSubmitted: (text) => model.searchDestination(text),
                       textAlignVertical: TextAlignVertical.center,
                       textInputAction: TextInputAction.done,
                       decoration: InputDecoration(
-                        enabledBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.transparent, width: 0.1)),
-                        focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.transparent, width: 0.1)),
-                        border:
-                            OutlineInputBorder(borderRadius: BorderRadius.circular(10.0), borderSide: const BorderSide(color: Colors.transparent, width: 0.1)),
-                        contentPadding: const EdgeInsets.all(0),
-                        alignLabelWithHint: true,
-                      ),
+                          enabledBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.transparent, width: 0.1)),
+                          focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.transparent, width: 0.1)),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: const BorderSide(color: Colors.transparent, width: 0.1),
+                          ),
+                          contentPadding: const EdgeInsets.all(0),
+                          alignLabelWithHint: true,
+                          hintText: 'Destino' // TODO: translate
+                          ),
                     ),
                   ),
                 ],

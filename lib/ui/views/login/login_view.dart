@@ -1,9 +1,11 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:stacked/stacked.dart';
 
 import 'package:flutter/material.dart';
 import 'package:stacked_hooks/stacked_hooks.dart';
+import 'package:taxiapp/app/router.gr.dart';
 import 'package:taxiapp/localization/keys.dart';
 import 'package:taxiapp/models/enums/auth_type.dart';
 import 'package:taxiapp/theme/pallete_color.dart';
@@ -302,6 +304,11 @@ class _BodyLogin extends HookViewModelWidget<LoginViewModel> {
                   ),
                   const SizedBox(
                     height: 10.0,
+                  ),
+                  RaisedButton(
+                    color: Colors.blue,
+                    child: const Text('To Principal view'),
+                    onPressed: () => ExtendedNavigator.root.push(Routes.principalViewRoute),
                   ),
                 ],
               ),

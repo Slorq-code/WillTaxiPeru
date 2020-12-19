@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
+import 'package:taxiapp/app/globals.dart';
 import 'package:taxiapp/app/locator.dart';
 import 'package:taxiapp/services/storage_service.dart';
 import 'package:taxiapp/services/token.dart';
@@ -11,23 +12,38 @@ import 'package:taxiapp/utils/retry/dio_retry.dart';
 
 @lazySingleton
 class Api {
-  Dio dio = Dio();
+  final Dio _dioBack = Dio();
+  final Dio _dioMap = Dio();
   final shared = locator<Storage>();
   final token = locator<Token>();
 
   Api() {
-    dio.options.baseUrl = '';
-    dio.options.connectTimeout = 5000;
-    dio.options.sendTimeout = 5000;
-    dio.options.receiveTimeout = 20000;
-    dio.interceptors.add(RetryInterceptor(
-      dio: dio,
+    _dioBack.options.baseUrl = '';
+    _dioBack.options.connectTimeout = 5000;
+    _dioBack.options.sendTimeout = 5000;
+    _dioBack.options.receiveTimeout = 20000;
+    _dioBack.interceptors.add(RetryInterceptor(
+      dio: _dioBack,
       options: const RetryOptions(
         retries: 3,
         retryInterval: Duration(seconds: 5),
       ),
     ));
-    (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate = (client) {
+    (_dioBack.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate = (client) {
+      client.badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+      return client;
+    };
+    _dioMap.options.connectTimeout = 5000;
+    _dioMap.options.sendTimeout = 5000;
+    _dioMap.options.receiveTimeout = 20000;
+    _dioMap.interceptors.add(RetryInterceptor(
+      dio: _dioBack,
+      options: const RetryOptions(
+        retries: 3,
+        retryInterval: Duration(seconds: 5),
+      ),
+    ));
+    (_dioBack.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate = (client) {
       client.badCertificateCallback = (X509Certificate cert, String host, int port) => true;
       return client;
     };
@@ -35,7 +51,7 @@ class Api {
 
   // ignore: unused_element
   Future<dynamic> _get(String method, {Map query}) async {
-    var response = await dio.get(method,
+    var response = await _dioBack.get(method,
         queryParameters: query,
         options: Options(
           headers: await token.buildHeaders(),
@@ -44,7 +60,7 @@ class Api {
   }
 
   Future<dynamic> _post(String method, Map data, {Map query}) async {
-    var response = await dio.post(method,
+    var response = await _dioBack.post(method,
         queryParameters: query,
         data: jsonEncode(data),
         options: Options(
@@ -67,6 +83,28 @@ class Api {
 
   Future<String> countryCode() async {
     var response = await Dio().get('https://ipapi.co/country_code/');
+    return response.data;
+  }
+
+  Future<Map> getAddress(Map data) async {
+    var response = await _dioMap.get('https://maps.googleapis.com/maps/api/geocode/json?latlng=${data['lat']},${data['lng']}&key=${Globals.googleMapsApiKey}');
+    return response.data;
+  }
+
+  Future<Map> getCoords(Map data) async {
+    var response = await _dioMap.get('https://maps.googleapis.com/maps/api/geocode/json?address=${data['address']}region=PE&key=${Globals.googleMapsApiKey}');
+    return response.data;
+  }
+
+  Future<Map> findPlaces(Map data) async {
+    var response = await _dioMap.get(
+        'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${data['query']}&inputtype=textquery&fields=formatted_address,name,geometry&locationbias=point:${data['lat']},${data['lng']}&key=${Globals.googleMapsApiKey}');
+    return response.data;
+  }
+
+  Future<Map> getRouteByCoordinates(Map data) async {
+    var response = await _dioMap.get(
+        'https://maps.googleapis.com/maps/api/directions/json?origin=${data['lat1']},${data['lng1']}&destination=${data['lat2']},${data['lng2']}&key=${Globals.googleMapsApiKey}');
     return response.data;
   }
 }

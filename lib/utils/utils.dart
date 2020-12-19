@@ -78,5 +78,9 @@ class Utils {
   static Future<PackageInfo> getPackageInfo() async{
     return await PackageInfo.fromPlatform();
   }
+
+  static bool isValidPhone(String phone) {
+    return RegExp(r'^[0-9]{9}$').hasMatch(phone);
+  }
   
 }

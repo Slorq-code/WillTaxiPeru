@@ -19,6 +19,8 @@
 	"loading": "Cargando",
 	"login_invalid_username_or_password": "Usuario o contraseña incorrecta",
 	"request_not_processed_correctly": "Lo sentimos, su solicitud no se proceso correctamente",
-	"email_already_registered_another_social_network": "El correo electrónico ingresado ya se encuentra registrado con otra red social",
-	"user_created_successfully": "Usuario creado satisfactoriamente"
+	"email_already_registered": "El correo electrónico ingresado ya se encuentra registrado",
+	"user_created_successfully": "Usuario creado satisfactoriamente",
+	"user_has_been_temporarily_disabled": "Su usuario temporalmente a sido inhabilitado, por favor intente en unos minutos",
+	"password_dont_match": "Las contraseñas deben coincidir"
 }

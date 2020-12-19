@@ -13,6 +13,7 @@ import 'package:taxiapp/services/firestore_user_service.dart';
 import 'package:taxiapp/utils/alerts.dart';
 
 import 'package:taxiapp/extensions/string_extension.dart';
+import 'package:taxiapp/utils/utils.dart';
 
 class RegisterViewModel extends BaseViewModel {
 
@@ -103,13 +104,21 @@ class RegisterViewModel extends BaseViewModel {
     notifyListeners();
   }
 
+  bool get enableBtnContinue {
+    return !Utils.isNullOrEmpty(name) && !Utils.isNullOrEmpty(email) && !Utils.isNullOrEmpty(cellphone) && !Utils.isNullOrEmpty(password) && !Utils.isNullOrEmpty(repeatPassword) && Utils.isValidEmail(email) && Utils.isValidPhone(cellphone) && Utils.isValidPasswordLength(password);
+  }
+
   void signin() async {
     setBusy(true);
+
+    var packageInfo = await Utils.getPackageInfo();
     try {
-      // Alert(context: context).loading(Keys.loading.localize());
       
+      Alert(context: context).loading(Keys.loading.localize());
+
       if (password.toString().trim() != repeatPassword.toString().trim()) {
-        print('PASSWORDS DO NOT MATCH');
+        ExtendedNavigator.root.pop();
+        Alert(context: context, title: packageInfo.appName, label: Keys.password_dont_match.localize()).alertMessage();
         return;
       }
 
@@ -128,23 +137,40 @@ class RegisterViewModel extends BaseViewModel {
 
         if (userRegister) {
 
-          // ExtendedNavigator.root.pop();
+          ExtendedNavigator.root.pop();
           await ExtendedNavigator.root.push(Routes.principalViewRoute);
 
         } else {
-          print('THE USER DID NOT REGISTER');
+
+          ExtendedNavigator.root.pop();
+          Alert(context: context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();
+
         }
 
-        await ExtendedNavigator.root.push(Routes.loginViewRoute);
       } else {
-        print('THE USER DID NOT REGISTER');
+        
+        ExtendedNavigator.root.pop();
+        Alert(context: context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();
+
       }
+
     } catch (signUpError) {
+
       if (signUpError is FirebaseAuthException) {
+        print(signUpError.code);
         if (signUpError.code == 'email-already-in-use') {
-          print('THE USER IS ALREADY REGISTERED');
+
+          ExtendedNavigator.root.pop();
+          Alert(context: context, title: packageInfo.appName, label: Keys.email_already_registered.localize()).alertMessage();
+
+        } else {
+
+          ExtendedNavigator.root.pop();
+          Alert(context: context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();
+
         }
       }
+
     } finally {
       setBusy(false);
     }

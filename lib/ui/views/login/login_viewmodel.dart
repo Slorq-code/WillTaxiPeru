@@ -66,7 +66,7 @@ class LoginViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  bool get enableBtnLogin {
+  bool get enableBtnContinue {
     return !Utils.isNullOrEmpty(user) && !Utils.isNullOrEmpty(password) && Utils.isValidEmail(user) && Utils.isValidPasswordLength(password);
   }
 
@@ -112,7 +112,7 @@ class LoginViewModel extends BaseViewModel {
         print(signUpError.code.toString());
         var packageInfo = await Utils.getPackageInfo();
         if (signUpError.code == 'account-exists-with-different-credential') {
-          Alert(context: context, title: packageInfo.appName, label: Keys.email_already_registered_another_social_network.localize()).alertMessage();
+          Alert(context: context, title: packageInfo.appName, label: Keys.email_already_registered.localize()).alertMessage();
         } else if (signUpError.code == 'wrong-password' || signUpError.code == 'user-not-found' || signUpError.code == 'invalid-email') {
           Alert(context: context, title: packageInfo.appName, label: Keys.login_invalid_username_or_password.localize()).alertMessage();
         } else if (signUpError.code == 'too-many-requests') {

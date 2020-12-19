@@ -240,7 +240,7 @@ class _BodyLogin extends HookViewModelWidget<LoginViewModel> {
                           child: Container(
                             child: Text(Keys.continue_label.localize(), style: const TextStyle(color: Colors.white),),
                           ),
-                          onPressed: (!model.enableBtnLogin ? null : () {
+                          onPressed: (!model.enableBtnContinue ? null : () {
                             if (!model.isBusy) {
                               model.login(AuthType.User);
                             }

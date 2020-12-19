@@ -19,6 +19,8 @@
 	"loading": "Loading",
 	"login_invalid_username_or_password": "Invalid username or password",
 	"request_not_processed_correctly": "Sorry, your request was not processed correctly",
-	"email_already_registered_another_social_network": "The email entered is already registered with another social network",
-	"user_created_successfully": "User created successfully"
+	"email_already_registered": "The email entered is already registered",
+	"user_created_successfully": "User created successfully",
+	"user_has_been_temporarily_disabled": "Your username has been temporarily disabled, please try in a few minutes",
+	"password_dont_match": "Passwords do not match"
 }

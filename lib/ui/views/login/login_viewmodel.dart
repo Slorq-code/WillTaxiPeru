@@ -72,55 +72,81 @@ class LoginViewModel extends BaseViewModel {
 
   void login(AuthType authType) async {
     setBusy(true);
+
+    var packageInfo = await Utils.getPackageInfo();
     try {
-      if (AuthType.User.index == authType.index) {
-        Alert(context: context).loading(Keys.loading.localize());
-      }
+
+      Alert(context: context).loading(Keys.loading.localize());
 
       await _authSocialNetwork.login(user.toString().trim(), password.toString().trim(), authType);
-
+      
       if (_authSocialNetwork.isLoggedIn) {
+
         var userFounded = await _firestoreUser.userFind(_authSocialNetwork.user.uid);
 
         if (userFounded != null) {
+
           _authSocialNetwork.user = userFounded;
 
-          if (AuthType.User.index == authType.index) {
-            ExtendedNavigator.root.pop();
-          }
+          ExtendedNavigator.root.pop();
 
           // LOGIN SUCESSFULL, NAVIGATE TO PRINCIPAL PAGE
           await ExtendedNavigator.root.push(Routes.principalViewRoute);
+
         } else {
+
           if (AuthType.User.index != authType.index) {
-            // IF USER DONT EXISTS, COMPLETE REGISTER
+            // WITH SOCIAL NETOWKR
+            
             _authSocialNetwork.user.userType = UserType.Client;
 
+            ExtendedNavigator.root.pop();
+
+            // IF USER DONT EXISTS, COMPLETE REGISTER
             await ExtendedNavigator.root.push(Routes.registerSocialNetworkViewRoute);
+            
+          } else {
+            // WITHOUT SOCIAL NETOWRK
+
+            ExtendedNavigator.root.pop();
+
+            // USER DONT EXISTS ON DB
+            Alert(context: context, title: packageInfo.appName, label: Keys.login_invalid_username_or_password.localize()).alertMessage();
+
           }
+
         }
+
       } else {
-        if (AuthType.User.index == authType.index) {
-          ExtendedNavigator.root.pop();
-        }
-      }
-    } catch (signUpError) {
-      if (AuthType.User.index == authType.index) {
+
         ExtendedNavigator.root.pop();
+
+        if (AuthType.User.index == authType.index) {
+          
+          // USER OR PASSWORD INCORRECT
+          Alert(context: context, title: packageInfo.appName, label: Keys.login_invalid_username_or_password.localize()).alertMessage();
+
+        }
+
       }
+
+    } catch (signUpError) {
+      
+      ExtendedNavigator.root.pop();
+
       if (signUpError is FirebaseAuthException) {
         print(signUpError.code.toString());
-        var packageInfo = await Utils.getPackageInfo();
         if (signUpError.code == 'account-exists-with-different-credential') {
           Alert(context: context, title: packageInfo.appName, label: Keys.email_already_registered.localize()).alertMessage();
         } else if (signUpError.code == 'wrong-password' || signUpError.code == 'user-not-found' || signUpError.code == 'invalid-email') {
           Alert(context: context, title: packageInfo.appName, label: Keys.login_invalid_username_or_password.localize()).alertMessage();
         } else if (signUpError.code == 'too-many-requests') {
-          Alert(context: context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();
+          Alert(context: context, title: packageInfo.appName, label: Keys.user_has_been_temporarily_disabled.localize()).alertMessage();
         } else {
           Alert(context: context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();
         }
       }
+      
     } finally {
       setBusy(false);
     }

@@ -117,4 +117,9 @@ class AuthSocialNetwork {
       
     }
   }
+
+  Future<UserCredential> createUser(String email, String password) async{
+    return await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
+  }
+  
 }

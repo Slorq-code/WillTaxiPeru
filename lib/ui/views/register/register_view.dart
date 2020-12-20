@@ -136,7 +136,7 @@ class _BodyRegistro extends HookViewModelWidget<RegisterViewModel> {
 
                     Focus(
                       child: TextFormField(
-                        initialValue: model.cellphone,
+                        initialValue: model.phone,
                         inputFormatters: [LengthLimitingTextInputFormatter(9),],
                         keyboardType: TextInputType.phone,
                         decoration: InputDecoration(
@@ -165,7 +165,7 @@ class _BodyRegistro extends HookViewModelWidget<RegisterViewModel> {
                         onFieldSubmitted: (_) {
                           node.nextFocus();
                         },
-                        onChanged: (value) => model.cellphone = value,
+                        onChanged: (value) => model.phone = value,
                       ),
                     ),
                     

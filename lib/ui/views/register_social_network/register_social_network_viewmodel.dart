@@ -4,10 +4,21 @@ import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
 import 'package:taxiapp/app/locator.dart';
 import 'package:taxiapp/app/router.gr.dart';
+import 'package:taxiapp/localization/keys.dart';
 import 'package:taxiapp/services/auth_social_network_service.dart';
 import 'package:taxiapp/services/firestore_user_service.dart';
+import 'package:taxiapp/utils/alerts.dart';
+import 'package:taxiapp/utils/utils.dart';
+
+import 'package:taxiapp/extensions/string_extension.dart';
 
 class RegisterSocialNetworkViewModel extends BaseViewModel {
+
+  BuildContext context;
+
+  RegisterSocialNetworkViewModel(BuildContext context) {
+    this.context = context;
+  }
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -15,8 +26,6 @@ class RegisterSocialNetworkViewModel extends BaseViewModel {
   GlobalKey<FormState> get formKey => _formKey;
 
   // * Functions
-
-
 
   final AuthSocialNetwork _authSocialNetwork = locator<AuthSocialNetwork>();
   final FirestoreUser _firestoreUser = locator<FirestoreUser>();
@@ -34,43 +43,59 @@ class RegisterSocialNetworkViewModel extends BaseViewModel {
     notifyListeners();
   }
 
+  bool get enableBtnContinue {
+    return !Utils.isNullOrEmpty(phone) && Utils.isValidPhone(phone);
+  }
+
   void signin() async {
     setBusy(true);
+
+    var packageInfo = await Utils.getPackageInfo();
     try {
       
+      Alert(context: context).loading(Keys.loading.localize());
+
       if (_authSocialNetwork.isLoggedIn) {
         
         _authSocialNetwork.user.phone = phone.toString().trim();
 
         var userRegister = await _firestoreUser.userRegister(_authSocialNetwork.user);
-        print(userRegister);
-        if (userRegister) {
 
-          await ExtendedNavigator.root.push(Routes.principalViewRoute);
+        ExtendedNavigator.root.pop();
+
+        if (userRegister) {
+  
+          Alert(context: context, title: packageInfo.appName, label: Keys.user_created_successfully.localize()).alertCallBack(() { 
+            ExtendedNavigator.root.push(Routes.principalViewRoute);
+          });
 
         } else {
 
-          print('THE USER DID NOT REGISTER');
+          Alert(context: context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();
 
         }
         
       } else {
 
-        print('THE USER IS NOT AUTHENTICATED');
+        ExtendedNavigator.root.pop();
+        Alert(context: context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();
 
       }
       
     } catch(signUpError) {
 
+      ExtendedNavigator.root.pop();
+
       if(signUpError is FirebaseAuthException) {
-
-        if(signUpError.code == 'email-already-in-use') {
-          
-          print('THE USER IS ALREADY REGISTERED');
-
+        print(signUpError.code);
+        if(signUpError.code == 'email-already-in-use') {          
+          Alert(context: context, title: packageInfo.appName, label: Keys.email_already_registered.localize()).alertMessage();
+        } else {
+          Alert(context: context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();
         }
 
-      }      
+      }
+
     } finally {
       setBusy(false);
     }

@@ -13,7 +13,7 @@ class RegisterSocialNetworkView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<RegisterSocialNetworkViewModel>.nonReactive(
-      viewModelBuilder: () => RegisterSocialNetworkViewModel(),
+      viewModelBuilder: () => RegisterSocialNetworkViewModel(context),
       onModelReady: (model) => model.initial(),
       builder: (context, model, child) => SafeArea(
         child: Scaffold(
@@ -103,14 +103,15 @@ class _BodyRegistro extends HookViewModelWidget<RegisterSocialNetworkViewModel> 
                             borderRadius: BorderRadius.circular(16.0),
                           ),
                           color: const Color.fromRGBO(255, 165, 0, 1.0),
+                          disabledColor: const Color.fromRGBO(255, 200, 120, 1.0),
                           child: Container(
                             child: Text(Keys.continue_label.localize(), style: const TextStyle(color: Colors.white),),
                           ),
-                          onPressed: () {
+                          onPressed: (!model.enableBtnContinue ? null : () {
                             if (!model.isBusy) {
                               model.signin();
                             }
-                          },
+                          }),
                         ),
                       ),
                     ),

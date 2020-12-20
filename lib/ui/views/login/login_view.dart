@@ -21,10 +21,6 @@ class LoginView extends StatelessWidget {
       onModelReady: (model) => model.initial(),
       builder: (context, model, child) => SafeArea(
         child: Scaffold(
-          appBar: AppBar(
-            elevation: 0,
-            automaticallyImplyLeading: false,
-          ),
           backgroundColor: PalleteColor.backgroundColor,
           body: _BodyLogin(),
         ),

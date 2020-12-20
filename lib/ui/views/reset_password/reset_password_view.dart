@@ -19,7 +19,11 @@ class ResetPasswordView extends StatelessWidget {
         child: Scaffold(
           appBar: AppBar(
             elevation: 0,
-            automaticallyImplyLeading: false,
+            automaticallyImplyLeading: true,
+            backgroundColor: Colors.white,
+            iconTheme: const IconThemeData(
+              color: Colors.black, //change your color here
+            ),
           ),
           backgroundColor: PalleteColor.backgroundColor,
           body: _BodyRegistro(),

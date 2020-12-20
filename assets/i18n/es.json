@@ -25,5 +25,6 @@
 	"password_dont_match": "Las contraseñas deben coincidir",
 	"forgot_your_password": "¿Olvidó su contraseña?",
 	"reset_password": "Restablecer contraseña",
-	"instructions_reset_password": "Por favor siga las instrucciones que se le envio a su correo electrónico para restablecer su contraseña"
+	"instructions_reset_password": "Por favor siga las instrucciones que se le envio a su correo electrónico para restablecer su contraseña",
+	"email_not_registered": "La dirección de correo electrónico ingresada no se encuentra registrada"
 }

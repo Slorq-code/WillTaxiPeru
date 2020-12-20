@@ -25,5 +25,6 @@
 	"password_dont_match": "Passwords do not match",
 	"forgot_your_password": "Forgot your password?",
 	"reset_password": "Reset password",
-	"instructions_reset_password": "Please follow the instructions sent to your email to reset your password"
+	"instructions_reset_password": "Please follow the instructions sent to your email to reset your password",
+	"email_not_registered": "The email address entered is not registered"
 }

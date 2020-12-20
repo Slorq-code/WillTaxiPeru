@@ -53,7 +53,7 @@ class ResetPasswordViewModel extends BaseViewModel {
       
       Alert(context: context).loading(Keys.loading.localize());
 
-      await _authSocialNetwork.sendPasswordResetEmail(email);
+      await _authSocialNetwork.sendPasswordResetEmail(email.toString().trim());
 
       ExtendedNavigator.root.pop();
 
@@ -67,7 +67,11 @@ class ResetPasswordViewModel extends BaseViewModel {
 
       if(signUpError is FirebaseAuthException) {
         print(signUpError.code);
-        Alert(context: context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();
+        if (signUpError.code == 'user-not-found') {
+          Alert(context: context, title: packageInfo.appName, label: Keys.email_not_registered.localize()).alertMessage();
+        } else {
+          Alert(context: context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();
+        }
 
       }
 

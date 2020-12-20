@@ -22,5 +22,8 @@
 	"email_already_registered": "The email entered is already registered",
 	"user_created_successfully": "User created successfully",
 	"user_has_been_temporarily_disabled": "Your username has been temporarily disabled, please try in a few minutes",
-	"password_dont_match": "Passwords do not match"
+	"password_dont_match": "Passwords do not match",
+	"forgot_your_password": "Forgot your password?",
+	"reset_password": "Reset password",
+	"instructions_reset_password": "Please follow the instructions sent to your email to reset your password"
 }

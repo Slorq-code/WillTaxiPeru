@@ -22,5 +22,8 @@
 	"email_already_registered": "El correo electrónico ingresado ya se encuentra registrado",
 	"user_created_successfully": "Usuario creado satisfactoriamente",
 	"user_has_been_temporarily_disabled": "Su usuario temporalmente a sido inhabilitado, por favor intente en unos minutos",
-	"password_dont_match": "Las contraseñas deben coincidir"
+	"password_dont_match": "Las contraseñas deben coincidir",
+	"forgot_your_password": "¿Olvidó su contraseña?",
+	"reset_password": "Restablecer contraseña",
+	"instructions_reset_password": "Por favor siga las instrucciones que se le envio a su correo electrónico para restablecer su contraseña"
 }

@@ -104,7 +104,7 @@ class AuthSocialNetwork {
           'date': dateFormat.format(now),
           'hour': timeFormat.format(now),
         });
-
+        
         user.name =  userCredential.user.providerData.first.displayName;
         user.email = userCredential.user.providerData.first.email;
         user.image = userCredential.user.providerData.first.photoURL;
@@ -122,4 +122,8 @@ class AuthSocialNetwork {
     return await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
   }
   
+  void sendPasswordResetEmail(String email) async {        
+    await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+  }
+
 }

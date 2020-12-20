@@ -5,15 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:stacked_hooks/stacked_hooks.dart';
 import 'package:taxiapp/localization/keys.dart';
 import 'package:taxiapp/theme/pallete_color.dart';
-import 'package:taxiapp/ui/views/register_social_network/register_social_network_viewmodel.dart';
 
 import 'package:taxiapp/extensions/string_extension.dart';
+import 'package:taxiapp/ui/views/reset_password/reset_password_viewmodel.dart';
 
-class RegisterSocialNetworkView extends StatelessWidget {
+class ResetPasswordView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ViewModelBuilder<RegisterSocialNetworkViewModel>.nonReactive(
-      viewModelBuilder: () => RegisterSocialNetworkViewModel(context),
+    return ViewModelBuilder<ResetPasswordViewModel>.nonReactive(
+      viewModelBuilder: () => ResetPasswordViewModel(context),
       onModelReady: (model) => model.initial(),
       builder: (context, model, child) => SafeArea(
         child: Scaffold(
@@ -29,17 +29,17 @@ class RegisterSocialNetworkView extends StatelessWidget {
   }
 }
 
-class _BodyRegistro extends HookViewModelWidget<RegisterSocialNetworkViewModel> {
+class _BodyRegistro extends HookViewModelWidget<ResetPasswordViewModel> {
   _BodyRegistro({
     Key key,
   }) : super(key: key);
 
   @override
-  Widget buildViewModelWidget(BuildContext context, RegisterSocialNetworkViewModel model) {
+  Widget buildViewModelWidget(BuildContext context, ResetPasswordViewModel model) {
     return _crearFormulario(model, context);
   }
   
-  Widget _crearFormulario(RegisterSocialNetworkViewModel model, context) {
+  Widget _crearFormulario(ResetPasswordViewModel model, context) {
 
     return SafeArea(
         child: Column(
@@ -54,18 +54,18 @@ class _BodyRegistro extends HookViewModelWidget<RegisterSocialNetworkViewModel> 
                     const SizedBox(height: 10.0,),
 
                     Text(
-                      Keys.sign_up.localize(),
+                      Keys.reset_password.localize(),
                       style: const TextStyle(color: Color.fromRGBO(130, 130, 130, 1.0), fontSize: 15, fontWeight: FontWeight.bold),
                     ),
 
                     const SizedBox(height: 20.0,),
 
                     TextFormField(
-                      initialValue: model.phone,
-                      inputFormatters: [LengthLimitingTextInputFormatter(9),],
-                      keyboardType: TextInputType.phone,
+                      initialValue: model.email,
+                      inputFormatters: [LengthLimitingTextInputFormatter(50),],
+                      keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
-                        labelText: Keys.mobile_phone.localize(),
+                        labelText: Keys.email.localize(),
                         labelStyle: const TextStyle(color: Color.fromRGBO(130, 130, 130, 1.0)),
                         fillColor: Colors.white,
                         contentPadding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
@@ -88,7 +88,7 @@ class _BodyRegistro extends HookViewModelWidget<RegisterSocialNetworkViewModel> 
                       ),
                       textInputAction: TextInputAction.done,
                       onFieldSubmitted: (_) => FocusScope.of(context).unfocus(),
-                      onChanged: (value) => model.phone = value,
+                      onChanged: (value) => model.email = value,
                     ),
                     
                     const SizedBox(height: 20.0,),
@@ -109,7 +109,7 @@ class _BodyRegistro extends HookViewModelWidget<RegisterSocialNetworkViewModel> 
                           ),
                           onPressed: (!model.enableBtnContinue ? null : () {
                             if (!model.isBusy) {
-                              model.signin();
+                              model.resetPassword();
                             }
                           }),
                         ),

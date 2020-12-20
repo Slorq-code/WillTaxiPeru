@@ -120,14 +120,22 @@ class _BodyLogin extends HookViewModelWidget<LoginViewModel> {
                     
                     const SizedBox(height: 15.0,),
 
-                    /*
-                    Text(
-                      labelText: Keys.email.localize(),
-                      style: TextStyle(color: Color.fromRGBO(130, 130, 130, 1.0), fontSize: 15),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: RichText(
+                        text: TextSpan(
+                          text: Keys.forgot_your_password.localize(),
+                          style: const TextStyle(color: Color.fromRGBO(130, 130, 130, 1.0)),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              if (!model.isBusy) {
+                                model.goToResetPassword();
+                              }
+                        }),
+                      ),
                     ),
 
-                    SizedBox(height: 10.0,),
-                    */
+                    const SizedBox(height: 10.0,),
 
                     Focus(
                       child: TextFormField(

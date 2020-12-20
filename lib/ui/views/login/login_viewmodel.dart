@@ -157,4 +157,11 @@ class LoginViewModel extends BaseViewModel {
     await ExtendedNavigator.root.push(Routes.registerViewRoute);
     setBusy(false);
   }
+
+  void goToResetPassword() async {
+    setBusy(true);
+    _authSocialNetwork.user.email = user;
+    await ExtendedNavigator.root.push(Routes.resetPasswordViewRoute);
+    setBusy(false);
+  }
 }

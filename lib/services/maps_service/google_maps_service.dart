@@ -24,7 +24,7 @@ class GoogleMapsService {
         distance: Distance.fromMap(legs['distance']),
         timeNeeded: TimeNeeded.fromMap(legs['duration']),
         endAddress: legs['end_address'],
-        startAddress: legs['end_address']);
+        startAddress: legs['start_address']);
     return route;
   }
 
@@ -38,9 +38,10 @@ class GoogleMapsService {
     var placesFound = <Place>[];
     routes.forEach((place) {
       placesFound.add(Place(
-          name: place['name'],
-          address: place['formatted_address'],
-          latLng: LatLng(place['geometry']['location']['lat'], place['geometry']['location']['lng'])));
+        name: place['name'],
+        address: place['formatted_address'],
+        latLng: LatLng(place['geometry']['location']['lat'], place['geometry']['location']['lng']),
+      ));
     });
     return placesFound;
   }

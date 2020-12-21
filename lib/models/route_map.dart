@@ -18,7 +18,7 @@ class RouteMap {
 
 class Distance {
   String text;
-  int value;
+  num value;
 
   Distance.fromMap(Map data) {
     text = data['text'];
@@ -30,7 +30,7 @@ class Distance {
 
 class TimeNeeded {
   String text;
-  int value;
+  num value;
 
   TimeNeeded.fromMap(Map data) {
     text = data['text'];

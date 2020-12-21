@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -6,6 +7,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_hooks/stacked_hooks.dart';
 
+import 'package:taxiapp/models/place.dart';
 import 'package:taxiapp/ui/views/principal/principal_viewmodel.dart';
 
 class PrincipalView extends StatelessWidget {
@@ -51,68 +53,182 @@ class _HomeMap extends ViewModelWidget<PrincipalViewModel> {
               )
             : const Center(child: Text('Ubicando...')),
         Positioned(
+          right: 20,
+          top: MediaQuery.of(context).size.height * .2,
+          child: Row(
+            children: [
+              const Text('Google'),
+              CupertinoSwitch(
+                onChanged: (value) => model.updateApiSelection(value),
+                value: model.apiSelected,
+              ),
+              const Text('MapBox'),
+            ],
+          ),
+        ),
+        const Positioned(
           top: 0,
-          child: Container(
-            color: Colors.white,
-            width: MediaQuery.of(context).size.width,
-            child: Column(
+          child: _SearchBar(),
+        ),
+        if (model.isManualSearch) _ManualMarker()
+      ],
+    );
+  }
+}
+
+class _SearchBar extends ViewModelWidget<PrincipalViewModel> {
+  const _SearchBar({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, PrincipalViewModel model) {
+    return Container(
+      color: Colors.white,
+      width: MediaQuery.of(context).size.width,
+      child: Column(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              border: Border(bottom: BorderSide(color: Colors.grey, width: .4)),
+              boxShadow: [BoxShadow(blurRadius: 7, color: Colors.black45, spreadRadius: 4, offset: Offset(-4, -4))],
+              color: Colors.white,
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
               children: [
-                Row(
-                  mainAxisSize: MainAxisSize.max,
+                Column(
                   children: [
-                    Column(
-                      children: [
-                        const _OriginLocationField(),
-                        const _DestinationLocationField(),
-                      ],
-                    ),
-                    Expanded(
-                      child: CircleAvatar(
-                        backgroundColor: const Color(0xffFFA500),
-                        radius: MediaQuery.of(context).size.width * .07,
-                      ),
-                    ),
+                    const _OriginLocationField(),
+                    const _DestinationLocationField(),
                   ],
                 ),
-                Visibility(
-                  visible: model.isSearching,
-                  child: Container(
-                    height: MediaQuery.of(context).size.height,
-                    width: double.infinity,
-                    color: Colors.white,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text('Pick in map'),
-                        ),
-                        ...model.placesFound.map((place) => Material(
-                              type: MaterialType.transparency,
-                              child: InkWell(
-                                onTap: () => model.makeRoute(place),
-                                child: Container(
-                                  width: double.infinity,
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(place.name),
-                                      Text(place.address),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ))
-                      ],
-                    ),
+                Expanded(
+                  child: CircleAvatar(
+                    backgroundColor: const Color(0xffFFA500),
+                    radius: MediaQuery.of(context).size.width * .07,
                   ),
-                )
+                ),
               ],
             ),
           ),
+          WillPopScope(
+            onWillPop: () {
+              model.updateSearching(false);
+              return Future.value(false);
+            },
+            child: Visibility(
+              visible: model.isSearching,
+              child: Container(
+                height: MediaQuery.of(context).size.height * .5,
+                width: double.infinity,
+                color: Colors.white,
+                child: ListView(
+                  children: [
+                    ...model.placesFound.map(
+                      (place) => _SugerationPlace(
+                        place: place,
+                        onTap: () => model.makeRoute(place),
+                      ),
+                    ),
+                    const _PickInMapOption(),
+                  ],
+                ),
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class _SugerationPlace extends StatelessWidget {
+  const _SugerationPlace({
+    Key key,
+    @required this.place,
+    @required this.onTap,
+  })  : assert(place != null),
+        assert(onTap != null),
+        super(key: key);
+  final Place place;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      type: MaterialType.transparency,
+      child: InkWell(
+        onTap: () => onTap(),
+        child: Container(
+          width: double.infinity,
+          height: 50,
+          padding: const EdgeInsets.all(8.0),
+          decoration: const BoxDecoration(
+            border: Border(
+              top: BorderSide(color: Colors.transparent, width: 0),
+              bottom: BorderSide(color: Colors.grey, width: .3),
+            ),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 4.0),
+                child: Icon(Icons.timer),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Text(place.name),
+                      Text(place.address, overflow: TextOverflow.ellipsis),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
-      ],
+      ),
+    );
+  }
+}
+
+class _PickInMapOption extends ViewModelWidget<PrincipalViewModel> {
+  const _PickInMapOption({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, PrincipalViewModel model) {
+    return GestureDetector(
+      onTap: () => model.updateManualSearchState(true),
+      child: Container(
+        height: 50,
+        decoration: const BoxDecoration(
+          border: Border(
+            top: BorderSide(color: Colors.transparent, width: 0),
+            bottom: BorderSide(color: Colors.grey, width: .3),
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: SvgPicture.asset('assets/icons/start_location.svg', height: 20.0),
+              ),
+              const Text('Ubicar en mapa'), // TODO: translate
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -128,9 +244,9 @@ class _ForceEnableGPS extends ViewModelWidget<PrincipalViewModel> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text('Se necesita autorizar el GPS para utilizar el app '),
+          const Text('Se necesita autorizar el GPS para utilizar el app '), // TODO: translate
           MaterialButton(
-              child: const Text('Solicitar Acceso', style: TextStyle(color: Colors.white)),
+              child: const Text('Solicitar Acceso', style: TextStyle(color: Colors.white)), // TODO: translate
               color: Colors.black,
               shape: const StadiumBorder(),
               elevation: 0,
@@ -292,6 +408,51 @@ class _DestinationLocationField extends HookViewModelWidget<PrincipalViewModel> 
           ],
         ),
       ),
+    );
+  }
+}
+
+class _ManualMarker extends ViewModelWidget<PrincipalViewModel> {
+  @override
+  Widget build(BuildContext context, PrincipalViewModel model) {
+    final width = MediaQuery.of(context).size.width;
+
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Positioned(
+          top: MediaQuery.of(context).size.height * .2,
+          left: 0,
+          child: RaisedButton(
+            shape: const CircleBorder(),
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            padding: const EdgeInsets.all(0),
+            color: Colors.white,
+            child: const Icon(Icons.arrow_back, color: Colors.orange),
+            onPressed: () => model.updateManualSearchState(false),
+          ),
+        ),
+
+        const Center(
+          child: Icon(Icons.location_on, size: 50, color: Colors.orange),
+        ),
+
+        // Boton de confirmar destino
+        Positioned(
+          bottom: 70,
+          child: MaterialButton(
+            minWidth: width - 120,
+            child: const Text('Confirmar destino', style: TextStyle(color: Colors.white)), // TODO: translate
+            color: Colors.orange,
+            shape: const StadiumBorder(),
+            elevation: 0,
+            splashColor: Colors.transparent,
+            onPressed: () => model.makeRoute(
+              Place(latLng: model.centralLocation, address: '', name: ''),
+            ),
+          ),
+        )
+      ],
     );
   }
 }

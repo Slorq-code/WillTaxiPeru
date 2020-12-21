@@ -1,26 +1,23 @@
 part of 'custom_markers.dart';
 
 class MarkerStartPainter extends CustomPainter {
-  final int minutos;
+  final int minutes;
 
-  MarkerStartPainter(this.minutos);
+  MarkerStartPainter(this.minutes);
 
   @override
   void paint(Canvas canvas, Size size) {
-    final circuloNegroR = 20.0;
-    final circuloBlancoR = 7.0;
+    final circleR = 20.0;
+    final whiteCircle = 7.0;
 
-    var paint = Paint()..color = Colors.black;
+    var paint = Paint()..color = Colors.orange;
 
-    // Dibujar circulo negro
-    canvas.drawCircle(Offset(circuloNegroR, size.height - circuloNegroR), 20, paint);
+    canvas.drawCircle(Offset(circleR, size.height - circleR), 20, paint);
 
-    // Circulo Blanco
     paint.color = Colors.white;
 
-    canvas.drawCircle(Offset(circuloNegroR, size.height - circuloNegroR), circuloBlancoR, paint);
+    canvas.drawCircle(Offset(circleR, size.height - circleR), whiteCircle, paint);
 
-    // Sombra
     final path = Path();
 
     path.moveTo(40, 20);
@@ -30,39 +27,33 @@ class MarkerStartPainter extends CustomPainter {
 
     canvas.drawShadow(path, Colors.black87, 10, false);
 
-    // Caja Blanca
-    final cajaBlanca = Rect.fromLTWH(40, 20, size.width - 55, 80);
-    canvas.drawRect(cajaBlanca, paint);
+    final whiteBox = Rect.fromLTWH(40, 20, size.width - 55, 80);
+    canvas.drawRect(whiteBox, paint);
 
-    // Caja Negra
-    paint.color = Colors.black;
-    final cajaNegra = Rect.fromLTWH(40, 20, 70, 80);
-    canvas.drawRect(cajaNegra, paint);
+    paint.color = Colors.orange;
+    final box = const Rect.fromLTWH(40, 20, 70, 80);
+    canvas.drawRect(box, paint);
 
-    // Dibujar textos
-    TextSpan textSpan = new TextSpan(style: TextStyle(color: Colors.white, fontSize: 30, fontWeight: FontWeight.w400), text: '$minutos');
+    var textSpan = TextSpan(style: const TextStyle(color: Colors.white, fontSize: 30, fontWeight: FontWeight.w400), text: '$minutes');
 
-    TextPainter textPainter = new TextPainter(text: textSpan, textDirection: TextDirection.ltr, textAlign: TextAlign.center)
-      ..layout(maxWidth: 70, minWidth: 70);
+    var textPainter = TextPainter(text: textSpan, textDirection: TextDirection.ltr, textAlign: TextAlign.center)..layout(maxWidth: 70, minWidth: 70);
 
-    textPainter.paint(canvas, Offset(40, 35));
+    textPainter.paint(canvas, const Offset(40, 35));
 
-    // Minutos
-    textSpan = new TextSpan(style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w400), text: 'Min');
+    textSpan = const TextSpan(style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w400), text: 'Min'); // TODO: Translate
 
-    textPainter = new TextPainter(text: textSpan, textDirection: TextDirection.ltr, textAlign: TextAlign.center)..layout(maxWidth: 70, minWidth: 70);
+    textPainter = TextPainter(text: textSpan, textDirection: TextDirection.ltr, textAlign: TextAlign.center)..layout(maxWidth: 70, minWidth: 70);
 
-    textPainter.paint(canvas, Offset(40, 67));
+    textPainter.paint(canvas, const Offset(40, 67));
 
-    // Mi ubicación
-    textSpan = new TextSpan(style: TextStyle(color: Colors.black, fontSize: 22, fontWeight: FontWeight.w400), text: 'Mi ubicación');
+    textSpan = const TextSpan(style: TextStyle(color: Colors.black, fontSize: 22, fontWeight: FontWeight.w400), text: 'My location'); // TODO : Translate
 
-    textPainter = new TextPainter(text: textSpan, textDirection: TextDirection.ltr, textAlign: TextAlign.center)
+    textPainter = TextPainter(text: textSpan, textDirection: TextDirection.ltr, textAlign: TextAlign.center)
       ..layout(
         maxWidth: size.width - 130,
       );
 
-    textPainter.paint(canvas, Offset(150, 50));
+    textPainter.paint(canvas, const Offset(150, 50));
   }
 
   @override

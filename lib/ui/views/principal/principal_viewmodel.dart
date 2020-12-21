@@ -8,20 +8,23 @@ import 'package:stacked/stacked.dart';
 import 'package:taxiapp/app/locator.dart';
 import 'package:taxiapp/models/place.dart';
 import 'package:taxiapp/models/user_location.dart';
-import 'package:taxiapp/services/google_maps_service.dart';
 import 'package:taxiapp/services/location_service.dart';
+import 'package:taxiapp/services/maps_service/maps_general_service.dart';
 import 'package:taxiapp/ui/widgets/helpers.dart';
 
 class PrincipalViewModel extends ReactiveViewModel {
   final LocationService _locationService = locator<LocationService>();
-  final GoogleMapsService _googleMapsService = locator<GoogleMapsService>();
+  final MapsGeneralService _mapsService = locator<MapsGeneralService>();
   PrincipalState _state = PrincipalState.loading;
-  bool _mapReady = false;
-  bool _drawRoute = false;
-  bool _followLocation = false;
+  final bool _mapReady = false;
+  final bool _drawRoute = false;
+  final bool _followLocation = false;
+
+  bool apiSelected = false;
 
   LatLng _centralLocation;
   bool isSearching = false;
+  bool _isManualSearch = false;
 
   String addressCurrentPosition;
 
@@ -34,6 +37,8 @@ class PrincipalViewModel extends ReactiveViewModel {
   // * Getters
   PrincipalState get state => _state;
   UserLocation get userLocation => _locationService.location;
+  bool get isManualSearch => _isManualSearch;
+  LatLng get centralLocation => _centralLocation;
 
   Map<String, Polyline> get polylines => _polylines;
   Map<String, Marker> get markers => _markers;
@@ -99,20 +104,16 @@ class PrincipalViewModel extends ReactiveViewModel {
   }
 
   void searchDestination(String destinationAddress) async {
-    final result = await _googleMapsService.getDestinationBySearch(destinationAddress, userLocation.location);
+    final result = await _mapsService.getDestinationBySearch(destinationAddress, userLocation.location);
 
     placesFound = result;
     notifyListeners();
   }
 
   void makeRoute(Place place) async {
-    final route = await _googleMapsService.getRouteByCoordinates(userLocation.location, place.latLng);
+    _isManualSearch = false;
+    final route = await _mapsService.getRouteByCoordinates(userLocation.location, place.latLng);
     final routePoints = route.points.map((point) => LatLng(point[0], point[1])).toList();
-    final myRoute = Polyline(
-      polylineId: PolylineId('my_route'),
-      width: 4,
-      color: Colors.transparent,
-    );
     final myDestinationRoute = Polyline(
       polylineId: PolylineId('my_destination_route'),
       width: 4,
@@ -134,12 +135,12 @@ class PrincipalViewModel extends ReactiveViewModel {
         position: routePoints[0],
         icon: iconInicio,
         infoWindow: InfoWindow(
-          title: 'My Location',
-          snippet: 'Time route: ${(route.timeNeeded.value / 60).floor()} minuts',
+          title: 'My Location', //TODO: translate
+          snippet: 'Time route: ${(route.timeNeeded.value / 60).floor()} minutes', //TODO: translate
         ));
 
     final markerDestination = Marker(
-        markerId: MarkerId('destino'),
+        markerId: MarkerId('destination'),
         position: routePoints.last,
         icon: iconDestino,
         anchor: const Offset(0.1, 0.90),
@@ -153,13 +154,25 @@ class PrincipalViewModel extends ReactiveViewModel {
     newMarkers['destination'] = markerDestination;
 
     await Future.delayed(const Duration(milliseconds: 300)).then((value) {
-      // _mapController.showMarkerInfoWindow(MarkerId('inicio'));
-      // _mapController.showMarkerInfoWindow(MarkerId('destino'));
+      _mapController.showMarkerInfoWindow(MarkerId('start'));
+      _mapController.showMarkerInfoWindow(MarkerId('destination'));
     });
 
     _polylines = currentPolylines;
     _markers = newMarkers;
     isSearching = false;
+    notifyListeners();
+  }
+
+  void updateManualSearchState(bool state) {
+    _isManualSearch = state;
+    isSearching = false;
+    notifyListeners();
+  }
+
+  void updateApiSelection(bool status) {
+    apiSelected = status;
+    _mapsService.selectApi(status ? ApiMap.mapBox : ApiMap.google);
     notifyListeners();
   }
 }

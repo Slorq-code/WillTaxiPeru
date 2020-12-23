@@ -20,16 +20,14 @@ class PrincipalViewModel extends BaseViewModel {
   final AuthSocialNetwork _authSocialNetwork = locator<AuthSocialNetwork>();
 
   void initial() async {
-    print(_authSocialNetwork.user.authType.index);
-    print(_authSocialNetwork.user.userType.index);
-    print(_authSocialNetwork.user.email);
-    print(_authSocialNetwork.user.name);
-    print(_authSocialNetwork.user.phone);
-    print(_authSocialNetwork.user.uid);
   }
 
   void logout() async {
     await _authSocialNetwork.logout();
     await ExtendedNavigator.root.push(Routes.loginViewRoute);
+  }
+
+  void goToProfile() async {
+    await ExtendedNavigator.root.push(Routes.profileViewRoute);
   }
 }

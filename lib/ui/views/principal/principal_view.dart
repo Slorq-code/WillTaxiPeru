@@ -32,24 +32,44 @@ class _BodyRegistro extends HookViewModelWidget<PrincipalViewModel> {
 
   @override
   Widget buildViewModelWidget(BuildContext context, PrincipalViewModel model) {
-    return Center(
-      child: RaisedButton(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16.0),
-        ),
-        color: const Color.fromRGBO(12, 128, 206, 1.0),
-        child: Container(
-          child: const Text(
-            'LOGOUT',
-            style: TextStyle(color: Colors.white),
+    return ListView(
+        padding: const EdgeInsets.symmetric(horizontal: 30.0),
+        children: <Widget>[
+          RaisedButton(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16.0),
+            ),
+            color: const Color.fromRGBO(12, 128, 206, 1.0),
+            child: Container(
+              child: const Text(
+                'Profile',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+            onPressed: () {
+              if (!model.isBusy) {
+                model.goToProfile();
+              }
+            },
           ),
-        ),
-        onPressed: () {
-          if (!model.isBusy) {
-            model.logout();
-          }
-        },
-      ),
-    );
+
+          RaisedButton(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16.0),
+            ),
+            color: const Color.fromRGBO(12, 128, 206, 1.0),
+            child: Container(
+              child: const Text(
+                'LOGOUT',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+            onPressed: () {
+              if (!model.isBusy) {
+                model.logout();
+              }
+            },
+          ),
+        ]);
   }
 }

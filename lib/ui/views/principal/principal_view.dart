@@ -115,10 +115,7 @@ class _SearchBar extends ViewModelWidget<PrincipalViewModel> {
             ),
           ),
           WillPopScope(
-            onWillPop: () {
-              model.updateSearching(false);
-              return Future.value(false);
-            },
+            onWillPop: () => Future.value(model.onBack()),
             child: Visibility(
               visible: model.isSearching,
               child: Container(

@@ -25,7 +25,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   bool apiSelected = false;
 
   LatLng _centralLocation;
-  bool isSearching = false;
+  bool _isSearching = false;
   bool _isManualSearch = false;
 
   String addressCurrentPosition;
@@ -40,6 +40,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   PrincipalState get state => _state;
   UserLocation get userLocation => _locationService.location;
   bool get isManualSearch => _isManualSearch;
+  bool get isSearching => _isSearching;
   LatLng get centralLocation => _centralLocation;
 
   Map<String, Polyline> get polylines => _polylines;
@@ -100,8 +101,21 @@ class PrincipalViewModel extends ReactiveViewModel {
 
   Future<String> getMapTheme() async => rootBundle.loadString('assets/map_theme/map_theme.json');
 
+  bool onBack() {
+    if (_isSearching) {
+      updateSearching(false);
+      return false;
+    } else if (_isManualSearch) {
+      _isManualSearch = false;
+      notifyListeners();
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   void updateSearching(bool state) {
-    isSearching = state;
+    _isSearching = state;
     notifyListeners();
   }
 
@@ -163,13 +177,13 @@ class PrincipalViewModel extends ReactiveViewModel {
 
     _polylines = currentPolylines;
     _markers = newMarkers;
-    isSearching = false;
+    _isSearching = false;
     notifyListeners();
   }
 
   void updateManualSearchState(bool state) {
     _isManualSearch = state;
-    isSearching = false;
+    _isSearching = false;
     notifyListeners();
   }
 

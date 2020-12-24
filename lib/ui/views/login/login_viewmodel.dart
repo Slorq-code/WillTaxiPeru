@@ -16,7 +16,6 @@ import 'package:taxiapp/utils/utils.dart';
 import 'package:taxiapp/extensions/string_extension.dart';
 
 class LoginViewModel extends BaseViewModel {
-
   BuildContext context;
 
   LoginViewModel(BuildContext context) {
@@ -33,9 +32,6 @@ class LoginViewModel extends BaseViewModel {
   final AuthSocialNetwork _authSocialNetwork = locator<AuthSocialNetwork>();
   final FirestoreUser _firestoreUser = locator<FirestoreUser>();
   final Token _token = locator<Token>();
-
-  void goToEnrollPage() async {
-  }
 
   void initial() async {
     user = '';
@@ -77,17 +73,14 @@ class LoginViewModel extends BaseViewModel {
 
     var packageInfo = await Utils.getPackageInfo();
     try {
-
       Alert(context: context).loading(Keys.loading.localize());
 
       await _authSocialNetwork.login(user.toString().trim(), password.toString().trim(), authType);
-      
-      if (_authSocialNetwork.isLoggedIn) {
 
+      if (_authSocialNetwork.isLoggedIn) {
         var userFounded = await _firestoreUser.userFind(_authSocialNetwork.user.uid);
 
         if (userFounded != null) {
-
           _authSocialNetwork.user = userFounded;
 
           ExtendedNavigator.root.pop();
@@ -96,19 +89,16 @@ class LoginViewModel extends BaseViewModel {
 
           // LOGIN SUCESSFULL, NAVIGATE TO PRINCIPAL PAGE
           await ExtendedNavigator.root.push(Routes.principalViewRoute);
-
         } else {
-
           if (AuthType.User.index != authType.index) {
             // WITH SOCIAL NETOWKR
-            
+
             _authSocialNetwork.user.userType = UserType.Client;
 
             ExtendedNavigator.root.pop();
 
             // IF USER DONT EXISTS, COMPLETE REGISTER
             await ExtendedNavigator.root.push(Routes.registerSocialNetworkViewRoute);
-            
           } else {
             // WITHOUT SOCIAL NETOWRK
 
@@ -116,26 +106,17 @@ class LoginViewModel extends BaseViewModel {
 
             // USER DONT EXISTS ON DB
             Alert(context: context, title: packageInfo.appName, label: Keys.login_invalid_username_or_password.localize()).alertMessage();
-
           }
-
         }
-
       } else {
-
         ExtendedNavigator.root.pop();
 
         if (AuthType.User.index == authType.index) {
-          
           // USER OR PASSWORD INCORRECT
           Alert(context: context, title: packageInfo.appName, label: Keys.login_invalid_username_or_password.localize()).alertMessage();
-
         }
-
       }
-
     } catch (signUpError) {
-      
       ExtendedNavigator.root.pop();
 
       if (signUpError is FirebaseAuthException) {
@@ -150,7 +131,6 @@ class LoginViewModel extends BaseViewModel {
           Alert(context: context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();
         }
       }
-      
     } finally {
       setBusy(false);
     }

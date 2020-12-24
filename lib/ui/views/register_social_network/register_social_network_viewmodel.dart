@@ -13,7 +13,6 @@ import 'package:taxiapp/utils/utils.dart';
 import 'package:taxiapp/extensions/string_extension.dart';
 
 class RegisterSocialNetworkViewModel extends BaseViewModel {
-
   BuildContext context;
 
   RegisterSocialNetworkViewModel(BuildContext context) {
@@ -30,7 +29,7 @@ class RegisterSocialNetworkViewModel extends BaseViewModel {
   final AuthSocialNetwork _authSocialNetwork = locator<AuthSocialNetwork>();
   final FirestoreUser _firestoreUser = locator<FirestoreUser>();
 
-  void initial() async{
+  void initial() async {
     phone = '';
   }
 
@@ -52,11 +51,9 @@ class RegisterSocialNetworkViewModel extends BaseViewModel {
 
     var packageInfo = await Utils.getPackageInfo();
     try {
-      
       Alert(context: context).loading(Keys.loading.localize());
 
       if (_authSocialNetwork.isLoggedIn) {
-        
         _authSocialNetwork.user.phone = phone.toString().trim();
 
         var userRegister = await _firestoreUser.userRegister(_authSocialNetwork.user);
@@ -64,41 +61,29 @@ class RegisterSocialNetworkViewModel extends BaseViewModel {
         ExtendedNavigator.root.pop();
 
         if (userRegister) {
-  
-          Alert(context: context, title: packageInfo.appName, label: Keys.user_created_successfully.localize()).alertCallBack(() { 
+          Alert(context: context, title: packageInfo.appName, label: Keys.user_created_successfully.localize()).alertCallBack(() {
             ExtendedNavigator.root.push(Routes.principalViewRoute);
           });
-
         } else {
-
           Alert(context: context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();
-
         }
-        
       } else {
-
         ExtendedNavigator.root.pop();
         Alert(context: context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();
-
       }
-      
-    } catch(signUpError) {
-
+    } catch (signUpError) {
       ExtendedNavigator.root.pop();
 
-      if(signUpError is FirebaseAuthException) {
+      if (signUpError is FirebaseAuthException) {
         print(signUpError.code);
-        if(signUpError.code == 'email-already-in-use') {          
+        if (signUpError.code == 'email-already-in-use') {
           Alert(context: context, title: packageInfo.appName, label: Keys.email_already_registered.localize()).alertMessage();
         } else {
           Alert(context: context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();
         }
-
       }
-
     } finally {
       setBusy(false);
     }
   }
-
 }

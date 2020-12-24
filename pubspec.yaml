@@ -23,7 +23,7 @@ dependencies:
   # navigation
   auto_route: ^0.6.9
   # inversion of control
-  get_it: ^5.0.1
+  get_it: ^5.0.3
   injectable: ^1.0.5
 
   dio: ^3.0.10
@@ -32,7 +32,6 @@ dependencies:
   toast: ^0.1.5
   path_provider: ^1.6.11
   retry: ^3.0.1
-  overlay_support: ^1.0.5
   esys_flutter_share: ^1.0.2
   shared_preferences: ^0.5.12+4
   package_info: ^0.4.3+2
@@ -53,6 +52,10 @@ dependencies:
   firebase_auth: ^0.18.4+1
   cloud_firestore: ^0.14.4
   google_sign_in: ^4.5.6
+  google_maps_flutter: ^1.0.6
+  geolocator: ^5.3.2+2
+  google_polyline_algorithm: ^2.0.0
+
   flutter_facebook_login: ^3.0.0
   intl: ^0.16.1
 
@@ -72,4 +75,5 @@ flutter:
   assets:
     - assets/i18n/
     - assets/icons/
+    - assets/map_theme/
     - assets/icons/principal/

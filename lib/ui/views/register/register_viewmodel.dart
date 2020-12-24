@@ -16,13 +16,11 @@ import 'package:taxiapp/extensions/string_extension.dart';
 import 'package:taxiapp/utils/utils.dart';
 
 class RegisterViewModel extends BaseViewModel {
-
   BuildContext context;
 
   RegisterViewModel(BuildContext context) {
     this.context = context;
   }
-
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -34,8 +32,7 @@ class RegisterViewModel extends BaseViewModel {
   final AuthSocialNetwork _authSocialNetwork = locator<AuthSocialNetwork>();
   final FirestoreUser _firestoreUser = locator<FirestoreUser>();
 
-  void goToEnrollPage() async {
-  }
+  void goToEnrollPage() async {}
 
   void initial() async {
     email = '';
@@ -105,7 +102,14 @@ class RegisterViewModel extends BaseViewModel {
   }
 
   bool get enableBtnContinue {
-    return !Utils.isNullOrEmpty(name) && !Utils.isNullOrEmpty(email) && !Utils.isNullOrEmpty(phone) && !Utils.isNullOrEmpty(password) && !Utils.isNullOrEmpty(repeatPassword) && Utils.isValidEmail(email) && Utils.isValidPhone(phone) && Utils.isValidPasswordLength(password);
+    return !Utils.isNullOrEmpty(name) &&
+        !Utils.isNullOrEmpty(email) &&
+        !Utils.isNullOrEmpty(phone) &&
+        !Utils.isNullOrEmpty(password) &&
+        !Utils.isNullOrEmpty(repeatPassword) &&
+        Utils.isValidEmail(email) &&
+        Utils.isValidPhone(phone) &&
+        Utils.isValidPasswordLength(password);
   }
 
   void signin() async {
@@ -113,21 +117,17 @@ class RegisterViewModel extends BaseViewModel {
 
     var packageInfo = await Utils.getPackageInfo();
     try {
-      
       Alert(context: context).loading(Keys.loading.localize());
 
       if (password.toString().trim() != repeatPassword.toString().trim()) {
-
         ExtendedNavigator.root.pop();
         Alert(context: context, title: packageInfo.appName, label: Keys.password_dont_match.localize()).alertMessage();
         return;
-
       }
 
       var userCredential = await _authSocialNetwork.createUser(email, password);
 
       if (userCredential != null) {
-        
         // USER CREATED ON FIREBASE AUTHENTICATION
 
         var userFounded = await _firestoreUser.userFind(_authSocialNetwork.user.uid);
@@ -137,7 +137,6 @@ class RegisterViewModel extends BaseViewModel {
 
           ExtendedNavigator.root.pop();
           Alert(context: context, title: packageInfo.appName, label: Keys.email_already_registered.localize()).alertMessage();
-
         } else {
           // USER DONT EXISTS ON CLOUD FIRESTORE
 
@@ -154,47 +153,32 @@ class RegisterViewModel extends BaseViewModel {
           ExtendedNavigator.root.pop();
 
           if (userRegister) {
-
             // USER CREATED ON CLOUD FIRESTORE
 
-            Alert(context: context, title: packageInfo.appName, label: Keys.user_created_successfully.localize()).alertCallBack(() { 
+            Alert(context: context, title: packageInfo.appName, label: Keys.user_created_successfully.localize()).alertCallBack(() {
               ExtendedNavigator.root.push(Routes.principalViewRoute);
             });
-
           } else {
-
             // ERROR CREATING USER ON CLOUD FIRESTORE
 
             Alert(context: context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();
-
           }
-
         }
-
       } else {
-        
         ExtendedNavigator.root.pop();
         Alert(context: context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();
-
       }
-
     } catch (signUpError) {
-
       if (signUpError is FirebaseAuthException) {
         print(signUpError.code);
         if (signUpError.code == 'email-already-in-use') {
-
           ExtendedNavigator.root.pop();
           Alert(context: context, title: packageInfo.appName, label: Keys.email_already_registered.localize()).alertMessage();
-
         } else {
-
           ExtendedNavigator.root.pop();
           Alert(context: context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();
-
         }
       }
-
     } finally {
       setBusy(false);
     }

@@ -10,9 +10,10 @@ import 'package:taxiapp/localization/keys.dart';
 import 'package:taxiapp/models/enums/auth_type.dart';
 import 'package:taxiapp/theme/pallete_color.dart';
 import 'package:taxiapp/ui/views/login/login_viewmodel.dart';
-import 'package:taxiapp/extensions/string_extension.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
+
+import 'package:taxiapp/extensions/string_extension.dart';
 
 class LoginView extends StatelessWidget {
   @override
@@ -22,10 +23,6 @@ class LoginView extends StatelessWidget {
       onModelReady: (model) => model.initial(),
       builder: (context, model, child) => SafeArea(
         child: Scaffold(
-          appBar: AppBar(
-            elevation: 0,
-            automaticallyImplyLeading: false,
-          ),
           backgroundColor: PalleteColor.backgroundColor,
           body: _BodyLogin(),
         ),
@@ -110,25 +107,6 @@ class _BodyLogin extends HookViewModelWidget<LoginViewModel> {
                         ),
                         borderRadius: BorderRadius.circular(15),
                       ),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          model.passwordOfuscado ? Icons.visibility_off : Icons.visibility,
-                          color: const Color.fromRGBO(130, 130, 130, 1.0),
-                        ),
-                        onPressed: () {
-                          model.passwordOfuscado = !model.passwordOfuscado;
-
-                          /*INICIO CODIGO PARA DESACTIVAR EL EVENTO ONTAP DEL TEXTFIELD*/
-                          textFieldFocusNodePassword.unfocus();
-                          // Disable text field's focus node request
-                          textFieldFocusNodePassword.canRequestFocus = false;
-                          //Enable the text field's focus node request after some delay
-                          Future.delayed(const Duration(milliseconds: 100), () {
-                            textFieldFocusNodePassword.canRequestFocus = true;
-                          });
-                          /*FIN CODIGO*/
-                        },
-                      ),
                     ),
                     style: const TextStyle(
                       color: Color.fromRGBO(130, 130, 130, 1.0),
@@ -141,21 +119,28 @@ class _BodyLogin extends HookViewModelWidget<LoginViewModel> {
                   const SizedBox(
                     height: 15.0,
                   ),
-
-                  /*
-                    Text(
-                      labelText: Keys.email.localize(),
-                      style: TextStyle(color: Color.fromRGBO(130, 130, 130, 1.0), fontSize: 15),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: RichText(
+                      text: TextSpan(
+                          text: Keys.forgot_your_password.localize(),
+                          style: const TextStyle(color: Color.fromRGBO(130, 130, 130, 1.0)),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              if (!model.isBusy) {
+                                model.goToResetPassword();
+                              }
+                            }),
                     ),
-
-                    SizedBox(height: 10.0,),
-                    */
-
+                  ),
+                  const SizedBox(
+                    height: 10.0,
+                  ),
                   Focus(
                     child: TextFormField(
                       obscureText: model.passwordOfuscado,
                       inputFormatters: [
-                        LengthLimitingTextInputFormatter(12),
+                        LengthLimitingTextInputFormatter(20),
                       ],
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
@@ -257,17 +242,20 @@ class _BodyLogin extends HookViewModelWidget<LoginViewModel> {
                           borderRadius: BorderRadius.circular(16.0),
                         ),
                         color: const Color.fromRGBO(255, 165, 0, 1.0),
+                        disabledColor: const Color.fromRGBO(255, 200, 120, 1.0),
                         child: Container(
                           child: Text(
                             Keys.continue_label.localize(),
                             style: const TextStyle(color: Colors.white),
                           ),
                         ),
-                        onPressed: () {
-                          if (!model.isBusy) {
-                            model.login(AuthType.User);
-                          }
-                        },
+                        onPressed: (!model.enableBtnContinue
+                            ? null
+                            : () {
+                                if (!model.isBusy) {
+                                  model.login(AuthType.User);
+                                }
+                              }),
                       ),
                     ),
                   ),
@@ -294,7 +282,7 @@ class _BodyLogin extends HookViewModelWidget<LoginViewModel> {
                                 recognizer: TapGestureRecognizer()
                                   ..onTap = () {
                                     if (!model.isBusy) {
-                                      model.irRegistroUsuario();
+                                      model.goToRegisterUser();
                                     }
                                   }),
                           ],

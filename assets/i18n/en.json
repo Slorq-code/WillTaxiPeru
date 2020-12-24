@@ -1,5 +1,6 @@
 {
 	"accept": "Accept",
+	"cancel": "Cancel",
 	"accept_terms_and_references": "I accept terms and references",
 	"addr_line": "Addr. Line",
 	"address": "Address",
@@ -14,5 +15,16 @@
 	"sign_up": "Sign up",
 	"login": "Login",
 	"first_name_and_surname": "First name and surname",
-	"mobile_phone": "Mobile phone"
+	"mobile_phone": "Mobile phone",
+	"loading": "Loading",
+	"login_invalid_username_or_password": "Invalid username or password",
+	"request_not_processed_correctly": "Sorry, your request was not processed correctly",
+	"email_already_registered": "The email entered is already registered",
+	"user_created_successfully": "User created successfully",
+	"user_has_been_temporarily_disabled": "Your username has been temporarily disabled, please try in a few minutes",
+	"password_dont_match": "Passwords do not match",
+	"forgot_your_password": "Forgot your password?",
+	"reset_password": "Reset password",
+	"instructions_reset_password": "Please follow the instructions sent to your email to reset your password",
+	"email_not_registered": "The email address entered is not registered"
 }

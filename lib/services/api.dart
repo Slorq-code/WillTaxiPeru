@@ -6,6 +6,7 @@ import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:taxiapp/app/globals.dart';
 import 'package:taxiapp/app/locator.dart';
+import 'package:taxiapp/models/tokenModel.dart';
 import 'package:taxiapp/services/storage_service.dart';
 import 'package:taxiapp/services/token.dart';
 import 'package:taxiapp/utils/retry/dio_retry.dart';
@@ -18,7 +19,7 @@ class Api {
   final token = locator<Token>();
 
   Api() {
-    _dioBack.options.baseUrl = '';
+    _dioBack.options.baseUrl = 'https://warzsud.herokuapp.com';
     _dioBack.options.connectTimeout = 5000;
     _dioBack.options.sendTimeout = 5000;
     _dioBack.options.receiveTimeout = 20000;
@@ -37,7 +38,7 @@ class Api {
     _dioMap.options.sendTimeout = 5000;
     _dioMap.options.receiveTimeout = 20000;
     _dioMap.interceptors.add(RetryInterceptor(
-      dio: _dioBack,
+      dio: _dioMap,
       options: const RetryOptions(
         retries: 3,
         retryInterval: Duration(seconds: 5),
@@ -72,11 +73,14 @@ class Api {
   Future<void> refreshToken() async {
     Map json = await _post('refresh', {}, query: {'email': await shared.getString('email')});
     await token.saveToken(json['token']);
-    await token.saveUserType('user');
     return;
   }
 
-  Future inSessionUser() async => await _post('verify_session', {}).timeout(const Duration(milliseconds: 2000));
+  Future<TokenModel> inSessionUser() async {
+    var response = await _post('/token/verify', {}).timeout(const Duration(milliseconds: 10000));
+    var tokenModel = TokenModel.fromJson(response);
+    return tokenModel;
+  }
   // User
 
   // Others

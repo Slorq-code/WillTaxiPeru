@@ -6,15 +6,15 @@ import 'package:flutter/material.dart';
 import 'package:stacked_hooks/stacked_hooks.dart';
 import 'package:taxiapp/localization/keys.dart';
 import 'package:taxiapp/theme/pallete_color.dart';
-import 'package:taxiapp/ui/views/register/register_viewmodel.dart';
+import 'package:taxiapp/ui/views/profile/profile_viewmodel.dart';
 
 import 'package:taxiapp/extensions/string_extension.dart';
 
-class RegisterView extends StatelessWidget {
+class ProfileView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ViewModelBuilder<RegisterViewModel>.nonReactive(
-      viewModelBuilder: () => RegisterViewModel(context),
+    return ViewModelBuilder<ProfileViewModel>.nonReactive(
+      viewModelBuilder: () => ProfileViewModel(context),
       onModelReady: (model) => model.initial(),
       builder: (context, model, child) => SafeArea(
         child: Scaffold(
@@ -34,13 +34,13 @@ class RegisterView extends StatelessWidget {
   }
 }
 
-class _BodyRegistro extends HookViewModelWidget<RegisterViewModel> {
+class _BodyRegistro extends HookViewModelWidget<ProfileViewModel> {
   _BodyRegistro({
     Key key,
   }) : super(key: key);
 
   @override
-  Widget buildViewModelWidget(BuildContext context, RegisterViewModel model) {
+  Widget buildViewModelWidget(BuildContext context, ProfileViewModel model) {
     final focusEmail = useFocusNode();
     final focusPhone = useFocusNode();
     final focusPassword = useFocusNode();
@@ -69,6 +69,7 @@ class _BodyRegistro extends HookViewModelWidget<RegisterViewModel> {
                     inputFormatters: [
                       LengthLimitingTextInputFormatter(50),
                     ],
+                    readOnly: true,
                     keyboardType: TextInputType.text,
                     decoration: InputDecoration(
                       labelText: Keys.first_name_and_surname.localize(),
@@ -106,6 +107,7 @@ class _BodyRegistro extends HookViewModelWidget<RegisterViewModel> {
                     ],
                     keyboardType: TextInputType.emailAddress,
                     focusNode: focusEmail,
+                    readOnly: true,
                     decoration: InputDecoration(
                       labelText: Keys.email.localize(),
                       labelStyle: const TextStyle(color: Color.fromRGBO(130, 130, 130, 1.0)),
@@ -258,36 +260,7 @@ class _BodyRegistro extends HookViewModelWidget<RegisterViewModel> {
                     onFieldSubmitted: (_) => FocusScope.of(context).unfocus(),
                     onChanged: (value) => model.repeatPassword = value,
                   ),
-                  const SizedBox(
-                    height: 20.0,
-                  ),
-                  Align(
-                    alignment: Alignment.center,
-                    child: SizedBox(
-                      width: 200,
-                      height: 40,
-                      child: RaisedButton(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16.0),
-                        ),
-                        color: const Color.fromRGBO(255, 165, 0, 1.0),
-                        disabledColor: const Color.fromRGBO(255, 200, 120, 1.0),
-                        child: Container(
-                          child: Text(
-                            Keys.continue_label.localize(),
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                        ),
-                        onPressed: (!model.enableBtnContinue
-                            ? null
-                            : () {
-                                if (!model.isBusy) {
-                                  model.signin();
-                                }
-                              }),
-                      ),
-                    ),
-                  ),
+                  
                   const SizedBox(
                     height: 10.0,
                   ),

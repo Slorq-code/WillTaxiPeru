@@ -5,7 +5,9 @@ import 'storage_service.dart';
 
 @lazySingleton
 class Token {
+
   final shared = locator<Storage>();
+  
   Future<Map<String, String>> buildHeaders() async {
     var token = await shared.getString('token');
     return {'Content-Type': 'application/json', 'Accept': 'application/json', 'Authorization': 'Bearer $token'};
@@ -13,11 +15,8 @@ class Token {
 
   Future<void> saveToken(String value) => shared.saveString('token', value);
 
-  Future<void> saveUserType(String value) => shared.saveString('userType', value);
-
   void deleteToken() {
     shared.deleteString('token');
-    shared.deleteString('userType');
   }
 
   Future<bool> hasToken() async {
@@ -25,7 +24,4 @@ class Token {
     return false;
   }
 
-  Future<String> getUserType() async {
-    return await shared.getString('userType');
-  }
 }

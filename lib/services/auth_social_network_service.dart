@@ -5,7 +5,9 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:injectable/injectable.dart';
 import 'package:intl/intl.dart';
 import 'package:taxiapp/models/enums/auth_type.dart';
+import 'package:taxiapp/models/tokenModel.dart';
 import 'package:taxiapp/models/userModel.dart';
+import 'package:taxiapp/utils/provider_util.dart';
 
 @lazySingleton
 class AuthSocialNetwork {
@@ -17,6 +19,7 @@ class AuthSocialNetwork {
 
   bool isLoggedIn = false;
   UserModel user = UserModel();
+  String idToken = '';
 
   void logout() async{
 
@@ -47,6 +50,7 @@ class AuthSocialNetwork {
 
       UserCredential userCredential;
       user = UserModel();
+      idToken = '';
 
       if (authType.index == AuthType.User.index) {
         
@@ -91,6 +95,22 @@ class AuthSocialNetwork {
       }
 
       if (userCredential != null) {
+
+        idToken = await userCredential.user.getIdToken();
+
+        /*
+        // VELIDAMOS EL TOKEN
+        var headers = {
+          'Authorization': 'Bearer ' + idToken,
+        };
+
+        var providerUtil = ProviderUtil(baseUrl: 'https://warzsud.herokuapp.com');
+        var response = await providerUtil.requestPost('/token/verify', headers, {});
+
+        if (response.statusCode.compareTo(200) == 0) {
+          var tokenModel = TokenModel.fromJson(response.data);
+        }
+        */
 
         // SI LA AUTENTICACION FUE EXITOSA
 

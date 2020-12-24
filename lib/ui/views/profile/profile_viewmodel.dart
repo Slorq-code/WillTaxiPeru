@@ -40,6 +40,8 @@ class ProfileViewModel extends BaseViewModel {
     email = _authSocialNetwork.user.email;
     phone = _authSocialNetwork.user.phone;
     name = _authSocialNetwork.user.name;
+    image = _authSocialNetwork.user.image ?? '';
+    image = '';
     password = '';
     repeatPassword = '';
     passwordOfuscado = true;
@@ -52,9 +54,17 @@ class ProfileViewModel extends BaseViewModel {
   String _repeatPassword;
   String _phone;
   String _name;
+  String _image;
   bool _passwordOfuscado;
   bool _repitePasswordOfuscado;
   bool _socialNetwork;
+
+  String get image => _image;
+
+  set image(image) {
+    _image = image;
+    notifyListeners();
+  }
 
   String get repeatPassword => _repeatPassword;
 

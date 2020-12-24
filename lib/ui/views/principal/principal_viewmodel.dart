@@ -4,6 +4,7 @@ import 'package:stacked/stacked.dart';
 import 'package:taxiapp/app/locator.dart';
 import 'package:taxiapp/app/router.gr.dart';
 import 'package:taxiapp/services/auth_social_network_service.dart';
+import 'package:taxiapp/services/token.dart';
 
 class PrincipalViewModel extends BaseViewModel {
 
@@ -18,12 +19,14 @@ class PrincipalViewModel extends BaseViewModel {
   }
 
   final AuthSocialNetwork _authSocialNetwork = locator<AuthSocialNetwork>();
+  final Token _token = locator<Token>();
 
   void initial() async {
   }
 
   void logout() async {
     await _authSocialNetwork.logout();
+    await _token.deleteToken();
     await ExtendedNavigator.root.push(Routes.loginViewRoute);
   }
 

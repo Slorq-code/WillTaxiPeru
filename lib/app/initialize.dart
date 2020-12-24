@@ -34,10 +34,12 @@ class Initialize {
   Initialize() {
     _token.hasToken().then(
       (tokenResponse) {
+        print('tokenResponse: ' + tokenResponse.toString());
         if (tokenResponse == true) {
           _api.inSessionUser().then((response) {
-            setPage(auto_router.Routes.loginViewRoute);
+            setPage(auto_router.Routes.principalViewRoute);
           }).catchError((error) {
+            print('entro catch');
             _token.deleteToken();
             setPage(auto_router.Routes.loginViewRoute);
           });

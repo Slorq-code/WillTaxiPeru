@@ -6,6 +6,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_hooks/stacked_hooks.dart';
+import 'package:taxiapp/extensions/string_extension.dart';
+import 'package:taxiapp/localization/keys.dart';
 
 import 'package:taxiapp/models/place.dart';
 import 'package:taxiapp/ui/views/principal/principal_viewmodel.dart';
@@ -224,7 +226,7 @@ class _PickInMapOption extends ViewModelWidget<PrincipalViewModel> {
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: SvgPicture.asset('assets/icons/start_location.svg', height: 20.0),
               ),
-              const Text('Ubicar en mapa'), // TODO: translate
+              Text(Keys.locate_on_map.localize()),
             ],
           ),
         ),
@@ -244,9 +246,9 @@ class _ForceEnableGPS extends ViewModelWidget<PrincipalViewModel> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text('Se necesita autorizar el GPS para utilizar el app '), // TODO: translate
+          Text(Keys.you_need_to_authorize_the_gps_to_use_the_app.localize()),
           MaterialButton(
-              child: const Text('Solicitar Acceso', style: TextStyle(color: Colors.white)), // TODO: translate
+              child: Text(Keys.request_access.localize(), style: const TextStyle(color: Colors.white)),
               color: Colors.black,
               shape: const StadiumBorder(),
               elevation: 0,
@@ -390,16 +392,16 @@ class _DestinationLocationField extends HookViewModelWidget<PrincipalViewModel> 
                       textAlignVertical: TextAlignVertical.center,
                       textInputAction: TextInputAction.done,
                       decoration: InputDecoration(
-                          enabledBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.transparent, width: 0.1)),
-                          focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.transparent, width: 0.1)),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                            borderSide: const BorderSide(color: Colors.transparent, width: 0.1),
-                          ),
-                          contentPadding: const EdgeInsets.all(0),
-                          alignLabelWithHint: true,
-                          hintText: 'Destino' // TODO: translate
-                          ),
+                        enabledBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.transparent, width: 0.1)),
+                        focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.transparent, width: 0.1)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                          borderSide: const BorderSide(color: Colors.transparent, width: 0.1),
+                        ),
+                        contentPadding: const EdgeInsets.all(0),
+                        alignLabelWithHint: true,
+                        hintText: Keys.destination.localize(),
+                      ),
                     ),
                   ),
                 ],
@@ -442,7 +444,7 @@ class _ManualMarker extends ViewModelWidget<PrincipalViewModel> {
           bottom: 70,
           child: MaterialButton(
             minWidth: width - 120,
-            child: const Text('Confirmar destino', style: TextStyle(color: Colors.white)), // TODO: translate
+            child: Text(Keys.confirm_destination.localize(), style: const TextStyle(color: Colors.white)),
             color: Colors.orange,
             shape: const StadiumBorder(),
             elevation: 0,

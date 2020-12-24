@@ -6,6 +6,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:stacked/stacked.dart';
 import 'package:taxiapp/app/locator.dart';
+import 'package:taxiapp/extensions/string_extension.dart';
+import 'package:taxiapp/localization/keys.dart';
 import 'package:taxiapp/models/place.dart';
 import 'package:taxiapp/models/user_location.dart';
 import 'package:taxiapp/services/location_service.dart';
@@ -130,14 +132,15 @@ class PrincipalViewModel extends ReactiveViewModel {
     final iconDestino = await getMarkerDestinoIcon(place.name, route.distance.value.toDouble());
 
     final markerStart = Marker(
-        anchor: const Offset(0.0, 1.0),
-        markerId: MarkerId('start'),
-        position: routePoints[0],
-        icon: iconInicio,
-        infoWindow: InfoWindow(
-          title: 'My Location', //TODO: translate
-          snippet: 'Time route: ${(route.timeNeeded.value / 60).floor()} minutes', //TODO: translate
-        ));
+      anchor: const Offset(0.0, 1.0),
+      markerId: MarkerId('start'),
+      position: routePoints[0],
+      icon: iconInicio,
+      infoWindow: InfoWindow(
+        title: Keys.my_location.localize(),
+        snippet: Keys.route_time_with_minutes.localize(['${(route.timeNeeded.value / 60).floor()}']),
+      ),
+    );
 
     final markerDestination = Marker(
         markerId: MarkerId('destination'),

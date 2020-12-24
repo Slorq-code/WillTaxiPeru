@@ -5,8 +5,6 @@
 	"addr_line": "Dirección",
 	"address": "Domicilio",
 	"hello": "Hola",
-	"test_key_1": "Me llamo {%1$s}",
-	"test_key_2": "Hola",
 	"email": "Correo electrónico",
 	"password": "Contraseña",
 	"repeat_password": "Confirmar contraseña",
@@ -26,5 +24,13 @@
 	"forgot_your_password": "¿Olvidó su contraseña?",
 	"reset_password": "Restablecer contraseña",
 	"instructions_reset_password": "Por favor siga las instrucciones que se le envio a su correo electrónico para restablecer su contraseña",
-	"email_not_registered": "La dirección de correo electrónico ingresada no se encuentra registrada"
+	"email_not_registered": "La dirección de correo electrónico ingresada no se encuentra registrada",
+	"locate_on_map": "Ubicar en mapa",
+	"you_need_to_authorize_the_gps_to_use_the_app": "Se necesita autorizar el GPS para utilizar el app",
+	"request_access": "Solicitar Acceso",
+	"destination": "Destino",
+	"confirm_destination": "Confirmar destino",
+	"minutes_short": "Min",
+	"my_location": "Mi ubicación",
+	"route_time_with_minutes": "Tiempo de Ruta: {%1$s} minutos"
 }

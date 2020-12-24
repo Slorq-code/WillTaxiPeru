@@ -40,13 +40,13 @@ class MarkerStartPainter extends CustomPainter {
 
     textPainter.paint(canvas, const Offset(40, 35));
 
-    textSpan = const TextSpan(style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w400), text: 'Min'); // TODO: Translate
+    textSpan = TextSpan(style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w400), text: Keys.minutes_short.localize());
 
     textPainter = TextPainter(text: textSpan, textDirection: TextDirection.ltr, textAlign: TextAlign.center)..layout(maxWidth: 70, minWidth: 70);
 
     textPainter.paint(canvas, const Offset(40, 67));
 
-    textSpan = const TextSpan(style: TextStyle(color: Colors.black, fontSize: 22, fontWeight: FontWeight.w400), text: 'My location'); // TODO : Translate
+    textSpan = TextSpan(style: const TextStyle(color: Colors.black, fontSize: 22, fontWeight: FontWeight.w400), text: Keys.my_location.localize());
 
     textPainter = TextPainter(text: textSpan, textDirection: TextDirection.ltr, textAlign: TextAlign.center)
       ..layout(

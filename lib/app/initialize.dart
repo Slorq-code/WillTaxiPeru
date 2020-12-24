@@ -8,13 +8,18 @@ import 'package:overlay_support/overlay_support.dart';
 import 'package:taxiapp/app/router.gr.dart' as auto_router;
 import 'package:taxiapp/localization/localization_helper.dart';
 import 'package:taxiapp/services/api.dart';
+import 'package:taxiapp/services/auth_social_network_service.dart';
+import 'package:taxiapp/services/firestore_user_service.dart';
 import 'package:taxiapp/services/token.dart';
 
 import 'locator.dart';
 
 class Initialize {
+  
   final Token _token = locator<Token>();
   final Api _api = locator<Api>();
+  final FirestoreUser _firestoreUser = locator<FirestoreUser>();
+  final AuthSocialNetwork _authSocialNetwork = locator<AuthSocialNetwork>();
 
   void setPage(String home) async {
     await SystemChrome.setPreferredOrientations([
@@ -34,12 +39,19 @@ class Initialize {
   Initialize() {
     _token.hasToken().then(
       (tokenResponse) {
-        print('tokenResponse: ' + tokenResponse.toString());
         if (tokenResponse == true) {
           _api.inSessionUser().then((response) {
-            setPage(auto_router.Routes.principalViewRoute);
+
+            _firestoreUser.userFind(response.uid).then((value) {
+              _authSocialNetwork.user = value;
+              setPage(auto_router.Routes.principalViewRoute);
+            }).timeout(const Duration(milliseconds: 5000)).catchError((error) {
+              _token.deleteToken();
+              setPage(auto_router.Routes.loginViewRoute);
+            });
+
           }).catchError((error) {
-            print('entro catch');
+            print(error);
             _token.deleteToken();
             setPage(auto_router.Routes.loginViewRoute);
           });

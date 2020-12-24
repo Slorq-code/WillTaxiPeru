@@ -22,6 +22,7 @@ class PrincipalViewModel extends BaseViewModel {
   final Token _token = locator<Token>();
 
   void initial() async {
+    print('name:' + _authSocialNetwork.user.name);
   }
 
   void logout() async {

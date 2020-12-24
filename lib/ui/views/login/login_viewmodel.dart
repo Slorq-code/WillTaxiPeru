@@ -93,8 +93,6 @@ class LoginViewModel extends BaseViewModel {
           ExtendedNavigator.root.pop();
 
           await _token.saveToken(_authSocialNetwork.idToken);
-          var hasToken = await _token.hasToken();
-          print('login hasToken: ' + hasToken.toString());
 
           // LOGIN SUCESSFULL, NAVIGATE TO PRINCIPAL PAGE
           await ExtendedNavigator.root.push(Routes.principalViewRoute);

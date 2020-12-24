@@ -173,9 +173,9 @@ class _SugerationPlace extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 4.0),
-                child: Icon(Icons.timer),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                child: SvgPicture.asset('assets/icons/clock.svg'),
               ),
               Expanded(
                 child: Padding(

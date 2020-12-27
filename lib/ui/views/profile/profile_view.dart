@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:stacked_hooks/stacked_hooks.dart';
 import 'package:taxiapp/theme/pallete_color.dart';
 import 'package:taxiapp/ui/views/profile/profile_viewmodel.dart';
+import 'package:taxiapp/ui/widgets/profile/header_widget.dart';
 
 class ProfileView extends StatelessWidget {
   @override
@@ -34,6 +35,6 @@ class _BodyRegistro extends HookViewModelWidget<ProfileViewModel> {
 
   @override
   Widget buildViewModelWidget(BuildContext context, ProfileViewModel model) {
-    return Container();
+    return HeaderWidget();
   }
 }

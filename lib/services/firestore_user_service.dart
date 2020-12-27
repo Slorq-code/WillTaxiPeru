@@ -1,25 +1,24 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:injectable/injectable.dart';
-import 'package:taxiapp/models/userModel.dart';
+import 'package:taxiapp/models/user_model.dart';
 
 @lazySingleton
 class FirestoreUser {
-
   final databaseReference = FirebaseFirestore.instance;
 
   final String collectionUser = 'user';
 
   Future<bool> userRegister(UserModel user) async {
-    try{
+    try {
       await databaseReference.collection(collectionUser).doc(user.uid).set({
-            'name': user.name,
-            'email': user.email.toLowerCase(),
-            'phone': user.phone,
-            'uid': user.uid,
-            'authType': user.authType.index,
-            'userType': user.userType.index,
-            'image': user.image,
-          });
+        'name': user.name,
+        'email': user.email.toLowerCase(),
+        'phone': user.phone,
+        'uid': user.uid,
+        'authType': user.authType.index,
+        'userType': user.userType.index,
+        'image': user.image,
+      });
       return true;
     } catch (err) {
       print(err);
@@ -33,7 +32,7 @@ class FirestoreUser {
   }
 
   Future<UserModel> userFind(String uid) async {
-    try{
+    try {
       var documentSnapshot = await databaseReference.collection(collectionUser).doc(uid).get();
 
       if (documentSnapshot.exists) {
@@ -41,11 +40,9 @@ class FirestoreUser {
         var user = UserModel.fromMap(data);
         return user;
       }
-
     } catch (err) {
       print(err);
     }
     return null;
   }
-
 }

@@ -14,11 +14,12 @@ class PNetworkImage extends StatelessWidget {
       placeholder: (context, url) => Container(
           height: height,
           decoration: const BoxDecoration(
-            color: Colors.black,
+            color: Colors.transparent,
           ),
           child: const Center(child: CircularProgressIndicator())),
       errorWidget: (context, url, error) => Container(
-        height: 200.0,
+        height: 100.0,
+        width: 100.0,
         child: Image.asset(
           'assets/home/default_business.jpg',
           fit: fit,

@@ -7,7 +7,7 @@ import 'package:taxiapp/app/router.gr.dart';
 import 'package:taxiapp/localization/keys.dart';
 import 'package:taxiapp/models/enums/auth_type.dart';
 import 'package:taxiapp/models/enums/user_type.dart';
-import 'package:taxiapp/models/userModel.dart';
+import 'package:taxiapp/models/user_model.dart';
 import 'package:taxiapp/services/auth_social_network_service.dart';
 import 'package:taxiapp/services/firestore_user_service.dart';
 import 'package:taxiapp/utils/alerts.dart';

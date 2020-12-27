@@ -14,7 +14,6 @@ import 'package:taxiapp/services/token.dart';
 import 'locator.dart';
 
 class Initialize {
-  
   final Token _token = locator<Token>();
   final Api _api = locator<Api>();
   final FirestoreUser _firestoreUser = locator<FirestoreUser>();
@@ -40,15 +39,17 @@ class Initialize {
       (tokenResponse) {
         if (tokenResponse == true) {
           _api.inSessionUser().then((response) {
-
-            _firestoreUser.userFind(response.uid).then((value) {
-              _authSocialNetwork.user = value;
-              setPage(auto_router.Routes.principalViewRoute);
-            }).timeout(const Duration(milliseconds: 5000)).catchError((error) {
-              _token.deleteToken();
-              setPage(auto_router.Routes.loginViewRoute);
-            });
-
+            _firestoreUser
+                .userFind(response.uid)
+                .then((value) {
+                  _authSocialNetwork.user = value;
+                  setPage(auto_router.Routes.principalViewRoute);
+                })
+                .timeout(const Duration(milliseconds: 5000))
+                .catchError((error) {
+                  _token.deleteToken();
+                  setPage(auto_router.Routes.loginViewRoute);
+                });
           }).catchError((error) {
             print(error);
             _token.deleteToken();
@@ -78,9 +79,8 @@ class _MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         localizationsDelegates: [
           GlobalMaterialLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
-          localizationDelegate
+          localizationDelegate,
         ],
         builder: ExtendedNavigator.builder(
           router: auto_router.Router(),

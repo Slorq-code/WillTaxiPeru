@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:stacked/stacked.dart';
 
 import 'package:flutter/material.dart';
@@ -22,9 +23,26 @@ class LoginView extends StatelessWidget {
       viewModelBuilder: () => LoginViewModel(context),
       onModelReady: (model) => model.initial(),
       builder: (context, model, child) => SafeArea(
-        child: Scaffold(
-          backgroundColor: PalleteColor.backgroundColor,
-          body: _BodyLogin(),
+        child: Container(
+          color: PalleteColor.backgroundColor,
+          child: Stack(
+            alignment: Alignment.bottomCenter,
+            children: [
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: SvgPicture.asset('assets/background/background_login.svg', fit: BoxFit.cover),
+              ),
+              SafeArea(
+                child: Scaffold(
+                  backgroundColor: Colors.transparent,
+                  body: _BodyLogin(),
+                  // resizeToAvoidBottomPadding: false,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -38,272 +56,214 @@ class _BodyLogin extends HookViewModelWidget<LoginViewModel> {
 
   @override
   Widget buildViewModelWidget(BuildContext context, LoginViewModel model) {
-    /*
-    return Center(
-      child: Text(
-        Keys.accept.localize(),
-        style: const TextStyle(color: Colors.white),
-      ),
-    );
-    */
-    return _crearFormulario(model, context);
-  }
-
-  final textFieldFocusNodePassword = FocusNode();
-
-  Widget _crearFormulario(LoginViewModel model, context) {
-    return SafeArea(
+    final emailController = useTextEditingController();
+    final passwordController = useTextEditingController();
+    final passwordFocus = useFocusNode();
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          /*
-            Container(
-              alignment: Alignment.center, 
-              child: Image.asset(
-                  'assets/images/img_background.jpg',
-                  height: 120.0,
-                  width: double.infinity,
-                  //width: 150.0,
-                  fit: BoxFit.fill,
-              ),
-              color: Colors.white,
+          Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Text(
+              Keys.login.localize(),
+              style: const TextStyle(color: Colors.black, fontSize: 27, fontWeight: FontWeight.bold),
             ),
-            */
+          ),
           Expanded(
-            child: Container(
-              color: Colors.white,
-              child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                children: <Widget>[
-                  const SizedBox(
-                    height: 10.0,
-                  ),
-                  Text(
-                    Keys.login.localize(),
-                    style: const TextStyle(color: Color.fromRGBO(130, 130, 130, 1.0), fontSize: 15, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(
-                    height: 20.0,
-                  ),
-                  TextFormField(
-                    initialValue: model.user,
-                    inputFormatters: [
-                      LengthLimitingTextInputFormatter(50),
-                    ],
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(
-                      labelText: Keys.email.localize(),
-                      labelStyle: const TextStyle(color: Color.fromRGBO(130, 130, 130, 1.0)),
-                      fillColor: Colors.white,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                          color: Color.fromRGBO(40, 180, 245, 1.0),
+            child: ListView(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              children: <Widget>[
+                Column(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    TextFormField(
+                      controller: emailController,
+                      inputFormatters: [LengthLimitingTextInputFormatter(50)],
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: InputDecoration(
+                        labelText: Keys.email.localize(),
+                        labelStyle: const TextStyle(fontSize: 16.0, color: Colors.black),
+                        fillColor: Colors.white,
+                        contentPadding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 15.0),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(color: Color(0xffF0F0F0), width: 3.0),
+                          borderRadius: BorderRadius.circular(30),
                         ),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                          color: Color.fromRGBO(130, 130, 130, 1.0),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(color: Color(0xffF0F0F0), width: 3.0),
+                          borderRadius: BorderRadius.circular(30),
                         ),
-                        borderRadius: BorderRadius.circular(15),
                       ),
+                      style: const TextStyle(fontSize: 14.0, color: Colors.black),
+                      textInputAction: TextInputAction.next,
+                      onFieldSubmitted: (_) => passwordFocus.requestFocus(),
+                      onChanged: (value) => model.user = value,
                     ),
-                    style: const TextStyle(
-                      color: Color.fromRGBO(130, 130, 130, 1.0),
-                      fontSize: 14.0,
-                    ),
-                    textInputAction: TextInputAction.next,
-                    onFieldSubmitted: (_) => FocusScope.of(context).nextFocus(),
-                    onChanged: (value) => model.user = value,
-                  ),
-                  const SizedBox(
-                    height: 15.0,
-                  ),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: RichText(
-                      text: TextSpan(
-                          text: Keys.forgot_your_password.localize(),
-                          style: const TextStyle(color: Color.fromRGBO(130, 130, 130, 1.0)),
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () {
-                              if (!model.isBusy) {
-                                model.goToResetPassword();
-                              }
-                            }),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 10.0,
-                  ),
-                  Focus(
-                    child: TextFormField(
+                    const SizedBox(height: 15.0),
+                    TextFormField(
+                      controller: passwordController,
+                      focusNode: passwordFocus,
                       obscureText: model.passwordOfuscado,
-                      inputFormatters: [
-                        LengthLimitingTextInputFormatter(20),
-                      ],
+                      inputFormatters: [LengthLimitingTextInputFormatter(20)],
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
                         labelText: Keys.password.localize(),
-                        labelStyle: const TextStyle(color: Color.fromRGBO(130, 130, 130, 1.0)),
+                        labelStyle: const TextStyle(fontSize: 16.0, color: Colors.black),
                         fillColor: Colors.white,
-                        contentPadding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 15.0),
                         focusedBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            color: Color.fromRGBO(40, 180, 245, 1.0),
-                          ),
-                          borderRadius: BorderRadius.circular(15),
+                          borderSide: const BorderSide(color: Color(0xffF0F0F0), width: 3.0),
+                          borderRadius: BorderRadius.circular(30),
                         ),
                         enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            color: Color.fromRGBO(130, 130, 130, 1.0),
-                          ),
-                          borderRadius: BorderRadius.circular(15),
+                          borderSide: const BorderSide(color: Color(0xffF0F0F0), width: 3.0),
+                          borderRadius: BorderRadius.circular(30),
                         ),
                         suffixIcon: IconButton(
                           icon: Icon(
-                            model.passwordOfuscado ? Icons.visibility_off : Icons.visibility,
-                            color: const Color.fromRGBO(130, 130, 130, 1.0),
+                            model.passwordOfuscado ? Icons.visibility : Icons.visibility_off,
+                            color: Colors.grey,
                           ),
-                          onPressed: () {
-                            model.passwordOfuscado = !model.passwordOfuscado;
-
-                            /*INICIO CODIGO PARA DESACTIVAR EL EVENTO ONTAP DEL TEXTFIELD*/
-                            textFieldFocusNodePassword.unfocus();
-                            // Disable text field's focus node request
-                            textFieldFocusNodePassword.canRequestFocus = false;
-                            //Enable the text field's focus node request after some delay
-                            Future.delayed(const Duration(milliseconds: 100), () {
-                              textFieldFocusNodePassword.canRequestFocus = true;
-                            });
-                            /*FIN CODIGO*/
-                          },
+                          onPressed: () => model.passwordOfuscado = !model.passwordOfuscado,
                         ),
-                      ),
-                      style: const TextStyle(
-                        color: Color.fromRGBO(130, 130, 130, 1.0),
-                        fontSize: 14.0,
                       ),
                       textInputAction: TextInputAction.done,
                       onFieldSubmitted: (_) => FocusScope.of(context).unfocus(),
                       onChanged: (value) => model.password = value,
                     ),
-                  ),
-                  const SizedBox(
-                    height: 20.0,
-                  ),
-                  Align(
-                    alignment: Alignment.center,
-                    child: SizedBox(
-                      width: 130,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          FloatingActionButton(
-                            heroTag: 'btnGoogle',
-                            backgroundColor: Colors.transparent,
-                            child: SvgPicture.asset(
-                              'assets/icons/ic_google.svg',
-                              fit: BoxFit.fitWidth,
-                            ),
-                            onPressed: () {
-                              if (!model.isBusy) {
-                                model.login(AuthType.Google);
-                              }
-                            },
-                          ),
-                          FloatingActionButton(
-                            heroTag: 'btnFacebook',
-                            backgroundColor: Colors.transparent,
-                            child: SvgPicture.asset(
-                              'assets/icons/ic_facebook.svg',
-                              fit: BoxFit.fitWidth,
-                            ),
-                            onPressed: () {
-                              if (!model.isBusy) {
-                                model.login(AuthType.Facebook);
-                              }
-                            },
-                          ),
-                        ],
-                      ),
+                    const SizedBox(height: 15.0),
+                    GestureDetector(
+                      onTap: () => !model.isBusy ? model.goToResetPassword() : null,
+                      child: Text(Keys.forgot_your_password.localize(), style: const TextStyle(color: Colors.black, fontSize: 16)),
                     ),
-                  ),
-                  const SizedBox(
-                    height: 20.0,
-                  ),
-                  Align(
-                    alignment: Alignment.center,
-                    child: SizedBox(
-                      width: 200,
-                      height: 40,
-                      child: RaisedButton(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16.0),
-                        ),
-                        color: const Color.fromRGBO(255, 165, 0, 1.0),
-                        disabledColor: const Color.fromRGBO(255, 200, 120, 1.0),
-                        child: Container(
-                          child: Text(
-                            Keys.continue_label.localize(),
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                        ),
-                        onPressed: (!model.enableBtnContinue
-                            ? null
-                            : () {
-                                if (!model.isBusy) {
-                                  model.login(AuthType.User);
-                                }
-                              }),
-                      ),
+                    const SizedBox(height: 20.0),
+                    const _SocialButtons(),
+                    const SizedBox(height: 20.0),
+                    const _ContinueButton(),
+                    const SizedBox(height: 20.0),
+                    const _EnrollAdvice(),
+                    const SizedBox(height: 10.0),
+                    RaisedButton(
+                      color: Colors.blue,
+                      child: const Text('To Principal view', style: TextStyle(color: Colors.white)),
+                      onPressed: () => ExtendedNavigator.root.push(Routes.principalViewRoute),
                     ),
-                  ),
-                  const SizedBox(
-                    height: 20.0,
-                  ),
-                  Align(
-                    alignment: Alignment.center,
-                    child: SizedBox(
-                      height: 40,
-                      child: RichText(
-                        text: TextSpan(
-                          text: Keys.login_dont_have_account.localize(),
-                          style: const TextStyle(color: Color.fromRGBO(130, 130, 130, 1.0)),
-                          children: <TextSpan>[
-                            const TextSpan(
-                              text: ', ',
-                              style: TextStyle(color: Color.fromRGBO(130, 130, 130, 1.0)),
-                            ),
-                            TextSpan(
-                                text: Keys.sign_up.localize(),
-                                style: const TextStyle(
-                                    decoration: TextDecoration.underline, fontWeight: FontWeight.bold, color: Color.fromRGBO(130, 130, 130, 1.0)),
-                                recognizer: TapGestureRecognizer()
-                                  ..onTap = () {
-                                    if (!model.isBusy) {
-                                      model.goToRegisterUser();
-                                    }
-                                  }),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 10.0,
-                  ),
-                  RaisedButton(
-                    color: Colors.blue,
-                    child: const Text('To Principal view', style: TextStyle(color: Colors.white)),
-                    onPressed: () => ExtendedNavigator.root.push(Routes.principalViewRoute),
-                  ),
-                ],
-              ),
+                  ],
+                ),
+              ],
             ),
           ),
         ],
       ),
+    );
+  }
+}
+
+class _ContinueButton extends ViewModelWidget<LoginViewModel> {
+  const _ContinueButton({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, LoginViewModel model) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * .18),
+      child: Container(
+        height: 50,
+        width: double.infinity,
+        child: RaisedButton(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          color: PalleteColor.actionButtonColor,
+          disabledColor: PalleteColor.actionButtonColor.withOpacity(0.5),
+          child: Text(Keys.continue_label.localize(), style: const TextStyle(fontSize: 16.0, color: Colors.white)),
+          onPressed: !model.enableBtnContinue ? null : () => !model.isBusy ? model.login(AuthType.User) : null,
+        ),
+      ),
+    );
+  }
+}
+
+class _EnrollAdvice extends ViewModelWidget<LoginViewModel> {
+  const _EnrollAdvice({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, LoginViewModel model) {
+    return SizedBox(
+      height: 40,
+      child: RichText(
+        text: TextSpan(
+          text: Keys.login_dont_have_account.localize(),
+          style: const TextStyle(color: Colors.black, fontSize: 16),
+          children: <TextSpan>[
+            const TextSpan(
+              text: ', ',
+              style: TextStyle(color: Colors.black, fontSize: 16),
+            ),
+            TextSpan(
+                text: Keys.sign_up.localize(),
+                style: const TextStyle(decoration: TextDecoration.underline, fontWeight: FontWeight.w600, color: Colors.black, fontSize: 16),
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () {
+                    if (!model.isBusy) {
+                      model.goToRegisterUser();
+                    }
+                  }),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SocialButtons extends ViewModelWidget<LoginViewModel> {
+  const _SocialButtons({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, LoginViewModel model) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        FloatingActionButton(
+          heroTag: 'btnFacebook',
+          backgroundColor: Colors.transparent,
+          child: SvgPicture.asset(
+            'assets/icons/ic_facebook.svg',
+            fit: BoxFit.fitWidth,
+          ),
+          onPressed: () {
+            if (!model.isBusy) {
+              model.login(AuthType.Facebook);
+            }
+          },
+        ),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 10.0),
+          child: Text('-', style: TextStyle(color: Colors.black, fontSize: 30)),
+        ),
+        FloatingActionButton(
+          heroTag: 'btnGoogle',
+          backgroundColor: Colors.transparent,
+          child: SvgPicture.asset(
+            'assets/icons/ic_google.svg',
+            fit: BoxFit.fitWidth,
+          ),
+          onPressed: () {
+            if (!model.isBusy) {
+              model.login(AuthType.Google);
+            }
+          },
+        ),
+      ],
     );
   }
 }

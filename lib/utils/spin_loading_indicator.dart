@@ -8,6 +8,6 @@ class SpinLoadingIndicator extends StatelessWidget {
   final double height;
   @override
   Widget build(BuildContext context) {
-    return Image.asset('assets/icons/principal/spin_loading.gif', height: height, fit: BoxFit.contain);
+    return Image.asset('assets/icons/spin_loading.gif', height: height, fit: BoxFit.contain);
   }
 }

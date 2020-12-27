@@ -23,9 +23,9 @@ class PrincipalViewModel extends ReactiveViewModel {
   final LocationService _locationService = locator<LocationService>();
   final MapsGeneralService _mapsService = locator<MapsGeneralService>();
   PrincipalState _state = PrincipalState.loading;
-  final bool _mapReady = false;
-  final bool _drawRoute = false;
-  final bool _followLocation = false;
+  // final bool _mapReady = false;
+  // final bool _drawRoute = false;
+  // final bool _followLocation = false;
 
   bool apiSelected = false;
 

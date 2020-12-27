@@ -327,7 +327,7 @@ class _OriginLocationField extends HookViewModelWidget<PrincipalViewModel> {
                       ),
                     ),
                   ),
-                  _OriginButton(icon: 'assets/icons/destination.svg', onTap: () {}),
+                  _OriginButton(icon: 'assets/icons/locate_position.svg', onTap: () {}),
                   _OriginButton(icon: 'assets/icons/start_location.svg', onTap: () {}),
                 ],
               ),

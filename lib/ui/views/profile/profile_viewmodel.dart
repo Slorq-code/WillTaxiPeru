@@ -3,17 +3,12 @@ import 'package:stacked/stacked.dart';
 import 'package:taxiapp/app/locator.dart';
 import 'package:taxiapp/models/user_model.dart';
 import 'package:taxiapp/services/app_service.dart';
-import 'package:taxiapp/services/auth_social_network_service.dart';
 import 'package:taxiapp/ui/views/profile/profile_view.dart';
 
 class ProfileViewModel extends BaseViewModel {
   final AppService _appService = locator<AppService>();
-  final AuthSocialNetwork _authSocialNetwork = locator<AuthSocialNetwork>();
-  BuildContext _context;
   int _currentIndex = 0;
   bool _driveStatus = false;
-
-  ProfileViewModel(BuildContext context) : _context = context;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 

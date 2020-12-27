@@ -32,5 +32,15 @@
 	"confirm_destination": "Confirm destination",
 	"minutes_short": "Min",
 	"my_location": "My location",
-	"route_time_with_minutes": "Route time: {%1$s} minutes"
+	"route_time_with_minutes": "Route time: {%1$s} minutes",
+	"edit": "Edit",
+	"logout": "Logout",
+	"central": "Central",
+	"profile": "Profile",
+	"record": "Record",
+	"driving": "Driving",
+	"names": "Names",
+	"birthdate": "Birthdate",
+	"vehicle": "Vehicle",
+	"drive": "Drive"
 }

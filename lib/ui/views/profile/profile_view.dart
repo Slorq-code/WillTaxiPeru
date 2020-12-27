@@ -4,6 +4,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:morpheus/widgets/morpheus_tab_view.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_hooks/stacked_hooks.dart';
+import 'package:taxiapp/extensions/string_extension.dart';
+import 'package:taxiapp/localization/keys.dart';
 
 import 'package:taxiapp/models/enums/user_type.dart';
 import 'package:taxiapp/theme/pallete_color.dart';
@@ -17,7 +19,7 @@ class ProfileView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<ProfileViewModel>.nonReactive(
-      viewModelBuilder: () => ProfileViewModel(context),
+      viewModelBuilder: () => ProfileViewModel(),
       builder: (context, model, child) => SafeArea(
         child: Scaffold(
           appBar: AppBar(
@@ -31,9 +33,9 @@ class ProfileView extends StatelessWidget {
             actions: [
               FlatButton(
                 onPressed: () => {},
-                child: const Text(
-                  'Editar', // TODO : translate
-                  style: TextStyle(color: Color(0xff017DFF), fontSize: 15.0),
+                child: Text(
+                  Keys.edit.localize(),
+                  style: const TextStyle(color: Color(0xff017DFF), fontSize: 15.0),
                 ),
               )
             ],
@@ -75,7 +77,7 @@ class _BoxInformation extends ViewModelWidget<ProfileViewModel> {
   Widget build(BuildContext context, ProfileViewModel model) {
     return Expanded(
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10.0),
@@ -115,7 +117,7 @@ class _LogoutButton extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 80.0),
       child: ActionButtonCustom(
         action: () {},
-        label: 'Cerrar Sesion', // TODO : translate
+        label: Keys.logout.localize(),
         fontSize: 20,
       ),
     );
@@ -139,11 +141,11 @@ class _CallCentralButton extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               SvgPicture.asset('assets/icons/phone.svg'),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                 child: Text(
-                  'Central',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: Color(0xff545253)),
+                  Keys.central.localize(),
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: Color(0xff545253)),
                 ),
               ),
             ],
@@ -193,11 +195,7 @@ class _AvatarProfile extends ViewModelWidget<ProfileViewModel> {
                       height: 25,
                       width: 100,
                       color: Colors.black,
-                      child: const Icon(
-                        Icons.camera_alt,
-                        color: Colors.white,
-                        size: 18.0,
-                      ),
+                      child: SvgPicture.asset('assets/icons/camera.svg'),
                     ),
                   ),
                 ],
@@ -227,6 +225,7 @@ class _TabBarCustom extends ViewModelWidget<ProfileViewModel> {
   @override
   Widget build(BuildContext context, ProfileViewModel model) {
     return Container(
+      padding: const EdgeInsets.only(top: 4.0),
       decoration: const BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(25.0))),
       child: Column(
         children: <Widget>[
@@ -237,26 +236,23 @@ class _TabBarCustom extends ViewModelWidget<ProfileViewModel> {
               mainAxisSize: MainAxisSize.max,
               children: <Widget>[
                 _TabProfile(
-                  title: 'Perfil', // TODO: translate
+                  title: Keys.profile.localize(),
                   onTap: () => model.updateIndex(0),
                   selected: model.currentIndex == 0,
-                  icon: SvgPicture.asset('assets/icons/information.svg', height: 17),
-                  backgroundColor: const Color(0xff017DFF),
+                  icon: 'assets/icons/profile_information.svg',
                 ),
                 _TabProfile(
-                  title: 'Historial', // TODO: translate
+                  title: Keys.record.localize(),
                   onTap: () => model.updateIndex(1),
                   selected: model.currentIndex == 1,
-                  icon: const Icon(Icons.access_time, size: 30, color: Colors.white),
-                  backgroundColor: const Color(0xff4CCEB1),
+                  icon: 'assets/icons/historial.svg',
                 ),
                 if (model.user.userType == UserType.Driver)
                   _TabProfile(
-                    title: 'Drive', //TODO: Translate
+                    title: Keys.driving.localize(),
                     onTap: () => model.updateIndex(2),
                     selected: model.currentIndex == 2,
-                    icon: const Icon(Icons.drive_eta, size: 30, color: Colors.white),
-                    backgroundColor: const Color(0xff017DFF),
+                    icon: 'assets/icons/profile_information.svg',
                   ),
               ],
             ),
@@ -277,19 +273,16 @@ class _TabProfile extends StatelessWidget {
     Key key,
     this.onTap,
     @required this.title,
-    @required this.backgroundColor,
     this.selected = false,
     @required this.icon,
   })  : assert(title != null),
-        assert(backgroundColor != null),
         assert(icon != null),
         super(key: key);
 
   final VoidCallback onTap;
   final String title;
-  final Color backgroundColor;
   final bool selected;
-  final Widget icon;
+  final String icon;
 
   @override
   Widget build(BuildContext context) {
@@ -300,11 +293,7 @@ class _TabProfile extends StatelessWidget {
           child: Column(
             children: [
               Expanded(
-                child: CircleAvatar(
-                  radius: 20,
-                  backgroundColor: backgroundColor,
-                  child: icon,
-                ),
+                child: SvgPicture.asset(icon, height: 50.0),
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 3.0),
@@ -336,20 +325,20 @@ class ProfileInformationTab extends ViewModelWidget<ProfileViewModel> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Conducir',
-                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14.0),
+                Text(
+                  Keys.drive.localize(),
+                  style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14.0),
                 ),
-                Container(child: CupertinoSwitch(onChanged: model.changeDriveStatus, value: model.driveStatus)),
+                Transform.scale(scale: 0.8, child: CupertinoSwitch(onChanged: model.changeDriveStatus, value: model.driveStatus)),
               ],
             ),
           ),
-        _InformationField(title: 'Nombres', label: model.user.name), // TODO: translate
-        const _InformationField(title: 'Fecha de nacimiento', label: '01/01/1990'), // TODO: translate
-        _InformationField(title: 'Teléfono móvil', label: model.user.phone), // TODO: translate
-        _InformationField(title: 'Email', label: model.user.email), // TODO: translate
-        if (isDriver) const _InformationField(title: 'Vehículo', label: 'Toyota Corolla, 2006, XYZ-123'), // TODO: translate
-        const _InformationField(title: 'Contraseña', label: '*******'), // TODO: translate
+        _InformationField(title: Keys.names.localize(), label: model.user.name),
+        _InformationField(title: Keys.birthdate.localize(), label: '01/01/1990'), // TODO:  Update with real information
+        _InformationField(title: Keys.mobile_phone.localize(), label: model.user.phone),
+        _InformationField(title: Keys.email.localize(), label: model.user.email),
+        if (isDriver) _InformationField(title: Keys.vehicle.localize(), label: 'Toyota Corolla, 2006, XYZ-123'), // TODO:  Update with real information
+        _InformationField(title: Keys.password.localize(), label: '*******'),
       ],
     );
   }
@@ -405,11 +394,11 @@ class HistorialTab extends StatelessWidget {
         const _HistorialField(date: '23/01', price: 9.9),
         const _HistorialField(date: '23/01', price: 9.9),
         const _HistorialField(date: '23/01', price: 9.9),
+        const _HistorialField(date: '23/01', price: 1000),
         const _HistorialField(date: '23/01', price: 9.9),
+        const _HistorialField(date: '23/01', price: 20.9),
         const _HistorialField(date: '23/01', price: 9.9),
-        const _HistorialField(date: '23/01', price: 9.9),
-        const _HistorialField(date: '23/01', price: 9.9),
-        const _HistorialField(date: '23/01', price: 9.9),
+        const _HistorialField(date: '23/01', price: 10.9),
         const _HistorialField(date: '23/01', price: 9.9),
         const _HistorialField(date: '23/01', price: 9.9),
         const _HistorialField(date: '23/01', price: 9.9),
@@ -443,7 +432,7 @@ class _HistorialField extends StatelessWidget {
           Expanded(
             child: Row(
               children: [
-                const Icon(Icons.access_time, color: Colors.black, size: 20),
+                SvgPicture.asset('assets/icons/clock.svg', height: 22.0),
                 const SizedBox(width: 5.0),
                 Text(
                   date,
@@ -452,9 +441,17 @@ class _HistorialField extends StatelessWidget {
               ],
             ),
           ),
-          Expanded(
+          const Expanded(
             child: Text(
-              '\$ ${price.toStringAsFixed(2)}',
+              'S/',
+              textAlign: TextAlign.end,
+              style: TextStyle(fontSize: 14.0, color: Color(0xff858585), fontWeight: FontWeight.w500),
+            ),
+          ),
+          Container(
+            width: 65.0,
+            child: Text(
+              '${price.toStringAsFixed(2)}',
               textAlign: TextAlign.end,
               style: const TextStyle(fontSize: 14.0, color: Color(0xff858585), fontWeight: FontWeight.w500),
             ),

@@ -295,7 +295,7 @@ class _BodyLogin extends HookViewModelWidget<LoginViewModel> {
                   ),
                   RaisedButton(
                     color: Colors.blue,
-                    child: const Text('To Principal view'),
+                    child: const Text('To Principal view', style: TextStyle(color: Colors.white)),
                     onPressed: () => ExtendedNavigator.root.push(Routes.principalViewRoute),
                   ),
                 ],

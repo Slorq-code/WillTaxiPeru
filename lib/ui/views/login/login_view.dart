@@ -95,6 +95,7 @@ class _BodyLogin extends HookViewModelWidget<LoginViewModel> {
                           borderSide: const BorderSide(color: Color(0xffF0F0F0), width: 3.0),
                           borderRadius: BorderRadius.circular(30),
                         ),
+                        filled: true,
                       ),
                       style: const TextStyle(fontSize: 14.0, color: Colors.black),
                       textInputAction: TextInputAction.next,
@@ -121,6 +122,7 @@ class _BodyLogin extends HookViewModelWidget<LoginViewModel> {
                           borderSide: const BorderSide(color: Color(0xffF0F0F0), width: 3.0),
                           borderRadius: BorderRadius.circular(30),
                         ),
+                        filled: true,
                         suffixIcon: IconButton(
                           icon: Icon(
                             model.passwordOfuscado ? Icons.visibility : Icons.visibility_off,

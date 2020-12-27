@@ -207,7 +207,7 @@ class _AvatarProfile extends ViewModelWidget<ProfileViewModel> {
           padding: const EdgeInsets.all(8.0),
           child: Text(
             model.user.name,
-            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
           ),
         ),
       ],
@@ -299,7 +299,7 @@ class _TabProfile extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 3.0),
                 child: Text(
                   title,
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Color(0xff545253)),
+                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: Color(0xff545253)),
                 ),
               ),
               Container(width: 60.0, height: 2.0, color: selected ? Colors.red : Colors.transparent),
@@ -327,7 +327,7 @@ class ProfileInformationTab extends ViewModelWidget<ProfileViewModel> {
               children: [
                 Text(
                   Keys.drive.localize(),
-                  style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14.0),
+                  style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12.0),
                 ),
                 Transform.scale(scale: 0.8, child: CupertinoSwitch(onChanged: model.changeDriveStatus, value: model.driveStatus)),
               ],
@@ -369,14 +369,14 @@ class _InformationField extends StatelessWidget {
           Expanded(
             child: Text(
               title,
-              style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14.0),
+              style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12.0),
             ),
           ),
           Expanded(
             child: Text(
               label,
               textAlign: TextAlign.end,
-              style: const TextStyle(fontSize: 14.0, color: Color(0xff858585), fontWeight: FontWeight.w500),
+              style: const TextStyle(fontSize: 12.0, color: Color(0xff858585), fontWeight: FontWeight.w400),
             ),
           ),
         ],
@@ -432,11 +432,11 @@ class _HistorialField extends StatelessWidget {
           Expanded(
             child: Row(
               children: [
-                SvgPicture.asset('assets/icons/clock.svg', height: 22.0),
+                SvgPicture.asset('assets/icons/clock.svg', height: 18.0),
                 const SizedBox(width: 5.0),
                 Text(
                   date,
-                  style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14.0),
+                  style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12.0),
                 ),
               ],
             ),
@@ -445,7 +445,7 @@ class _HistorialField extends StatelessWidget {
             child: Text(
               'S/',
               textAlign: TextAlign.end,
-              style: TextStyle(fontSize: 14.0, color: Color(0xff858585), fontWeight: FontWeight.w500),
+              style: TextStyle(fontSize: 12.0, color: Color(0xff858585), fontWeight: FontWeight.w400),
             ),
           ),
           Container(
@@ -453,7 +453,7 @@ class _HistorialField extends StatelessWidget {
             child: Text(
               '${price.toStringAsFixed(2)}',
               textAlign: TextAlign.end,
-              style: const TextStyle(fontSize: 14.0, color: Color(0xff858585), fontWeight: FontWeight.w500),
+              style: const TextStyle(fontSize: 12.0, color: Color(0xff858585), fontWeight: FontWeight.w400),
             ),
           ),
         ],

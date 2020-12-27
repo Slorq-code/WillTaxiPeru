@@ -8,13 +8,18 @@ import 'package:stacked/stacked.dart';
 import 'package:taxiapp/app/locator.dart';
 import 'package:taxiapp/extensions/string_extension.dart';
 import 'package:taxiapp/localization/keys.dart';
+import 'package:taxiapp/models/enums/auth_type.dart';
+import 'package:taxiapp/models/enums/user_type.dart';
 import 'package:taxiapp/models/place.dart';
 import 'package:taxiapp/models/user_location.dart';
+import 'package:taxiapp/models/user_model.dart';
+import 'package:taxiapp/services/app_service.dart';
 import 'package:taxiapp/services/location_service.dart';
 import 'package:taxiapp/services/maps_service/maps_general_service.dart';
 import 'package:taxiapp/ui/widgets/helpers.dart';
 
 class PrincipalViewModel extends ReactiveViewModel {
+  final AppService _appService = locator<AppService>();
   final LocationService _locationService = locator<LocationService>();
   final MapsGeneralService _mapsService = locator<MapsGeneralService>();
   PrincipalState _state = PrincipalState.loading;
@@ -37,6 +42,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   GoogleMapController _mapController;
 
   // * Getters
+  UserModel get user => _appService.user;
   PrincipalState get state => _state;
   UserLocation get userLocation => _locationService.location;
   bool get isManualSearch => _isManualSearch;
@@ -49,7 +55,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   // * Functions
 
   @override
-  List<ReactiveServiceMixin> get reactiveServices => [_locationService];
+  List<ReactiveServiceMixin> get reactiveServices => [_locationService, _appService];
 
   Future<void> initialize() async {
     if (await Geolocator().isLocationServiceEnabled()) {
@@ -58,6 +64,15 @@ class PrincipalViewModel extends ReactiveViewModel {
     } else {
       _state = PrincipalState.accessGPSDisable;
     }
+    _appService.updateUser(UserModel(
+      authType: AuthType.Google,
+      email: 'test@gmail.com',
+      image: 'https://cdn3.iconfinder.com/data/icons/avatars-round-flat/33/avat-01-512.png',
+      name: 'Test Go',
+      phone: '999999009',
+      uid: 'dsgdjgkdnsfgjkndskjfg',
+      userType: UserType.Client,
+    ));
     notifyListeners();
   }
 

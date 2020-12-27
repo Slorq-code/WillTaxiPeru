@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -6,11 +7,13 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_hooks/stacked_hooks.dart';
+import 'package:taxiapp/app/router.gr.dart';
 import 'package:taxiapp/extensions/string_extension.dart';
 import 'package:taxiapp/localization/keys.dart';
 
 import 'package:taxiapp/models/place.dart';
 import 'package:taxiapp/ui/views/principal/principal_viewmodel.dart';
+import 'package:taxiapp/utils/network_image.dart';
 
 class PrincipalView extends StatelessWidget {
   @override
@@ -106,9 +109,25 @@ class _SearchBar extends ViewModelWidget<PrincipalViewModel> {
                   ],
                 ),
                 Expanded(
-                  child: CircleAvatar(
-                    backgroundColor: const Color(0xffFFA500),
-                    radius: MediaQuery.of(context).size.width * .07,
+                  child: GestureDetector(
+                    onTap: () => ExtendedNavigator.root.push(Routes.profileViewRoute),
+                    child: CircleAvatar(
+                      backgroundColor: const Color(0xffFFA500),
+                      radius: MediaQuery.of(context).size.width * .07,
+                      child: ClipOval(
+                        child: SizedBox(
+                          height: MediaQuery.of(context).size.width * .14,
+                          width: MediaQuery.of(context).size.width * .14,
+                          child: Hero(
+                            tag: model.user.uid,
+                            child: PNetworkImage(
+                              model.user.image.isEmpty ? 'https://cdn.onlinewebfonts.com/svg/img_568657.png' : model.user.image,
+                              fit: BoxFit.fitHeight,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ],

@@ -22,5 +22,24 @@ class UserModel {
     userType = UserType.values[data['userType'] ?? 0];
     authType = AuthType.values[data['authType'] ?? 0];
   }
-  
+
+  UserModel copyWith({
+    String name,
+    String uid,
+    String phone,
+    String email,
+    String image,
+    UserType userType,
+    AuthType authType,
+  }) {
+    return UserModel(
+      name: name ?? this.name,
+      uid: uid ?? this.uid,
+      phone: phone ?? this.phone,
+      email: email ?? this.email,
+      image: image ?? this.image,
+      userType: userType ?? this.userType,
+      authType: authType ?? this.authType,
+    );
+  }
 }

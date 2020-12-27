@@ -76,4 +76,15 @@ flutter:
     - assets/i18n/
     - assets/icons/
     - assets/map_theme/
-    - assets/icons/principal/
+    - assets/background/
+
+  fonts:
+    - family: Futura
+      fonts:
+        - asset: fonts/Futura-Regular.ttf
+        - asset: fonts/Futura-Bold.ttf
+          weight: 700
+        - asset: fonts/Futura-Medium.ttf
+          weight: 600
+        - asset: fonts/Futura-Light.ttf
+          weight: 300

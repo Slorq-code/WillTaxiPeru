@@ -87,7 +87,7 @@ class _MyApp extends StatelessWidget {
           initialRoute: home,
           builder: (context, extendedNav) => Theme(
               data: ThemeData(
-                fontFamily: 'WhyteTrial',
+                fontFamily: 'Futura',
                 primaryColor: const Color(0xFF2f3640),
                 accentColor: const Color(0xFF353b48),
               ),

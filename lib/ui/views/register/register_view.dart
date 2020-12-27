@@ -24,15 +24,16 @@ class RegisterView extends StatelessWidget {
         color: PalleteColor.backgroundColor,
         child: Stack(
           children: [
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: AspectRatio(
-                aspectRatio: 1.1,
-                child: SvgPicture.asset('assets/background/background_enroll.svg', fit: BoxFit.contain),
+            if (MediaQuery.of(context).size.height > 600)
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: AspectRatio(
+                  aspectRatio: 1.1,
+                  child: SvgPicture.asset('assets/background/background_enroll.svg', fit: BoxFit.contain),
+                ),
               ),
-            ),
             SafeArea(
               child: Scaffold(
                 backgroundColor: Colors.transparent,

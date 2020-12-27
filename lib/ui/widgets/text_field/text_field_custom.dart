@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import 'package:taxiapp/theme/pallete_color.dart';
-
 typedef TextCallback = Function(String text);
 typedef ValidatorCallBack = Function(String text);
 
@@ -87,6 +85,7 @@ class _TextFieldCustomState extends State<TextFieldCustom> {
               errorText: widget.validateText,
               errorStyle: const TextStyle(color: Colors.redAccent),
               labelText: widget.labelText,
+              filled: true,
               isDense: true,
               suffixIconConstraints: const BoxConstraints(minHeight: 40),
               suffixIcon: widget.isPassword

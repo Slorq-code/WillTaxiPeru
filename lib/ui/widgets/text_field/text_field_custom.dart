@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+
 import 'package:taxiapp/theme/pallete_color.dart';
 
 typedef TextCallback = Function(String text);
@@ -7,18 +10,20 @@ typedef ValidatorCallBack = Function(String text);
 class TextFieldCustom extends StatefulWidget {
   const TextFieldCustom({
     Key key,
-    this.nameField,
+    this.icon,
     @required this.controller,
     this.validateText,
     this.focus,
     this.nextFocus,
-    @required this.onChanged,
-    this.onValidation,
     this.isFinal = false,
     this.isPassword = false,
-    @required this.hintText,
+    @required this.onChanged,
+    this.onValidation,
+    @required this.labelText,
+    this.keyboardType = TextInputType.text,
+    this.inputFormatters = const [],
   }) : super(key: key);
-  final String nameField;
+  final String icon;
   final TextEditingController controller;
   final String validateText;
   final FocusNode focus;
@@ -27,7 +32,9 @@ class TextFieldCustom extends StatefulWidget {
   final bool isPassword;
   final TextCallback onChanged;
   final ValidatorCallBack onValidation;
-  final String hintText;
+  final String labelText;
+  final TextInputType keyboardType;
+  final List<TextInputFormatter> inputFormatters;
 
   @override
   _TextFieldCustomState createState() => _TextFieldCustomState();
@@ -39,60 +46,65 @@ class _TextFieldCustomState extends State<TextFieldCustom> {
   @override
   Widget build(BuildContext context) {
     var _iconObscurePin = _obscurePin ? Icons.visibility_off : Icons.visibility;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
-        if (widget.nameField != null)
+        if (widget.icon != null)
           Padding(
-            padding: const EdgeInsets.only(left: 5.0),
-            child: Text(widget.nameField,
-                style: const TextStyle(
-                  color: PalleteColor.titleTextColor,
-                  fontSize: 11.0,
-                  fontWeight: FontWeight.bold,
-                )),
+            padding: const EdgeInsets.only(right: 8.0),
+            child: Container(
+              width: 25,
+              alignment: Alignment.centerLeft,
+              child: SvgPicture.asset(widget.icon, height: 22.0),
+            ),
           ),
         const SizedBox(height: 5.0),
-        TextFormField(
-          controller: widget.controller,
-          autofocus: false,
-          textCapitalization: TextCapitalization.sentences,
-          textInputAction: widget.isFinal ? TextInputAction.done : TextInputAction.next,
-          focusNode: widget.focus,
-          obscureText: widget.isPassword ? _obscurePin : false,
-          keyboardType: TextInputType.text,
-          onChanged: widget.onChanged,
-          onFieldSubmitted: (v) {
-            if (widget.nextFocus != null) FocusScope.of(context).requestFocus(widget.nextFocus);
-          },
-          decoration: InputDecoration(
-            enabledBorder: const OutlineInputBorder(
-              borderSide: BorderSide(color: PalleteColor.textFieldBorderColor, width: 1.2),
+        Expanded(
+          child: TextFormField(
+            controller: widget.controller,
+            autofocus: false,
+            textCapitalization: TextCapitalization.sentences,
+            textInputAction: widget.isFinal ? TextInputAction.done : TextInputAction.next,
+            focusNode: widget.focus,
+            inputFormatters: widget.inputFormatters,
+            obscureText: widget.isPassword ? _obscurePin : false,
+            keyboardType: widget.keyboardType,
+            onChanged: widget.onChanged,
+            onFieldSubmitted: (v) {
+              if (widget.nextFocus != null) FocusScope.of(context).requestFocus(widget.nextFocus);
+            },
+            decoration: InputDecoration(
+              fillColor: Colors.white,
+              contentPadding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 15.0),
+              focusedBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: Color(0xffF0F0F0), width: 3.0),
+                borderRadius: BorderRadius.circular(30),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: Color(0xffF0F0F0), width: 3.0),
+                borderRadius: BorderRadius.circular(30),
+              ),
+              errorText: widget.validateText,
+              errorStyle: const TextStyle(color: Colors.redAccent),
+              labelText: widget.labelText,
+              isDense: true,
+              suffixIconConstraints: const BoxConstraints(minHeight: 40),
+              suffixIcon: widget.isPassword
+                  ? GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _obscurePin = !_obscurePin;
+                        });
+                      },
+                      child: Container(
+                        height: 40,
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: Icon(_iconObscurePin, color: Colors.grey, size: 20),
+                      ))
+                  : const SizedBox(),
             ),
-            focusedBorder: const OutlineInputBorder(
-              borderSide: BorderSide(color: PalleteColor.actionButtonColor, width: 1.2),
-            ),
-            focusedErrorBorder: const OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.red, width: 1.2),
-            ),
-            errorBorder: const OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.red, width: 1.2),
-            ),
-            contentPadding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
-            errorText: widget.validateText,
-            errorStyle: const TextStyle(color: Colors.redAccent),
-            hintText: widget.hintText,
-            suffixIcon: widget.isPassword
-                ? IconButton(
-                    onPressed: () {
-                      setState(() {
-                        _obscurePin = !_obscurePin;
-                      });
-                    },
-                    icon: Icon(_iconObscurePin, color: PalleteColor.informationActionColor))
-                : null,
+            validator: widget.onValidation,
           ),
-          validator: widget.onValidation,
         ),
       ],
     );

@@ -26,7 +26,6 @@ class LoginView extends StatelessWidget {
         child: Container(
           color: PalleteColor.backgroundColor,
           child: Stack(
-            alignment: Alignment.bottomCenter,
             children: [
               Positioned(
                 bottom: 0,
@@ -169,20 +168,16 @@ class _ContinueButton extends ViewModelWidget<LoginViewModel> {
 
   @override
   Widget build(BuildContext context, LoginViewModel model) {
-    return Padding(
+    return Container(
+      height: 50,
       padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * .18),
-      child: Container(
-        height: 50,
-        width: double.infinity,
-        child: RaisedButton(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          color: PalleteColor.actionButtonColor,
-          disabledColor: PalleteColor.actionButtonColor.withOpacity(0.5),
-          child: Text(Keys.continue_label.localize(), style: const TextStyle(fontSize: 16.0, color: Colors.white)),
-          onPressed: !model.enableBtnContinue ? null : () => !model.isBusy ? model.login(AuthType.User) : null,
-        ),
+      width: double.infinity,
+      child: RaisedButton(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+        color: PalleteColor.actionButtonColor,
+        disabledColor: PalleteColor.actionButtonColor.withOpacity(0.5),
+        child: Text(Keys.continue_label.localize(), style: const TextStyle(fontSize: 16.0, color: Colors.white)),
+        onPressed: !model.enableBtnContinue ? null : () => !model.isBusy ? model.login(AuthType.User) : null,
       ),
     );
   }
@@ -199,13 +194,9 @@ class _EnrollAdvice extends ViewModelWidget<LoginViewModel> {
       height: 40,
       child: RichText(
         text: TextSpan(
-          text: Keys.login_dont_have_account.localize(),
+          text: '${Keys.login_dont_have_account.localize()}, ',
           style: const TextStyle(color: Colors.black, fontSize: 16),
           children: <TextSpan>[
-            const TextSpan(
-              text: ', ',
-              style: TextStyle(color: Colors.black, fontSize: 16),
-            ),
             TextSpan(
                 text: Keys.sign_up.localize(),
                 style: const TextStyle(decoration: TextDecoration.underline, fontWeight: FontWeight.w600, color: Colors.black, fontSize: 16),
@@ -236,15 +227,8 @@ class _SocialButtons extends ViewModelWidget<LoginViewModel> {
         FloatingActionButton(
           heroTag: 'btnFacebook',
           backgroundColor: Colors.transparent,
-          child: SvgPicture.asset(
-            'assets/icons/ic_facebook.svg',
-            fit: BoxFit.fitWidth,
-          ),
-          onPressed: () {
-            if (!model.isBusy) {
-              model.login(AuthType.Facebook);
-            }
-          },
+          child: SvgPicture.asset('assets/icons/ic_facebook.svg', fit: BoxFit.fitWidth),
+          onPressed: !model.isBusy ? () => model.login(AuthType.Facebook) : () {},
         ),
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 10.0),
@@ -253,15 +237,8 @@ class _SocialButtons extends ViewModelWidget<LoginViewModel> {
         FloatingActionButton(
           heroTag: 'btnGoogle',
           backgroundColor: Colors.transparent,
-          child: SvgPicture.asset(
-            'assets/icons/ic_google.svg',
-            fit: BoxFit.fitWidth,
-          ),
-          onPressed: () {
-            if (!model.isBusy) {
-              model.login(AuthType.Google);
-            }
-          },
+          child: SvgPicture.asset('assets/icons/ic_google.svg', fit: BoxFit.fitWidth),
+          onPressed: !model.isBusy ? () => model.login(AuthType.Google) : () {},
         ),
       ],
     );

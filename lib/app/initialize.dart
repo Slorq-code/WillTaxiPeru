@@ -87,10 +87,13 @@ class _MyApp extends StatelessWidget {
           initialRoute: home,
           builder: (context, extendedNav) => Theme(
               data: ThemeData(
-                fontFamily: 'Futura',
-                primaryColor: const Color(0xFF2f3640),
-                accentColor: const Color(0xFF353b48),
-              ),
+                  fontFamily: 'Futura',
+                  primaryColor: const Color(0xFF2f3640),
+                  accentColor: const Color(0xFF353b48),
+                  textTheme: const TextTheme(
+                    bodyText1: TextStyle(),
+                    bodyText2: TextStyle(),
+                  ).apply(bodyColor: const Color(0xff545253))),
               child: extendedNav),
         ),
         supportedLocales: localizationDelegate.supportedLocales,

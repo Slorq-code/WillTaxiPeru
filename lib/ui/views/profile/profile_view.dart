@@ -312,7 +312,7 @@ class _TabProfile extends StatelessWidget {
 class ProfileInformationTab extends ViewModelWidget<ProfileViewModel> {
   @override
   Widget build(BuildContext context, ProfileViewModel model) {
-    final isDriver = model.user.userType != UserType.Driver;
+    final isDriver = model.user.userType == UserType.Driver;
     return ListView(
       children: [
         if (isDriver)

@@ -14,7 +14,6 @@ class FirestoreUser {
         'name': user.name,
         'email': user.email.toLowerCase(),
         'phone': user.phone,
-        'uid': user.uid,
         'authType': user.authType.index,
         'userType': user.userType.index,
         'image': user.image,

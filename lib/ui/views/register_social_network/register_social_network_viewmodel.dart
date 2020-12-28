@@ -30,10 +30,21 @@ class RegisterSocialNetworkViewModel extends BaseViewModel {
   final FirestoreUser _firestoreUser = locator<FirestoreUser>();
 
   void initial() async {
-    phone = '';
+    name = Utils.isNullOrEmpty(_authSocialNetwork.user.name) ? '' : _authSocialNetwork.user.name;
+    phone = Utils.isNullOrEmpty(_authSocialNetwork.user.phone) ? '' : _authSocialNetwork.user.phone;
+    email = Utils.isNullOrEmpty(_authSocialNetwork.user.email) ? '' : _authSocialNetwork.user.email;
   }
 
+  String _name;
   String _phone;
+  String _email;
+
+  String get name => _name;
+
+  set name(name) {
+    _name = name;
+    notifyListeners();
+  }
 
   String get phone => _phone;
 
@@ -42,8 +53,15 @@ class RegisterSocialNetworkViewModel extends BaseViewModel {
     notifyListeners();
   }
 
+  String get email => _email;
+
+  set email(email) {
+    _email = email;
+    notifyListeners();
+  }
+
   bool get enableBtnContinue {
-    return !Utils.isNullOrEmpty(phone) && Utils.isValidPhone(phone);
+    return !Utils.isNullOrEmpty(name) && !Utils.isNullOrEmpty(email) && Utils.isValidEmail(email) && !Utils.isNullOrEmpty(phone) && Utils.isValidPhone(phone);
   }
 
   void signin() async {
@@ -54,7 +72,9 @@ class RegisterSocialNetworkViewModel extends BaseViewModel {
       Alert(context: context).loading(Keys.loading.localize());
 
       if (_authSocialNetwork.isLoggedIn) {
+        _authSocialNetwork.user.name = name.toString().trim();
         _authSocialNetwork.user.phone = phone.toString().trim();
+        _authSocialNetwork.user.email = email.toString().toLowerCase().trim();
 
         var userRegister = await _firestoreUser.userRegister(_authSocialNetwork.user);
 

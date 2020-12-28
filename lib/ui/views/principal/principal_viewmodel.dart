@@ -16,6 +16,7 @@ import 'package:taxiapp/models/user_model.dart';
 import 'package:taxiapp/services/app_service.dart';
 import 'package:taxiapp/services/location_service.dart';
 import 'package:taxiapp/services/maps_service/maps_general_service.dart';
+import 'package:taxiapp/ui/views/principal/principal_view.dart';
 import 'package:taxiapp/ui/widgets/helpers.dart';
 
 class PrincipalViewModel extends ReactiveViewModel {
@@ -34,12 +35,14 @@ class PrincipalViewModel extends ReactiveViewModel {
   bool _isManualSearch = false;
 
   String addressCurrentPosition;
+  Place _destinationSelected;
 
   Map<String, Polyline> _polylines = {};
   Map<String, Marker> _markers = {};
   List<Place> placesFound = [];
-
+  final List<Widget> _switchingWidgets = [const FloatingSearch(), const SearchFieldBar()];
   GoogleMapController _mapController;
+  Widget _currentSearchWidget = const SizedBox();
 
   // * Getters
   UserModel get user => _appService.user;
@@ -48,6 +51,8 @@ class PrincipalViewModel extends ReactiveViewModel {
   bool get isManualSearch => _isManualSearch;
   bool get isSearching => _isSearching;
   LatLng get centralLocation => _centralLocation;
+  Widget get currentSearchWidget => _currentSearchWidget;
+  Place get destinationSelected => _destinationSelected;
 
   Map<String, Polyline> get polylines => _polylines;
   Map<String, Marker> get markers => _markers;
@@ -58,6 +63,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   List<ReactiveServiceMixin> get reactiveServices => [_locationService, _appService];
 
   Future<void> initialize() async {
+    _currentSearchWidget = _switchingWidgets[0];
     if (await Geolocator().isLocationServiceEnabled()) {
       _state = PrincipalState.accessGPSEnable;
       _locationService.startTracking();
@@ -117,7 +123,8 @@ class PrincipalViewModel extends ReactiveViewModel {
   Future<String> getMapTheme() async => rootBundle.loadString('assets/map_theme/map_theme.json');
 
   bool onBack() {
-    if (_isSearching) {
+    if (_currentSearchWidget is SearchFieldBar) {
+      updateCurrentSearchWidget(0);
       updateSearching(false);
       return false;
     } else if (_isManualSearch) {
@@ -142,6 +149,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   }
 
   void makeRoute(Place place) async {
+    _destinationSelected = place;
     _isManualSearch = false;
     final route = await _mapsService.getRouteByCoordinates(userLocation.location, place.latLng);
     final routePoints = route.points.map((point) => LatLng(point[0], point[1])).toList();
@@ -151,7 +159,6 @@ class PrincipalViewModel extends ReactiveViewModel {
       color: Colors.black87,
       points: routePoints,
     );
-    ;
 
     final currentPolylines = _polylines;
     currentPolylines['my_destination_route'] = myDestinationRoute;
@@ -193,6 +200,7 @@ class PrincipalViewModel extends ReactiveViewModel {
     _polylines = currentPolylines;
     _markers = newMarkers;
     _isSearching = false;
+    _currentSearchWidget = _switchingWidgets[0];
     notifyListeners();
   }
 
@@ -205,6 +213,11 @@ class PrincipalViewModel extends ReactiveViewModel {
   void updateApiSelection(bool status) {
     apiSelected = status;
     _mapsService.selectApi(status ? ApiMap.mapBox : ApiMap.google);
+    notifyListeners();
+  }
+
+  void updateCurrentSearchWidget(int index) {
+    _currentSearchWidget = _switchingWidgets[index];
     notifyListeners();
   }
 }

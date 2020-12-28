@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:morpheus/morpheus.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_hooks/stacked_hooks.dart';
@@ -13,6 +14,7 @@ import 'package:taxiapp/localization/keys.dart';
 
 import 'package:taxiapp/models/place.dart';
 import 'package:taxiapp/ui/views/principal/principal_viewmodel.dart';
+import 'package:taxiapp/ui/widgets/buttons/platform_back_button.dart';
 import 'package:taxiapp/utils/network_image.dart';
 
 class PrincipalView extends StatelessWidget {
@@ -41,10 +43,10 @@ class _HomeMap extends ViewModelWidget<PrincipalViewModel> {
 
   @override
   Widget build(BuildContext context, PrincipalViewModel model) {
-    return Stack(
-      children: [
-        model.userLocation.existLocation
-            ? GoogleMap(
+    return model.userLocation.existLocation
+        ? Stack(
+            children: [
+              GoogleMap(
                 initialCameraPosition: CameraPosition(target: model.userLocation.location, zoom: 15),
                 myLocationEnabled: true,
                 myLocationButtonEnabled: false,
@@ -55,71 +57,134 @@ class _HomeMap extends ViewModelWidget<PrincipalViewModel> {
                 onCameraMove: (cameraPosition) {
                   model.updateCurrentLocation(cameraPosition.target);
                 },
-              )
-            : const Center(child: Text('Ubicando...')),
-        Positioned(
-          right: 20,
-          top: MediaQuery.of(context).size.height * .2,
-          child: Row(
-            children: [
-              const Text('Google'),
-              CupertinoSwitch(
-                onChanged: (value) => model.updateApiSelection(value),
-                value: model.apiSelected,
               ),
-              const Text('MapBox'),
+              const Positioned(
+                top: 0,
+                child: _Search(),
+              ),
+              if (model.isManualSearch) _ManualMarker()
             ],
-          ),
-        ),
-        const Positioned(
-          top: 0,
-          child: _SearchBar(),
-        ),
-        if (model.isManualSearch) _ManualMarker()
-      ],
-    );
+          )
+        : Container(
+            width: double.infinity,
+            height: double.infinity,
+            alignment: Alignment.center,
+            child: Image.asset(
+              'assets/icons/loading_location.gif',
+              height: MediaQuery.of(context).size.height * .5,
+              fit: BoxFit.fitHeight,
+            ),
+          );
   }
 }
 
-class _SearchBar extends ViewModelWidget<PrincipalViewModel> {
-  const _SearchBar({
+class _Search extends ViewModelWidget<PrincipalViewModel> {
+  const _Search({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, PrincipalViewModel model) {
+    return MorpheusTabView(child: model.currentSearchWidget);
+  }
+}
+
+class FloatingSearch extends ViewModelWidget<PrincipalViewModel> {
+  const FloatingSearch({
     Key key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context, PrincipalViewModel model) {
     return Container(
-      color: Colors.white,
+      color: Colors.transparent,
       width: MediaQuery.of(context).size.width,
       child: Column(
         children: [
           Container(
-            decoration: const BoxDecoration(
-              border: Border(bottom: BorderSide(color: Colors.grey, width: .4)),
-              boxShadow: [BoxShadow(blurRadius: 7, color: Colors.black45, spreadRadius: 4, offset: Offset(-4, -4))],
-              color: Colors.white,
-            ),
+            color: Colors.transparent,
             child: Row(
               mainAxisSize: MainAxisSize.max,
               children: [
-                Column(
-                  children: [
-                    const _OriginLocationField(),
-                    const _DestinationLocationField(),
-                  ],
+                Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: Container(
+                    width: MediaQuery.of(context).size.width * .7,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10.0),
+                      color: Colors.white,
+                      boxShadow: [const BoxShadow(blurRadius: 2, spreadRadius: 2, offset: Offset(1, 2), color: Colors.black26)],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              SvgPicture.asset('assets/icons/start_location.svg', height: 18.0),
+                              SvgPicture.asset('assets/icons/line_rail.svg', height: 12.0),
+                              SvgPicture.asset('assets/icons/destination_marker.svg', height: 18.0),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: Text(model.userLocation.descriptionAddress ?? '', overflow: TextOverflow.ellipsis),
+                                      ),
+                                      _OriginButton(icon: 'assets/icons/locate_position.svg', onTap: () {}),
+                                      _OriginButton(icon: 'assets/icons/move_in_map.svg', onTap: () {}),
+                                    ],
+                                  ),
+                                ),
+                                const Divider(color: Color(0xffe5e5e5), height: 0, thickness: 2.0),
+                                GestureDetector(
+                                  onTap: () => model.updateCurrentSearchWidget(1),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(model.destinationSelected != null ? model.destinationSelected.address : Keys.destination.localize(),
+                                              overflow: TextOverflow.ellipsis),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
                 Expanded(
                   child: GestureDetector(
                     onTap: () => ExtendedNavigator.root.push(Routes.profileViewRoute),
-                    child: CircleAvatar(
-                      backgroundColor: const Color(0xffFFA500),
-                      radius: MediaQuery.of(context).size.width * .07,
-                      child: ClipOval(
-                        child: SizedBox(
-                          height: MediaQuery.of(context).size.width * .14,
-                          width: MediaQuery.of(context).size.width * .14,
-                          child: Hero(
-                            tag: model.user.uid,
+                    child: Hero(
+                      tag: model.user.uid,
+                      child: CircleAvatar(
+                        backgroundColor: Colors.black,
+                        radius: MediaQuery.of(context).size.width * .07,
+                        child: ClipOval(
+                          child: SizedBox(
+                            height: MediaQuery.of(context).size.width * .14,
+                            width: MediaQuery.of(context).size.width * .14,
                             child: PNetworkImage(
                               model.user.image.isEmpty ? 'https://cdn.onlinewebfonts.com/svg/img_568657.png' : model.user.image,
                               fit: BoxFit.fitHeight,
@@ -161,6 +226,87 @@ class _SearchBar extends ViewModelWidget<PrincipalViewModel> {
   }
 }
 
+class SearchFieldBar extends ViewModelWidget<PrincipalViewModel> {
+  const SearchFieldBar({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, PrincipalViewModel model) {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      decoration: const BoxDecoration(
+        border: Border(bottom: BorderSide(color: Colors.grey, width: .4)),
+        boxShadow: [BoxShadow(blurRadius: 7, color: Colors.black45, spreadRadius: 4, offset: Offset(-4, -4))],
+        color: Colors.white,
+      ),
+      child: Column(
+        children: [
+          AppBar(
+            title: const Text('Nuevo destino', style: TextStyle(color: Colors.black)), // TODO: translate
+            centerTitle: true,
+            leading: PlatformBackButton(onPressed: () => model.onBack()),
+            backgroundColor: Colors.transparent,
+            iconTheme: const IconThemeData(color: Colors.black),
+            elevation: 0,
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      SvgPicture.asset('assets/icons/start_location.svg', height: 18.0),
+                      SvgPicture.asset('assets/icons/line_rail.svg', height: 18.0),
+                      SvgPicture.asset('assets/icons/destination_marker.svg', height: 18.0),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      const _OriginLocationField(),
+                      const Divider(color: Color(0xffe5e5e5), height: 2, thickness: 2.0),
+                      const _DestinationLocationField(),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          WillPopScope(
+            onWillPop: () => Future.value(model.onBack()),
+            child: Container(
+              height: MediaQuery.of(context).size.height * .5,
+              width: double.infinity,
+              color: Colors.white,
+              child: ListView(
+                children: [
+                  ...model.placesFound.map(
+                    (place) => _SugerationPlace(
+                      place: place,
+                      onTap: () => model.makeRoute(place),
+                    ),
+                  ),
+                  const _PickInMapOption(),
+                ],
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
 class _SugerationPlace extends StatelessWidget {
   const _SugerationPlace({
     Key key,
@@ -191,10 +337,11 @@ class _SugerationPlace extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                child: SvgPicture.asset('assets/icons/clock.svg'),
+              Container(
+                width: 30.0,
+                child: SvgPicture.asset('assets/icons/clock.svg', height: 25.0),
               ),
+              const SizedBox(width: 10.0),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 4.0),
@@ -203,8 +350,8 @@ class _SugerationPlace extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.max,
                     children: [
-                      Text(place.name),
-                      Text(place.address, overflow: TextOverflow.ellipsis),
+                      Expanded(child: Text(place.name)),
+                      Expanded(child: Text(place.address, overflow: TextOverflow.ellipsis)),
                     ],
                   ),
                 ),
@@ -238,10 +385,11 @@ class _PickInMapOption extends ViewModelWidget<PrincipalViewModel> {
           padding: const EdgeInsets.all(8.0),
           child: Row(
             children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: SvgPicture.asset('assets/icons/start_location.svg', height: 20.0),
+              Container(
+                width: 30.0,
+                child: SvgPicture.asset('assets/icons/move_in_map.svg', height: 25.0),
               ),
+              const SizedBox(width: 10.0),
               Text(Keys.locate_on_map.localize()),
             ],
           ),
@@ -264,15 +412,16 @@ class _ForceEnableGPS extends ViewModelWidget<PrincipalViewModel> {
         children: [
           Text(Keys.you_need_to_authorize_the_gps_to_use_the_app.localize()),
           MaterialButton(
-              child: Text(Keys.request_access.localize(), style: const TextStyle(color: Colors.white)),
-              color: Colors.black,
-              shape: const StadiumBorder(),
-              elevation: 0,
-              splashColor: Colors.transparent,
-              onPressed: () async {
-                final status = await Permission.location.request();
-                await model.accessGPS(status);
-              })
+            child: Text(Keys.request_access.localize(), style: const TextStyle(color: Colors.white)),
+            color: Colors.black,
+            shape: const StadiumBorder(),
+            elevation: 0,
+            splashColor: Colors.transparent,
+            onPressed: () async {
+              final status = await Permission.location.request();
+              await model.accessGPS(status);
+            },
+          )
         ],
       ),
     );
@@ -294,42 +443,27 @@ class _OriginLocationField extends HookViewModelWidget<PrincipalViewModel> {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(25.0),
-          border: Border.all(color: Colors.grey, width: 0.1),
-          color: const Color(0xffF1F1F1),
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 10.0),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Container(
-              height: 30.0,
-              padding: const EdgeInsets.symmetric(horizontal: 10.0),
-              width: MediaQuery.of(context).size.width * 0.75,
-              child: Row(
-                children: [
-                  Flexible(
-                    child: TextField(
-                      controller: searchController,
-                      autofocus: false,
-                      textAlignVertical: TextAlignVertical.center,
-                      textInputAction: TextInputAction.done,
-                      decoration: InputDecoration(
-                        enabledBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.transparent, width: 0.1)),
-                        focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.transparent, width: 0.1)),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide: const BorderSide(color: Colors.transparent, width: 0.1),
-                        ),
-                        contentPadding: const EdgeInsets.all(0),
-                        alignLabelWithHint: true,
-                      ),
-                    ),
+          children: [
+            Flexible(
+              child: TextField(
+                controller: searchController,
+                autofocus: false,
+                textAlignVertical: TextAlignVertical.center,
+                textInputAction: TextInputAction.done,
+                style: const TextStyle(color: Color(0xff545253), fontSize: 14),
+                decoration: InputDecoration(
+                  enabledBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.transparent, width: 0.1)),
+                  focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.transparent, width: 0.1)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: const BorderSide(color: Colors.transparent, width: 0.1),
                   ),
-                  _OriginButton(icon: 'assets/icons/locate_position.svg', onTap: () {}),
-                  _OriginButton(icon: 'assets/icons/start_location.svg', onTap: () {}),
-                ],
+                  contentPadding: const EdgeInsets.all(0),
+                  alignLabelWithHint: true,
+                  isDense: true,
+                ),
               ),
             ),
           ],
@@ -358,11 +492,8 @@ class _OriginButton extends StatelessWidget {
         customBorder: const CircleBorder(),
         onTap: onTap,
         child: Container(
-          width: 30,
-          child: SvgPicture.asset(
-            icon,
-            height: 20,
-          ),
+          width: 25,
+          child: SvgPicture.asset(icon, height: 25),
         ),
       ),
     );
@@ -384,43 +515,31 @@ class _DestinationLocationField extends HookViewModelWidget<PrincipalViewModel> 
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(25.0),
-          border: Border.all(color: Colors.grey, width: 0.1),
-          color: const Color(0xffF1F1F1),
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 10.0),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Container(
-              height: 30.0,
-              padding: const EdgeInsets.symmetric(horizontal: 10.0),
-              width: MediaQuery.of(context).size.width * 0.75,
-              child: Row(
-                children: [
-                  Flexible(
-                    child: TextField(
-                      controller: searchController,
-                      autofocus: false,
-                      onTap: () => model.updateSearching(true),
-                      onSubmitted: (text) => model.searchDestination(text),
-                      textAlignVertical: TextAlignVertical.center,
-                      textInputAction: TextInputAction.done,
-                      decoration: InputDecoration(
-                        enabledBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.transparent, width: 0.1)),
-                        focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.transparent, width: 0.1)),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide: const BorderSide(color: Colors.transparent, width: 0.1),
-                        ),
-                        contentPadding: const EdgeInsets.all(0),
-                        alignLabelWithHint: true,
-                        hintText: Keys.destination.localize(),
-                      ),
-                    ),
+          children: [
+            Flexible(
+              child: TextField(
+                controller: searchController,
+                autofocus: false,
+                onTap: () => model.updateSearching(true),
+                onSubmitted: (text) => model.searchDestination(text),
+                textAlignVertical: TextAlignVertical.center,
+                textInputAction: TextInputAction.done,
+                style: const TextStyle(color: Color(0xff545253), fontSize: 14),
+                decoration: InputDecoration(
+                  enabledBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.transparent, width: 0.1)),
+                  focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.transparent, width: 0.1)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: const BorderSide(color: Colors.transparent, width: 0.1),
                   ),
-                ],
+                  contentPadding: const EdgeInsets.all(0),
+                  alignLabelWithHint: true,
+                  hintText: Keys.destination.localize(),
+                  isDense: true,
+                  hintStyle: const TextStyle(color: Color(0xff545253), fontSize: 14),
+                ),
               ),
             ),
           ],

@@ -10,8 +10,9 @@ class UserModel {
   String image = '';
   UserType userType;
   AuthType authType;
+  AditionaldriveinformationModel aditionaldriveinformation;
 
-  UserModel({this.name, this.uid, this.phone, this.email, this.image, this.userType, this.authType});
+  UserModel({this.name, this.uid, this.phone, this.email, this.image, this.userType, this.authType, this.aditionaldriveinformation});
 
   UserModel.fromMap(Map<String, dynamic> data) {
     name = data['name'] ?? '';
@@ -41,5 +42,33 @@ class UserModel {
       userType: userType ?? this.userType,
       authType: authType ?? this.authType,
     );
+  }
+}
+
+class AditionaldriveinformationModel {
+  String document;
+  String documentType;
+  String fabrishYear;
+  String marc;
+  String model;
+  String plate;
+  String rating;
+  String token;
+  String trips;
+  String typeService;
+  String votes;
+
+  AditionaldriveinformationModel.fromMap(Map<String, dynamic> data) {
+    document = data['document'] ?? '';
+    documentType = data['documentType'] ?? '';
+    fabrishYear = data['fabrishYear'] ?? '';
+    marc = data['marc'] ?? '';
+    model = data['model'] ?? '';
+    plate = data['plate'] ?? '';
+    rating = data['rating'] ?? '';
+    token = data['token'] ?? '';
+    trips = data['trips'] ?? '';
+    typeService = data['typeService'] ?? '';
+    votes = data['votes'] ?? '';
   }
 }

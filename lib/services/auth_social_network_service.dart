@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:injectable/injectable.dart';
-import 'package:intl/intl.dart';
 import 'package:taxiapp/models/enums/auth_type.dart';
 import 'package:taxiapp/models/user_model.dart';
 
@@ -32,6 +31,7 @@ class AuthSocialNetwork {
   }
 
   void login(String email, String password, AuthType authType) async {
+    isLoggedIn = false;
     UserCredential userCredential;
     user = UserModel();
     idToken = '';

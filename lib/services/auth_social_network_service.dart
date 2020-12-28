@@ -32,73 +32,68 @@ class AuthSocialNetwork {
   }
 
   void login(String email, String password, AuthType authType) async {
-    if (isLoggedIn) {
-      print('THE USER IS ALREADY LOGGED IN');
-    } else {
-      UserCredential userCredential;
-      user = UserModel();
-      idToken = '';
+    UserCredential userCredential;
+    user = UserModel();
+    idToken = '';
 
-      if (authType.index == AuthType.User.index) {
-        userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
-      } else if (authType.index == AuthType.Google.index) {
-        var googleSignInAccount = await _googleSignIn.signIn();
+    if (authType.index == AuthType.User.index) {
+      userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
+    } else if (authType.index == AuthType.Google.index) {
+      var googleSignInAccount = await _googleSignIn.signIn();
 
-        if (googleSignInAccount != null) {
-          final googleAuth = await googleSignInAccount.authentication;
+      if (googleSignInAccount != null) {
+        final googleAuth = await googleSignInAccount.authentication;
 
-          final GoogleAuthCredential googleCredential = GoogleAuthProvider.credential(
-            accessToken: googleAuth.accessToken,
-            idToken: googleAuth.idToken,
-          );
+        final GoogleAuthCredential googleCredential =
+            GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
 
-          userCredential = await _auth.signInWithCredential(googleCredential);
-        }
-      } else if (authType.index == AuthType.Facebook.index) {
-        final result = await _facebookSignIn.logIn(['email']);
-
-        switch (result.status) {
-          case FacebookLoginStatus.loggedIn:
-            final facebookCredential = FacebookAuthProvider.credential(result.accessToken.token);
-            userCredential = await _auth.signInWithCredential(facebookCredential);
-
-            break;
-          case FacebookLoginStatus.cancelledByUser:
-            break;
-          case FacebookLoginStatus.error:
-            break;
-        }
+        userCredential = await _auth.signInWithCredential(googleCredential);
       }
+    } else if (authType.index == AuthType.Facebook.index) {
+      final result = await _facebookSignIn.logIn(['email']);
 
-      if (userCredential != null) {
-        // SI LA AUTENTICACION FUE EXITOSA
+      switch (result.status) {
+        case FacebookLoginStatus.loggedIn:
+          final facebookCredential =
+              FacebookAuthProvider.credential(result.accessToken.token);
+          userCredential = await _auth.signInWithCredential(facebookCredential);
 
-        idToken = await userCredential.user.getIdToken();
-
-        var now = DateTime.now();
-
-        var dateFormat = DateFormat('yyyyMMdd');
-        var timeFormat = DateFormat('HHmmss');
-
-        await _databaseReference.collection('login').add({
-          'email': userCredential.user.email,
-          'date': dateFormat.format(now),
-          'hour': timeFormat.format(now),
-        });
-
-        user.name = userCredential.user.providerData.first.displayName;
-        user.email = userCredential.user.providerData.first.email;
-        user.image = userCredential.user.providerData.first.photoURL;
-        user.uid = userCredential.user.uid;
-        user.authType = authType;
-
-        isLoggedIn = true;
+          break;
+        case FacebookLoginStatus.cancelledByUser:
+          break;
+        case FacebookLoginStatus.error:
+          break;
       }
+    }
+
+    if (userCredential != null) {
+      // SI LA AUTENTICACION FUE EXITOSA
+
+      idToken = await userCredential.user.getIdToken();
+
+      await _databaseReference.collection('login').add({
+        'email': userCredential.user.providerData.first.email,
+        'datetime': Timestamp.now(),
+      });
+      // FIREBASE DONT RETURN PHONENUMBER
+      // user.phone = userCredential.user.providerData.first.phoneNumber;
+      user.name = userCredential.user.providerData.first.displayName;
+      user.email = userCredential.user.providerData.first.email;
+      user.image = userCredential.user.providerData.first.photoURL;
+      user.uid = userCredential.user.uid;
+      user.authType = authType;
+
+      isLoggedIn = true;
     }
   }
 
   Future<UserCredential> createUser(String email, String password) async {
-    return await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
+    return await FirebaseAuth.instance
+        .createUserWithEmailAndPassword(email: email, password: password);
   }
 
   void sendPasswordResetEmail(String email) async {

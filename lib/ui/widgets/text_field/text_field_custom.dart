@@ -20,6 +20,7 @@ class TextFieldCustom extends StatefulWidget {
     @required this.labelText,
     this.keyboardType = TextInputType.text,
     this.inputFormatters = const [],
+    this.enabled,
   }) : super(key: key);
   final String icon;
   final TextEditingController controller;
@@ -33,6 +34,7 @@ class TextFieldCustom extends StatefulWidget {
   final String labelText;
   final TextInputType keyboardType;
   final List<TextInputFormatter> inputFormatters;
+  final bool enabled;
 
   @override
   _TextFieldCustomState createState() => _TextFieldCustomState();
@@ -59,6 +61,7 @@ class _TextFieldCustomState extends State<TextFieldCustom> {
         const SizedBox(height: 5.0),
         Expanded(
           child: TextFormField(
+            enabled: widget.enabled,
             controller: widget.controller,
             autofocus: false,
             textCapitalization: TextCapitalization.sentences,
@@ -79,6 +82,10 @@ class _TextFieldCustomState extends State<TextFieldCustom> {
                 borderRadius: BorderRadius.circular(30),
               ),
               enabledBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: Color(0xffF0F0F0), width: 3.0),
+                borderRadius: BorderRadius.circular(30),
+              ),
+              disabledBorder: OutlineInputBorder(
                 borderSide: const BorderSide(color: Color(0xffF0F0F0), width: 3.0),
                 borderRadius: BorderRadius.circular(30),
               ),

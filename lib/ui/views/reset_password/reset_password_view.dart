@@ -1,4 +1,7 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:stacked/stacked.dart';
 
 import 'package:flutter/material.dart';
@@ -8,6 +11,8 @@ import 'package:taxiapp/theme/pallete_color.dart';
 
 import 'package:taxiapp/extensions/string_extension.dart';
 import 'package:taxiapp/ui/views/reset_password/reset_password_viewmodel.dart';
+import 'package:taxiapp/ui/widgets/buttons/platform_back_button.dart';
+import 'package:taxiapp/ui/widgets/text_field/text_field_custom.dart';
 
 class ResetPasswordView extends StatelessWidget {
   @override
@@ -15,119 +20,121 @@ class ResetPasswordView extends StatelessWidget {
     return ViewModelBuilder<ResetPasswordViewModel>.nonReactive(
       viewModelBuilder: () => ResetPasswordViewModel(context),
       onModelReady: (model) => model.initial(),
-      builder: (context, model, child) => SafeArea(
-        child: Scaffold(
-          appBar: AppBar(
-            elevation: 0,
-            automaticallyImplyLeading: true,
-            backgroundColor: Colors.white,
-            iconTheme: const IconThemeData(
-              color: Colors.black, //change your color here
+      builder: (context, model, child) => Container(
+        color: PalleteColor.backgroundColor,
+        child: Stack(
+          children: [
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: AspectRatio(
+                aspectRatio: 1.1,
+                child: SvgPicture.asset(
+                    'assets/background/background_enroll.svg',
+                    fit: BoxFit.contain),
+              ),
             ),
-          ),
-          backgroundColor: PalleteColor.backgroundColor,
-          body: _BodyRegistro(),
+            SafeArea(
+              child: Scaffold(
+                backgroundColor: Colors.transparent,
+                body: _BodyRegister(),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-class _BodyRegistro extends HookViewModelWidget<ResetPasswordViewModel> {
-  _BodyRegistro({
+class _BodyRegister extends HookViewModelWidget<ResetPasswordViewModel> {
+  _BodyRegister({
     Key key,
   }) : super(key: key);
 
   @override
-  Widget buildViewModelWidget(BuildContext context, ResetPasswordViewModel model) {
-    return _crearFormulario(model, context);
-  }
-  
-  Widget _crearFormulario(ResetPasswordViewModel model, context) {
-
-    return SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: Container(
-                color: Colors.white,
-                child: ListView(
-                  padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                  children: <Widget>[
-
-                    const SizedBox(height: 10.0,),
-
-                    Text(
-                      Keys.reset_password.localize(),
-                      style: const TextStyle(color: Color.fromRGBO(130, 130, 130, 1.0), fontSize: 15, fontWeight: FontWeight.bold),
-                    ),
-
-                    const SizedBox(height: 20.0,),
-
-                    TextFormField(
-                      initialValue: model.email,
-                      inputFormatters: [LengthLimitingTextInputFormatter(50),],
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: InputDecoration(
-                        labelText: Keys.email.localize(),
-                        labelStyle: const TextStyle(color: Color.fromRGBO(130, 130, 130, 1.0)),
-                        fillColor: Colors.white,
-                        contentPadding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            color: Color.fromRGBO(40, 180, 245, 1.0),
-                          ),
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            color: Color.fromRGBO(130, 130, 130, 1.0),
-                          ),
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                      ),
-                      style: const TextStyle(
-                        color: Color.fromRGBO(130, 130, 130, 1.0),
-                        fontSize: 14.0,
-                      ),
-                      textInputAction: TextInputAction.done,
-                      onFieldSubmitted: (_) => FocusScope.of(context).unfocus(),
-                      onChanged: (value) => model.email = value,
-                    ),
-                    
-                    const SizedBox(height: 20.0,),
-
-                    Align(
-                      alignment: Alignment.center,
-                      child: SizedBox(
-                        width: 200,
-                        height: 40,
-                        child: RaisedButton(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16.0),
-                          ),
-                          color: const Color.fromRGBO(255, 165, 0, 1.0),
-                          disabledColor: const Color.fromRGBO(255, 200, 120, 1.0),
-                          child: Container(
-                            child: Text(Keys.continue_label.localize(), style: const TextStyle(color: Colors.white),),
-                          ),
-                          onPressed: (!model.enableBtnContinue ? null : () {
-                            if (!model.isBusy) {
-                              model.resetPassword();
-                            }
-                          }),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 10.0,),
-
-                  ],
+  Widget buildViewModelWidget(
+      BuildContext context, ResetPasswordViewModel model) {
+    final emailController = useTextEditingController();
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      color: Colors.transparent,
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20.0),
+            child: Row(
+              children: [
+                PlatformBackButton(
+                    onPressed: () => ExtendedNavigator.root.pop()),
+                Flexible(
+                  child: Text(
+                    Keys.reset_password.localize(),
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 27,
+                        fontWeight: FontWeight.bold),
+                  ),
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
+          ),
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(right: 30.0),
+                  child: Column(
+                    children: <Widget>[
+                      TextFieldCustom(
+                        controller: emailController,
+                        onChanged: (value) => model.email = value,
+                        labelText: Keys.email.localize(),
+                        inputFormatters: [LengthLimitingTextInputFormatter(50)],
+                        keyboardType: TextInputType.emailAddress,
+                        icon: 'assets/icons/mail.svg',
+                      ),
+                      const SizedBox(height: 30.0),
+                    ],
+                  ),
+                ),
+                const _ContinueEnrollButton(),
+                const SizedBox(height: 10.0),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ContinueEnrollButton extends ViewModelWidget<ResetPasswordViewModel> {
+  const _ContinueEnrollButton({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, ResetPasswordViewModel model) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+          horizontal: MediaQuery.of(context).size.width * .18),
+      height: 50,
+      child: RaisedButton(
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+        color: PalleteColor.actionButtonColor,
+        disabledColor: PalleteColor.actionButtonColor.withOpacity(0.5),
+        child: Text(Keys.continue_label.localize(),
+            style: const TextStyle(color: Colors.white, fontSize: 16)),
+        onPressed: !model.enableBtnContinue
+            ? null
+            : () => !model.isBusy ? model.resetPassword() : null,
+      ),
     );
   }
 }

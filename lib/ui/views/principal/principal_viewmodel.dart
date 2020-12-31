@@ -31,8 +31,6 @@ class PrincipalViewModel extends ReactiveViewModel {
   bool apiSelected = false;
 
   LatLng _centralLocation;
-  bool _isSearching = false;
-  bool _isManualSearch = false;
 
   String addressCurrentPosition;
   Place _destinationSelected;
@@ -40,7 +38,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   Map<String, Polyline> _polylines = {};
   Map<String, Marker> _markers = {};
   List<Place> placesFound = [];
-  final List<Widget> _switchingWidgets = [const FloatingSearch(), const SearchFieldBar()];
+  final List<Widget> _switchingWidgets = [const FloatingSearch(), const SearchFieldBar(), const ManualMarker()];
   GoogleMapController _mapController;
   Widget _currentSearchWidget = const SizedBox();
 
@@ -48,8 +46,6 @@ class PrincipalViewModel extends ReactiveViewModel {
   UserModel get user => _appService.user;
   PrincipalState get state => _state;
   UserLocation get userLocation => _locationService.location;
-  bool get isManualSearch => _isManualSearch;
-  bool get isSearching => _isSearching;
   LatLng get centralLocation => _centralLocation;
   Widget get currentSearchWidget => _currentSearchWidget;
   Place get destinationSelected => _destinationSelected;
@@ -125,20 +121,13 @@ class PrincipalViewModel extends ReactiveViewModel {
   bool onBack() {
     if (_currentSearchWidget is SearchFieldBar) {
       updateCurrentSearchWidget(0);
-      updateSearching(false);
       return false;
-    } else if (_isManualSearch) {
-      _isManualSearch = false;
-      notifyListeners();
+    } else if (_currentSearchWidget is ManualMarker) {
+      updateCurrentSearchWidget(1);
       return false;
     } else {
       return true;
     }
-  }
-
-  void updateSearching(bool state) {
-    _isSearching = state;
-    notifyListeners();
   }
 
   void searchDestination(String destinationAddress) async {
@@ -150,7 +139,7 @@ class PrincipalViewModel extends ReactiveViewModel {
 
   void makeRoute(Place place) async {
     _destinationSelected = place;
-    _isManualSearch = false;
+
     final route = await _mapsService.getRouteByCoordinates(userLocation.location, place.latLng);
     final routePoints = route.points.map((point) => LatLng(point[0], point[1])).toList();
     final myDestinationRoute = Polyline(
@@ -199,14 +188,7 @@ class PrincipalViewModel extends ReactiveViewModel {
 
     _polylines = currentPolylines;
     _markers = newMarkers;
-    _isSearching = false;
     _currentSearchWidget = _switchingWidgets[0];
-    notifyListeners();
-  }
-
-  void updateManualSearchState(bool state) {
-    _isManualSearch = state;
-    _isSearching = false;
     notifyListeners();
   }
 
@@ -219,6 +201,14 @@ class PrincipalViewModel extends ReactiveViewModel {
   void updateCurrentSearchWidget(int index) {
     _currentSearchWidget = _switchingWidgets[index];
     notifyListeners();
+  }
+
+  void clearOriginPosition() {
+    // TODO: Make implementation
+  }
+
+  void clearDestinationPosition() {
+    // TODO: Make implementation
   }
 }
 

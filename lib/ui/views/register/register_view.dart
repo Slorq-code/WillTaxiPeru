@@ -70,7 +70,7 @@ class _BodyRegister extends HookViewModelWidget<RegisterViewModel> {
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20.0),
+            padding: const EdgeInsets.symmetric(vertical: 10.0),
             child: Row(
               children: [
                 PlatformBackButton(onPressed: () => ExtendedNavigator.root.pop()),

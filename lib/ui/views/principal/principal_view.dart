@@ -8,10 +8,11 @@ import 'package:morpheus/morpheus.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_hooks/stacked_hooks.dart';
+
 import 'package:taxiapp/app/router.gr.dart';
 import 'package:taxiapp/extensions/string_extension.dart';
 import 'package:taxiapp/localization/keys.dart';
-
+import 'package:taxiapp/models/enums/vehicle_type.dart';
 import 'package:taxiapp/models/place.dart';
 import 'package:taxiapp/ui/views/principal/principal_viewmodel.dart';
 import 'package:taxiapp/ui/widgets/buttons/action_button_custom.dart';
@@ -207,76 +208,199 @@ class SearchFieldBar extends ViewModelWidget<PrincipalViewModel> {
 
   @override
   Widget build(BuildContext context, PrincipalViewModel model) {
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: Colors.grey, width: .4)),
-        boxShadow: [BoxShadow(blurRadius: 7, color: Colors.black45, spreadRadius: 4, offset: Offset(-4, -4))],
-        color: Colors.white,
-      ),
-      child: Column(
+    var size = MediaQuery.of(context).size;
+    return SizedBox(
+      width: size.width,
+      height: size.height - 25,
+      child: Stack(
         children: [
-          AppBar(
-            title: const Text('Nuevo destino', style: TextStyle(color: Colors.black)), // TODO: translate
-            centerTitle: true,
-            leading: PlatformBackButton(onPressed: () => model.onBack()),
-            backgroundColor: Colors.transparent,
-            iconTheme: const IconThemeData(color: Colors.black),
-            elevation: 0,
-          ),
           Container(
-            padding: const EdgeInsets.only(left: 10.0, right: 30.0),
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
+            width: MediaQuery.of(context).size.width,
+            decoration: const BoxDecoration(
+              border: Border(bottom: BorderSide(color: Colors.grey, width: .4)),
+              boxShadow: [BoxShadow(blurRadius: 7, color: Colors.black45, spreadRadius: 4, offset: Offset(-4, -4))],
+              color: Colors.white,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-                  child: Column(
+                AppBar(
+                  title: const Text('Nuevo destino', style: TextStyle(color: Colors.black)), // TODO: translate
+                  centerTitle: true,
+                  leading: PlatformBackButton(onPressed: () => model.onBack()),
+                  backgroundColor: Colors.transparent,
+                  iconTheme: const IconThemeData(color: Colors.black),
+                  elevation: 0,
+                ),
+                Container(
+                  padding: const EdgeInsets.only(left: 10.0, right: 30.0),
+                  child: Row(
                     mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      SvgPicture.asset('assets/icons/start_location.svg', height: 18.0),
-                      SvgPicture.asset('assets/icons/line_rail.svg', height: 18.0),
-                      SvgPicture.asset('assets/icons/destination_marker.svg', height: 18.0),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            SvgPicture.asset('assets/icons/start_location.svg', height: 18.0),
+                            SvgPicture.asset('assets/icons/line_rail.svg', height: 18.0),
+                            SvgPicture.asset('assets/icons/destination_marker.svg', height: 18.0),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            const _OriginLocationField(),
+                            const Divider(color: Color(0xffe5e5e5), height: 2, thickness: 2.0),
+                            const _DestinationLocationField(),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
-                Expanded(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      const _OriginLocationField(),
-                      const Divider(color: Color(0xffe5e5e5), height: 2, thickness: 2.0),
-                      const _DestinationLocationField(),
-                    ],
-                  ),
-                ),
+                if (model.destinationSelected == null)
+                  WillPopScope(
+                    onWillPop: () => Future.value(model.onBack()),
+                    child: Container(
+                      height: MediaQuery.of(context).size.height * .5,
+                      width: double.infinity,
+                      color: Colors.white,
+                      child: ListView(
+                        children: [
+                          ...model.placesFound.map(
+                            (place) => _SugerationPlace(
+                              place: place,
+                              onTap: () => model.makeRoute(place, context),
+                            ),
+                          ),
+                          const _PickInMapOption(),
+                        ],
+                      ),
+                    ),
+                  )
               ],
             ),
           ),
-          WillPopScope(
-            onWillPop: () => Future.value(model.onBack()),
-            child: Container(
-              height: MediaQuery.of(context).size.height * .5,
-              width: double.infinity,
-              color: Colors.white,
-              child: ListView(
-                children: [
-                  ...model.placesFound.map(
-                    (place) => _SugerationPlace(
-                      place: place,
-                      onTap: () => model.makeRoute(place),
-                    ),
-                  ),
-                  const _PickInMapOption(),
-                ],
-              ),
-            ),
-          )
+          if (model.destinationSelected != null) const _SelectVehicle()
         ],
       ),
+    );
+  }
+}
+
+class _SelectVehicle extends ViewModelWidget<PrincipalViewModel> {
+  const _SelectVehicle({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, PrincipalViewModel model) {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: WillPopScope(
+        onWillPop: () async {
+          print('aca');
+          return false;
+        },
+        child: Container(
+          padding: const EdgeInsets.only(top: 15.0, left: 15.0, right: 15.0),
+          decoration:
+              const BoxDecoration(color: Colors.white, boxShadow: [BoxShadow(color: Colors.black12, spreadRadius: 2, blurRadius: 2, offset: Offset(0, -2))]),
+          width: double.infinity,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _VehicleIcon(
+                      icon: 'assets/icons/moto.png',
+                      size: 60,
+                      isSelected: model.vehicleSelected == VehicleType.moto,
+                      bottomOffset: -2,
+                      borderColor: const Color(0xff1a9ab7),
+                      onTap: () => model.updateVehicleSelected(VehicleType.moto),
+                    ),
+                    _VehicleIcon(
+                      icon: 'assets/icons/taxi.png',
+                      size: 60,
+                      width: 80,
+                      bottomOffset: -5,
+                      borderColor: const Color(0xfffea913),
+                      onTap: () => model.updateVehicleSelected(VehicleType.taxi),
+                      isSelected: model.vehicleSelected == VehicleType.taxi,
+                    ),
+                    _VehicleIcon(
+                      icon: 'assets/icons/mototaxi.png',
+                      size: 68,
+                      bottomOffset: -8,
+                      borderColor: const Color(0xffd12a19),
+                      onTap: () => model.updateVehicleSelected(VehicleType.mototaxi),
+                      isSelected: model.vehicleSelected == VehicleType.mototaxi,
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 70.0, vertical: 10.0),
+                child: ActionButtonCustom(action: () {}, label: 'Continuar'), //TODO: translate
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _VehicleIcon extends StatelessWidget {
+  const _VehicleIcon({
+    Key key,
+    @required this.icon,
+    @required this.onTap,
+    @required this.isSelected,
+    this.size = 80,
+    this.width,
+    this.bottomOffset = 0,
+    this.borderColor,
+  })  : assert(icon != null),
+        assert(onTap != null),
+        assert(isSelected != null),
+        super(key: key);
+
+  final String icon;
+  final VoidCallback onTap;
+  final bool isSelected;
+  final double size;
+  final double width;
+  final double bottomOffset;
+  final Color borderColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      overflow: Overflow.visible,
+      alignment: Alignment.center,
+      children: [
+        GestureDetector(
+          onTap: onTap,
+          child: Container(
+            decoration: BoxDecoration(
+                shape: BoxShape.circle, border: Border.all(color: isSelected ? borderColor : Colors.transparent, width: 2.0), color: const Color(0xfff0f0f0)),
+            height: 65,
+            width: 65,
+          ),
+        ),
+        Positioned(bottom: bottomOffset, child: IgnorePointer(child: Image.asset(icon, width: width ?? size, height: size))),
+      ],
     );
   }
 }
@@ -584,6 +708,7 @@ class ManualMarker extends ViewModelWidget<PrincipalViewModel> {
                     child: ActionButtonCustom(
                       action: () => model.makeRoute(
                         Place(latLng: model.centralLocation, address: '', name: ''),
+                        context,
                       ),
                       label: Keys.confirm_destination.localize(),
                       fontSize: 16,

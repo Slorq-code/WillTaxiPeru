@@ -10,7 +10,9 @@ import 'package:taxiapp/extensions/string_extension.dart';
 import 'package:taxiapp/localization/keys.dart';
 import 'package:taxiapp/models/enums/auth_type.dart';
 import 'package:taxiapp/models/enums/user_type.dart';
+import 'package:taxiapp/models/enums/vehicle_type.dart';
 import 'package:taxiapp/models/place.dart';
+import 'package:taxiapp/models/route_map.dart';
 import 'package:taxiapp/models/user_location.dart';
 import 'package:taxiapp/models/user_model.dart';
 import 'package:taxiapp/services/app_service.dart';
@@ -41,6 +43,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   final List<Widget> _switchingWidgets = [const FloatingSearch(), const SearchFieldBar(), const ManualMarker()];
   GoogleMapController _mapController;
   Widget _currentSearchWidget = const SizedBox();
+  VehicleType _vehicleSelected = VehicleType.moto;
 
   // * Getters
   UserModel get user => _appService.user;
@@ -52,6 +55,7 @@ class PrincipalViewModel extends ReactiveViewModel {
 
   Map<String, Polyline> get polylines => _polylines;
   Map<String, Marker> get markers => _markers;
+  VehicleType get vehicleSelected => _vehicleSelected;
 
   // * Functions
 
@@ -137,10 +141,13 @@ class PrincipalViewModel extends ReactiveViewModel {
     notifyListeners();
   }
 
-  void makeRoute(Place place) async {
+  RouteMap routeMapCache;
+  void makeRoute(Place place, BuildContext context) async {
     _destinationSelected = place;
 
-    final route = await _mapsService.getRouteByCoordinates(userLocation.location, place.latLng);
+    final route = routeMapCache ?? await _mapsService.getRouteByCoordinates(userLocation.location, place.latLng);
+    // routeMapCache = route;
+
     final routePoints = route.points.map((point) => LatLng(point[0], point[1])).toList();
     final myDestinationRoute = Polyline(
       polylineId: PolylineId('my_destination_route'),
@@ -152,43 +159,44 @@ class PrincipalViewModel extends ReactiveViewModel {
     final currentPolylines = _polylines;
     currentPolylines['my_destination_route'] = myDestinationRoute;
 
-    final iconInicio = await getMarkerInicioIcon(route.timeNeeded.value.toInt());
+    // final iconInicio = await getMarkerInicioIcon(route.timeNeeded.value.toInt());
 
-    final iconDestino = await getMarkerDestinoIcon(place.name, route.distance.value.toDouble());
+    // final iconDestino = await getMarkerDestinoIcon(place.name, route.distance.value.toDouble());
 
     final markerStart = Marker(
-      anchor: const Offset(0.0, 1.0),
+      anchor: const Offset(0.5, 0.5),
       markerId: MarkerId('start'),
       position: routePoints[0],
-      icon: iconInicio,
-      infoWindow: InfoWindow(
-        title: Keys.my_location.localize(),
-        snippet: Keys.route_time_with_minutes.localize(['${(route.timeNeeded.value / 60).floor()}']),
-      ),
+      icon: await bitmapDescriptorFromSvgAsset(context, 'assets/icons/start_location.svg', 25),
+      // infoWindow: InfoWindow(
+      //   title: Keys.my_location.localize(),
+      //   snippet: Keys.route_time_with_minutes.localize(['${(route.timeNeeded.value / 60).floor()}']),
+      // ),
     );
 
     final markerDestination = Marker(
-        markerId: MarkerId('destination'),
-        position: routePoints.last,
-        icon: iconDestino,
-        anchor: const Offset(0.1, 0.90),
-        infoWindow: InfoWindow(
-          title: place.name,
-          snippet: 'Distance: ${route.distance.text}',
-        ));
+      markerId: MarkerId('destination'),
+      position: routePoints.last,
+      icon: await bitmapDescriptorFromSvgAsset(context, 'assets/icons/destination_marker.svg', 25),
+      // anchor: const Offset(0.1, 0.90),
+      // infoWindow: InfoWindow(
+      //   title: place.name,
+      //   snippet: 'Distance: ${route.distance.text}',
+      // ),
+    );
 
     final newMarkers = {..._markers};
     newMarkers['start'] = markerStart;
     newMarkers['destination'] = markerDestination;
 
-    await Future.delayed(const Duration(milliseconds: 300)).then((value) {
-      _mapController.showMarkerInfoWindow(MarkerId('start'));
-      _mapController.showMarkerInfoWindow(MarkerId('destination'));
-    });
+    // await Future.delayed(const Duration(milliseconds: 300)).then((value) {
+    //   _mapController.showMarkerInfoWindow(MarkerId('start'));
+    //   _mapController.showMarkerInfoWindow(MarkerId('destination'));
+    // });
 
     _polylines = currentPolylines;
     _markers = newMarkers;
-    _currentSearchWidget = _switchingWidgets[0];
+    _currentSearchWidget = _switchingWidgets[1];
     notifyListeners();
   }
 
@@ -209,6 +217,11 @@ class PrincipalViewModel extends ReactiveViewModel {
 
   void clearDestinationPosition() {
     // TODO: Make implementation
+  }
+
+  void updateVehicleSelected(VehicleType vehicleType) {
+    _vehicleSelected = vehicleType;
+    notifyListeners();
   }
 }
 

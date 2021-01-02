@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:package_info/package_info.dart';
 import 'package:stacked/stacked.dart';
 
 import 'package:flutter/material.dart';
@@ -15,6 +16,7 @@ import 'package:taxiapp/ui/views/login/login_viewmodel.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:taxiapp/extensions/string_extension.dart';
+import 'dart:io' show Platform;
 
 class LoginView extends StatelessWidget {
   @override
@@ -31,7 +33,9 @@ class LoginView extends StatelessWidget {
                 bottom: 0,
                 left: 0,
                 right: 0,
-                child: SvgPicture.asset('assets/background/background_login.svg', fit: BoxFit.cover),
+                child: SvgPicture.asset(
+                    'assets/background/background_login.svg',
+                    fit: BoxFit.cover),
               ),
               SafeArea(
                 child: Scaffold(
@@ -68,7 +72,10 @@ class _BodyLogin extends HookViewModelWidget<LoginViewModel> {
             padding: const EdgeInsets.all(20.0),
             child: Text(
               Keys.login.localize(),
-              style: const TextStyle(color: Colors.black, fontSize: 27, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 27,
+                  fontWeight: FontWeight.bold),
             ),
           ),
           Expanded(
@@ -84,20 +91,25 @@ class _BodyLogin extends HookViewModelWidget<LoginViewModel> {
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
                         labelText: Keys.email.localize(),
-                        labelStyle: const TextStyle(fontSize: 16.0, color: Colors.black),
+                        labelStyle: const TextStyle(
+                            fontSize: 16.0, color: Colors.black),
                         fillColor: Colors.white,
-                        contentPadding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 15.0),
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 0.0, horizontal: 15.0),
                         focusedBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(color: Color(0xffF0F0F0), width: 3.0),
+                          borderSide: const BorderSide(
+                              color: Color(0xffF0F0F0), width: 3.0),
                           borderRadius: BorderRadius.circular(30),
                         ),
                         enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(color: Color(0xffF0F0F0), width: 3.0),
+                          borderSide: const BorderSide(
+                              color: Color(0xffF0F0F0), width: 3.0),
                           borderRadius: BorderRadius.circular(30),
                         ),
                         filled: true,
                       ),
-                      style: const TextStyle(fontSize: 14.0, color: Colors.black),
+                      style:
+                          const TextStyle(fontSize: 14.0, color: Colors.black),
                       textInputAction: TextInputAction.next,
                       onFieldSubmitted: (_) => passwordFocus.requestFocus(),
                       onChanged: (value) => model.user = value,
@@ -111,24 +123,31 @@ class _BodyLogin extends HookViewModelWidget<LoginViewModel> {
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
                         labelText: Keys.password.localize(),
-                        labelStyle: const TextStyle(fontSize: 16.0, color: Colors.black),
+                        labelStyle: const TextStyle(
+                            fontSize: 16.0, color: Colors.black),
                         fillColor: Colors.white,
-                        contentPadding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 15.0),
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 0.0, horizontal: 15.0),
                         focusedBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(color: Color(0xffF0F0F0), width: 3.0),
+                          borderSide: const BorderSide(
+                              color: Color(0xffF0F0F0), width: 3.0),
                           borderRadius: BorderRadius.circular(30),
                         ),
                         enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(color: Color(0xffF0F0F0), width: 3.0),
+                          borderSide: const BorderSide(
+                              color: Color(0xffF0F0F0), width: 3.0),
                           borderRadius: BorderRadius.circular(30),
                         ),
                         filled: true,
                         suffixIcon: IconButton(
                           icon: Icon(
-                            model.passwordOfuscado ? Icons.visibility : Icons.visibility_off,
+                            model.passwordOfuscado
+                                ? Icons.visibility
+                                : Icons.visibility_off,
                             color: Colors.grey,
                           ),
-                          onPressed: () => model.passwordOfuscado = !model.passwordOfuscado,
+                          onPressed: () =>
+                              model.passwordOfuscado = !model.passwordOfuscado,
                         ),
                       ),
                       textInputAction: TextInputAction.done,
@@ -137,8 +156,11 @@ class _BodyLogin extends HookViewModelWidget<LoginViewModel> {
                     ),
                     const SizedBox(height: 15.0),
                     GestureDetector(
-                      onTap: () => !model.isBusy ? model.goToResetPassword() : null,
-                      child: Text(Keys.forgot_your_password.localize(), style: const TextStyle(color: Colors.black, fontSize: 16)),
+                      onTap: () =>
+                          !model.isBusy ? model.goToResetPassword() : null,
+                      child: Text(Keys.forgot_your_password.localize(),
+                          style: const TextStyle(
+                              color: Colors.black, fontSize: 16)),
                     ),
                     const SizedBox(height: 20.0),
                     const _SocialButtons(),
@@ -149,8 +171,10 @@ class _BodyLogin extends HookViewModelWidget<LoginViewModel> {
                     const SizedBox(height: 10.0),
                     RaisedButton(
                       color: Colors.blue,
-                      child: const Text('To Principal view', style: TextStyle(color: Colors.white)),
-                      onPressed: () => ExtendedNavigator.root.push(Routes.principalViewRoute),
+                      child: const Text('To Principal view',
+                          style: TextStyle(color: Colors.white)),
+                      onPressed: () => ExtendedNavigator.root
+                          .push(Routes.principalViewRoute),
                     ),
                   ],
                 ),
@@ -172,14 +196,19 @@ class _ContinueButton extends ViewModelWidget<LoginViewModel> {
   Widget build(BuildContext context, LoginViewModel model) {
     return Container(
       height: 50,
-      padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * .18),
+      padding: EdgeInsets.symmetric(
+          horizontal: MediaQuery.of(context).size.width * .18),
       width: double.infinity,
       child: RaisedButton(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
         color: PalleteColor.actionButtonColor,
         disabledColor: PalleteColor.actionButtonColor.withOpacity(0.5),
-        child: Text(Keys.continue_label.localize(), style: const TextStyle(fontSize: 16.0, color: Colors.white)),
-        onPressed: !model.enableBtnContinue ? null : () => !model.isBusy ? model.login(AuthType.User) : null,
+        child: Text(Keys.continue_label.localize(),
+            style: const TextStyle(fontSize: 16.0, color: Colors.white)),
+        onPressed: !model.enableBtnContinue
+            ? null
+            : () => !model.isBusy ? model.login(AuthType.User) : null,
       ),
     );
   }
@@ -201,7 +230,11 @@ class _EnrollAdvice extends ViewModelWidget<LoginViewModel> {
           children: <TextSpan>[
             TextSpan(
                 text: Keys.sign_up.localize(),
-                style: const TextStyle(decoration: TextDecoration.underline, fontWeight: FontWeight.w600, color: Colors.black, fontSize: 16),
+                style: const TextStyle(
+                    decoration: TextDecoration.underline,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black,
+                    fontSize: 16),
                 recognizer: TapGestureRecognizer()
                   ..onTap = () {
                     if (!model.isBusy) {
@@ -229,8 +262,10 @@ class _SocialButtons extends ViewModelWidget<LoginViewModel> {
         FloatingActionButton(
           heroTag: 'btnFacebook',
           backgroundColor: Colors.transparent,
-          child: SvgPicture.asset('assets/icons/ic_facebook.svg', fit: BoxFit.fitWidth),
-          onPressed: !model.isBusy ? () => model.login(AuthType.Facebook) : () {},
+          child: SvgPicture.asset('assets/icons/ic_facebook.svg',
+              fit: BoxFit.fitWidth),
+          onPressed:
+              !model.isBusy ? () => model.login(AuthType.Facebook) : () {},
         ),
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 10.0),
@@ -239,9 +274,25 @@ class _SocialButtons extends ViewModelWidget<LoginViewModel> {
         FloatingActionButton(
           heroTag: 'btnGoogle',
           backgroundColor: Colors.transparent,
-          child: SvgPicture.asset('assets/icons/ic_google.svg', fit: BoxFit.fitWidth),
+          child: SvgPicture.asset('assets/icons/ic_google.svg',
+              fit: BoxFit.fitWidth),
           onPressed: !model.isBusy ? () => model.login(AuthType.Google) : () {},
         ),
+        if (model.visibleBtnApple)
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 10.0),
+            child:
+                Text('-', style: TextStyle(color: Colors.black, fontSize: 30)),
+          ),
+        if (model.visibleBtnApple)
+          FloatingActionButton(
+            heroTag: 'btnApple',
+            backgroundColor: Colors.transparent,
+            child: SvgPicture.asset('assets/icons/ic_apple.svg',
+                fit: BoxFit.fitWidth),
+            onPressed:
+                !model.isBusy ? () => model.login(AuthType.Apple) : () {},
+          ),
       ],
     );
   }

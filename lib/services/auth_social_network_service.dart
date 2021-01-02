@@ -1,3 +1,4 @@
+import 'package:apple_sign_in/apple_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
@@ -68,6 +69,26 @@ class AuthSocialNetwork {
         case FacebookLoginStatus.error:
           break;
       }
+    } else if (authType.index == AuthType.Apple.index) {
+      final result = await AppleSignIn.performRequests([
+        const AppleIdRequest(requestedScopes: [Scope.email, Scope.fullName])
+      ]);
+      switch (result.status) {
+        case AuthorizationStatus.authorized:
+          final appleAuth = result.credential;
+          final oAuthProvider = OAuthProvider('apple.com');
+
+          final appleCredential = oAuthProvider.credential(
+              idToken: String.fromCharCodes(appleAuth.identityToken),
+              accessToken: String.fromCharCodes(appleAuth.authorizationCode));
+
+          userCredential = await _auth.signInWithCredential(appleCredential);
+          break;
+        case AuthorizationStatus.error:
+          break;
+        case AuthorizationStatus.cancelled:
+          break;
+      }
     }
 
     if (userCredential != null) {
@@ -98,5 +119,9 @@ class AuthSocialNetwork {
 
   void sendPasswordResetEmail(String email) async {
     await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+  }
+  
+  void sendSignInLinkToEmail(String email) async {
+    await FirebaseAuth.instance.sendSignInLinkToEmail(email: email, actionCodeSettings: null);
   }
 }

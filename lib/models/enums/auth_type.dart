@@ -1,7 +1,8 @@
 enum AuthType {
   User,
   Google,
-  Facebook
+  Facebook,
+  Apple
 }
 
 class AuthTypeHelper {

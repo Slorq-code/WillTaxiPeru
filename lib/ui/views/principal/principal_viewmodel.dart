@@ -15,6 +15,7 @@ import 'package:taxiapp/models/route_map.dart';
 import 'package:taxiapp/models/user_location.dart';
 import 'package:taxiapp/models/user_model.dart';
 import 'package:taxiapp/services/app_service.dart';
+import 'package:taxiapp/services/auth_social_network_service.dart';
 import 'package:taxiapp/services/location_service.dart';
 import 'package:taxiapp/services/maps_service/maps_general_service.dart';
 import 'package:taxiapp/ui/views/principal/widgets/check_ride_details.dart';
@@ -28,6 +29,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   final AppService _appService = locator<AppService>();
   final LocationService _locationService = locator<LocationService>();
   final MapsGeneralService _mapsService = locator<MapsGeneralService>();
+  final AuthSocialNetwork _authSocialNetwork = locator<AuthSocialNetwork>();
   PrincipalState _state = PrincipalState.loading;
   // final bool _mapReady = false;
   // final bool _drawRoute = false;
@@ -83,15 +85,7 @@ class PrincipalViewModel extends ReactiveViewModel {
     } else {
       _state = PrincipalState.accessGPSDisable;
     }
-    _appService.updateUser(UserModel(
-      authType: AuthType.Google,
-      email: 'test@gmail.com',
-      image: 'https://cdn3.iconfinder.com/data/icons/avatars-round-flat/33/avat-01-512.png',
-      name: 'Test Go',
-      phone: '999999009',
-      uid: 'dsgdjgkdnsfgjkndskjfg',
-      userType: UserType.Client,
-    ));
+    _appService.updateUser(_authSocialNetwork.user);
     notifyListeners();
   }
 

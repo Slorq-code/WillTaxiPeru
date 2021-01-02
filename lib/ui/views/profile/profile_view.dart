@@ -111,17 +111,17 @@ class _BoxInformation extends ViewModelWidget<ProfileViewModel> {
   }
 }
 
-class _LogoutButton extends StatelessWidget {
+class _LogoutButton extends ViewModelWidget<ProfileViewModel> {
   const _LogoutButton({
     Key key,
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ProfileViewModel model) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 80.0),
       child: ActionButtonCustom(
-        action: () {},
+        action: () => !model.isBusy ? model.logout() : null,
         label: Keys.logout.localize(),
         fontSize: 20,
       ),
@@ -280,10 +280,10 @@ class ProfileInformationTab extends ViewModelWidget<ProfileViewModel> {
             ),
           ),
         _InformationField(title: Keys.names.localize(), label: model.user.name),
-        _InformationField(title: Keys.birthdate.localize(), label: '01/01/1990'), // TODO:  Update with real information
+        // _InformationField(title: Keys.birthdate.localize(), label: '01/01/1990'),
         _InformationField(title: Keys.mobile_phone.localize(), label: model.user.phone),
         _InformationField(title: Keys.email.localize(), label: model.user.email),
-        if (isDriver) _InformationField(title: Keys.vehicle.localize(), label: 'Toyota Corolla, 2006, XYZ-123'), // TODO:  Update with real information
+        if (isDriver) _InformationField(title: Keys.vehicle.localize(), label: model.user.aditionaldriveinformation.plate),
         _InformationField(title: Keys.password.localize(), label: '*******'),
       ],
     );

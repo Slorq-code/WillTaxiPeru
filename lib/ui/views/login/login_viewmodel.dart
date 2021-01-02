@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:device_info/device_info.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
@@ -12,6 +13,7 @@ import 'package:taxiapp/services/firestore_user_service.dart';
 import 'package:taxiapp/services/token.dart';
 import 'package:taxiapp/utils/alerts.dart';
 import 'package:taxiapp/utils/utils.dart';
+import 'dart:io' show Platform;
 
 import 'package:taxiapp/extensions/string_extension.dart';
 
@@ -34,14 +36,30 @@ class LoginViewModel extends BaseViewModel {
   final Token _token = locator<Token>();
 
   void initial() async {
-    user = '';
-    password = '';
-    passwordOfuscado = true;
+    await validateButtonAppleSignIn();
   }
 
-  String _user;
-  String _password;
-  bool _passwordOfuscado;
+  void validateButtonAppleSignIn() async{
+    if (Platform.isIOS) {
+      var iosInfo = await DeviceInfoPlugin().iosInfo;
+      var version = iosInfo.systemVersion;
+      if (double.parse(version) >= 13) {
+        visibleBtnApple = true;
+      }
+    }
+  }
+
+  String _user = '';
+  String _password = '';
+  bool _passwordOfuscado = true;
+  bool _visibleBtnApple = false;
+
+  bool get visibleBtnApple => _visibleBtnApple;
+
+  set visibleBtnApple(visibleBtnApple) {
+    _visibleBtnApple = visibleBtnApple;
+    notifyListeners();
+  }
 
   String get user => _user;
 

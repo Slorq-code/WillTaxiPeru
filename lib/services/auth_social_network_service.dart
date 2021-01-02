@@ -20,15 +20,22 @@ class AuthSocialNetwork {
 
   void logout() async {
     if (isLoggedIn) {
-      if (user.userType.index == AuthType.Google.index) {
+      print(user.authType.index);
+      if (user.authType.index == AuthType.Google.index) {
         if (_googleSignIn != null) {
           await _googleSignIn.signOut();
         }
-      } else if (user.userType.index == AuthType.Facebook.index) {}
+      } else if (user.authType.index == AuthType.Facebook.index) {
+        if (_facebookSignIn != null) {
+          await _facebookSignIn.logOut();
+        }
+      }
+      await _auth.signOut();
     }
 
     isLoggedIn = false;
     user = UserModel();
+    idToken = '';
   }
 
   void login(String email, String password, AuthType authType) async {

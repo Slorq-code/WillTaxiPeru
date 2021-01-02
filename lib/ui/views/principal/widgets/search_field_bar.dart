@@ -34,7 +34,7 @@ class SearchFieldBar extends ViewModelWidget<PrincipalViewModel> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 AppBar(
-                  title: const Text('Nuevo destino', style: TextStyle(color: Colors.black)), // TODO: translate
+                  title: Text(Keys.new_destination.localize(), style: const TextStyle(color: Colors.black)),
                   centerTitle: true,
                   leading: PlatformBackButton(onPressed: () => model.onBack()),
                   backgroundColor: Colors.transparent,
@@ -182,7 +182,7 @@ class _PickInMapOption extends ViewModelWidget<PrincipalViewModel> {
                 child: SvgPicture.asset('assets/icons/move_in_map.svg', height: 25.0),
               ),
               const SizedBox(width: 10.0),
-              const Text('Fijar ubicación en el mapa', style: TextStyle(fontWeight: FontWeight.w500)), // TODO: translate
+              Text(Keys.set_location_on_map.localize(), style: const TextStyle(fontWeight: FontWeight.w500)),
             ],
           ),
         ),
@@ -229,7 +229,12 @@ class _OriginLocationField extends HookViewModelWidget<PrincipalViewModel> {
                 ),
               ),
             ),
-            GestureDetector(onTap: () => model.clearOriginPosition(), child: SvgPicture.asset('assets/icons/icon_x.svg', height: 20.0)),
+            GestureDetector(
+                onTap: () => model.clearOriginPosition(),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 10.0),
+                  child: SvgPicture.asset('assets/icons/icon_x.svg', height: 20.0),
+                )),
           ],
         ),
       ),
@@ -245,10 +250,10 @@ class _DestinationLocationField extends HookViewModelWidget<PrincipalViewModel> 
   @override
   Widget buildViewModelWidget(BuildContext context, PrincipalViewModel model) {
     final searchController = useTextEditingController();
-    // useEffect(() {
-    //   searchController.text = model.userLocation.descriptionAddress;
-    //   return null;
-    // }, [model.userLocation]);
+    useEffect(() {
+      searchController.text = model.destinationSelected != null ? model.destinationSelected.address : '';
+      return null;
+    }, [model.destinationSelected]);
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
@@ -279,7 +284,12 @@ class _DestinationLocationField extends HookViewModelWidget<PrincipalViewModel> 
                 ),
               ),
             ),
-            GestureDetector(onTap: () => model.clearDestinationPosition(), child: SvgPicture.asset('assets/icons/icon_x.svg', height: 20.0)),
+            GestureDetector(
+                onTap: () => model.clearDestinationPosition(),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 10.0),
+                  child: SvgPicture.asset('assets/icons/icon_x.svg', height: 20.0),
+                )),
           ],
         ),
       ),

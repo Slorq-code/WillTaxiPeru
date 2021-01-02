@@ -10,6 +10,8 @@ import 'package:taxiapp/models/enums/auth_type.dart';
 import 'package:taxiapp/models/enums/user_type.dart';
 import 'package:taxiapp/models/enums/vehicle_type.dart';
 import 'package:taxiapp/models/place.dart';
+import 'package:taxiapp/models/ride_request_model.dart';
+import 'package:taxiapp/models/route_map.dart';
 import 'package:taxiapp/models/user_location.dart';
 import 'package:taxiapp/models/user_model.dart';
 import 'package:taxiapp/services/app_service.dart';
@@ -30,14 +32,10 @@ class PrincipalViewModel extends ReactiveViewModel {
   // final bool _mapReady = false;
   // final bool _drawRoute = false;
   // final bool _followLocation = false;
-
   bool apiSelected = false;
-
   LatLng _centralLocation;
-
   String addressCurrentPosition;
   Place _destinationSelected;
-
   Map<String, Polyline> _polylines = {};
   Map<String, Marker> _markers = {};
   List<Place> placesFound = [];
@@ -47,6 +45,10 @@ class PrincipalViewModel extends ReactiveViewModel {
   Widget _currentSearchWidget = const SizedBox();
   Widget _currentRideWidget = const SizedBox();
   VehicleType _vehicleSelected = VehicleType.moto;
+  RouteMap _routeMap;
+  RideRequestModel rideRequest;
+  num ridePrice = 0;
+  DateTime destinationArrive;
 
   // * Getters
   UserModel get user => _appService.user;
@@ -56,7 +58,6 @@ class PrincipalViewModel extends ReactiveViewModel {
   Widget get currentSearchWidget => _currentSearchWidget;
   Widget get currentRideWidget => _currentRideWidget;
   Place get destinationSelected => _destinationSelected;
-
   Map<String, Polyline> get polylines => _polylines;
   Map<String, Marker> get markers => _markers;
   VehicleType get vehicleSelected => _vehicleSelected;
@@ -159,10 +160,9 @@ class PrincipalViewModel extends ReactiveViewModel {
   void makeRoute(Place place, BuildContext context) async {
     _destinationSelected = place;
 
-    final route = await _mapsService.getRouteByCoordinates(userLocation.location, place.latLng);
-    // routeMapCache = route;
+    _routeMap = await _mapsService.getRouteByCoordinates(userLocation.location, place.latLng);
 
-    final routePoints = route.points.map((point) => LatLng(point[0], point[1])).toList();
+    final routePoints = _routeMap.points.map((point) => LatLng(point[0], point[1])).toList();
     final myDestinationRoute = Polyline(
       polylineId: PolylineId('my_destination_route'),
       width: 4,
@@ -246,6 +246,19 @@ class PrincipalViewModel extends ReactiveViewModel {
   void updateVehicleSelected(VehicleType vehicleType) {
     _vehicleSelected = vehicleType;
     notifyListeners();
+  }
+
+  void confirmVehicleSelection() {
+    destinationArrive = DateTime.now().add(Duration(seconds: _routeMap.timeNeeded.value.toInt()));
+    updateCurrentRideWidget(2);
+    getPriceRide();
+  }
+
+  Future<void> getPriceRide() async {
+    setBusyForObject(ridePrice, true);
+    await Future.delayed(const Duration(seconds: 2));
+    ridePrice = 20;
+    setBusyForObject(ridePrice, false);
   }
 }
 

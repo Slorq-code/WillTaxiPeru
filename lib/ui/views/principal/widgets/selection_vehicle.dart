@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
+import 'package:taxiapp/extensions/string_extension.dart';
+import 'package:taxiapp/localization/keys.dart';
 import 'package:taxiapp/models/enums/vehicle_type.dart';
 import 'package:taxiapp/ui/views/principal/principal_viewmodel.dart';
 import 'package:taxiapp/ui/views/principal/widgets/vehicle_icon.dart';
@@ -61,7 +63,7 @@ class SelectionVehicle extends ViewModelWidget<PrincipalViewModel> {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 70.0, vertical: 10.0),
-                child: ActionButtonCustom(action: () => model.updateCurrentRideWidget(2), label: 'Continuar'), //TODO: translate
+                child: ActionButtonCustom(action: () => model.confirmVehicleSelection(), label: Keys.continue_label.localize()),
               ),
             ],
           ),

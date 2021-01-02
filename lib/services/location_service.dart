@@ -41,16 +41,22 @@ class LocationService with ReactiveServiceMixin {
     var userLocationTemp = _userLocation.value.copyWith();
     userLocationTemp.location = newlocation;
     if (!userLocationTemp.existLocation) {
-      final response = await _api.getAddress({'lat': userLocationTemp.location.latitude, 'lng': userLocationTemp.location.longitude});
-      try {
-        if (response['results'] != null && response['results'].isNotEmpty) {
-          userLocationTemp.descriptionAddress = response['results'][0]['formatted_address'];
-        }
-      } catch (e) {
-        userLocationTemp.descriptionAddress = '';
-      }
+      userLocationTemp.descriptionAddress = await getAddress(newlocation);
     }
     userLocationTemp.existLocation = true;
     _userLocation.value = userLocationTemp;
+  }
+
+  Future<String> getAddress(LatLng position) async {
+    try {
+      final response = await _api.getAddress({'lat': position.latitude, 'lng': position.longitude});
+      if (response['results'] != null && response['results'].isNotEmpty) {
+        return response['results'][0]['formatted_address'];
+      } else {
+        return '';
+      }
+    } catch (e) {
+      return '';
+    }
   }
 }

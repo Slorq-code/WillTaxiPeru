@@ -6,7 +6,7 @@ import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:taxiapp/app/globals.dart';
 import 'package:taxiapp/app/locator.dart';
-import 'package:taxiapp/models/tokenModel.dart';
+import 'package:taxiapp/models/token_model.dart';
 import 'package:taxiapp/services/storage_service.dart';
 import 'package:taxiapp/services/token.dart';
 import 'package:taxiapp/utils/retry/dio_retry.dart';

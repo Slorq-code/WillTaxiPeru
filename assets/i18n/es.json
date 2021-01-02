@@ -25,7 +25,6 @@
 	"reset_password": "Restablecer contraseña",
 	"instructions_reset_password": "Por favor siga las instrucciones que se le envio a su correo electrónico para restablecer su contraseña",
 	"email_not_registered": "La dirección de correo electrónico ingresada no se encuentra registrada",
-	"locate_on_map": "Ubicar en mapa",
 	"you_need_to_authorize_the_gps_to_use_the_app": "Se necesita autorizar el GPS para utilizar el app",
 	"request_access": "Solicitar Acceso",
 	"destination": "Destino",
@@ -42,5 +41,11 @@
 	"names": "Nombres",
 	"birthdate": "Fecha de nacimiento",
 	"vehicle": "Vehículo",
-	"drive": "Conducir"
+	"drive": "Conducir",
+	"moto": "Moto",
+	"taxi": "Taxi",
+	"mototaxi": "Mototaxi",
+	"new_destination": "Nuevo destino",
+	"locate_your_destination": "Ubica tu destino",
+	"set_location_on_map": "Fijar ubicación en el mapa"
 }

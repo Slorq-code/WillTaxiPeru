@@ -96,8 +96,11 @@ class FloatingSearch extends ViewModelWidget<PrincipalViewModel> {
                   onTap: () => ExtendedNavigator.root.push(Routes.profileViewRoute),
                   child: AvatarProfile(
                     heroTag: model.user.uid,
-                    height: MediaQuery.of(context).size.width * .07,
+                    height: MediaQuery.of(context).size.width * .15,
                     image: model.user.image,
+                    name: model.user.name,
+                    enableBorder: true,
+                    showName: false,
                   )),
             ),
           ],

@@ -28,28 +28,21 @@ class FirestoreUser {
   }
 
   Future<bool> userExists(String uid) async {
-    var documentSnapshot =
-        await databaseReference.collection(collectionUser).doc(uid).get();
+    var documentSnapshot = await databaseReference.collection(collectionUser).doc(uid).get();
     return documentSnapshot.exists;
   }
 
   Future<UserModel> userFind(String uid) async {
     try {
-      var documentSnapshot =
-          await databaseReference.collection(collectionUser).doc(uid).get();
+      var documentSnapshot = await databaseReference.collection(collectionUser).doc(uid).get();
 
       if (documentSnapshot.exists) {
         var data = documentSnapshot.data();
         var user = UserModel.fromMap(data);
-        if (user.userType.index == UserType.Driver.index) {
-          var documentDriverSnapshot = await databaseReference
-              .collection(collectionDriver)
-              .doc(uid)
-              .get();
+        if (user.userType == UserType.Driver) {
+          var documentDriverSnapshot = await databaseReference.collection(collectionDriver).doc(uid).get();
           if (documentDriverSnapshot.exists) {
-            user.aditionaldriveinformation =
-                AditionaldriveinformationModel.fromMap(
-                    documentDriverSnapshot.data());
+            user.aditionaldriveinformation = AditionaldriveinformationModel.fromMap(documentDriverSnapshot.data());
           }
         }
         return user;

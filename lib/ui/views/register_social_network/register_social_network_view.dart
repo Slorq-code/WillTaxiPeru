@@ -32,9 +32,7 @@ class RegisterSocialNetworkView extends StatelessWidget {
                 right: 0,
                 child: AspectRatio(
                   aspectRatio: 1.1,
-                  child: SvgPicture.asset(
-                      'assets/background/background_enroll.svg',
-                      fit: BoxFit.contain),
+                  child: SvgPicture.asset('assets/background/background_enroll.svg', fit: BoxFit.contain),
                 ),
               ),
             SafeArea(
@@ -50,15 +48,13 @@ class RegisterSocialNetworkView extends StatelessWidget {
   }
 }
 
-class _BodyRegister
-    extends HookViewModelWidget<RegisterSocialNetworkViewModel> {
+class _BodyRegister extends HookViewModelWidget<RegisterSocialNetworkViewModel> {
   _BodyRegister({
     Key key,
   }) : super(key: key);
 
   @override
-  Widget buildViewModelWidget(
-      BuildContext context, RegisterSocialNetworkViewModel model) {
+  Widget buildViewModelWidget(BuildContext context, RegisterSocialNetworkViewModel model) {
     final namesController = useTextEditingController(text: model.name);
     final emailController = useTextEditingController(text: model.email);
     final phoneController = useTextEditingController(text: model.phone);
@@ -77,14 +73,10 @@ class _BodyRegister
             padding: const EdgeInsets.symmetric(vertical: 20.0),
             child: Row(
               children: [
-                PlatformBackButton(
-                    onPressed: () => ExtendedNavigator.root.pop()),
+                PlatformBackButton(onPressed: () => ExtendedNavigator.root.pop()),
                 Text(
                   Keys.sign_up.localize(),
-                  style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 27,
-                      fontWeight: FontWeight.bold),
+                  style: const TextStyle(color: Colors.black, fontSize: 27, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -106,7 +98,7 @@ class _BodyRegister
                         icon: 'assets/icons/profile_avatar.svg',
                         enabled: false,
                       ),
-                      const SizedBox(height: 5.0),
+                      const SizedBox(height: 10.0),
                       TextFieldCustom(
                         controller: emailController,
                         focus: emailFocus,
@@ -118,16 +110,13 @@ class _BodyRegister
                         icon: 'assets/icons/mail.svg',
                         enabled: Utils.isNullOrEmpty(model.email),
                       ),
-                      const SizedBox(height: 5.0),
+                      const SizedBox(height: 10.0),
                       TextFieldCustom(
                         controller: phoneController,
                         focus: phoneFocus,
                         onChanged: (value) => model.phone = value,
                         labelText: Keys.mobile_phone.localize(),
-                        inputFormatters: [
-                          LengthLimitingTextInputFormatter(9),
-                          FilteringTextInputFormatter.digitsOnly
-                        ],
+                        inputFormatters: [LengthLimitingTextInputFormatter(9), FilteringTextInputFormatter.digitsOnly],
                         keyboardType: TextInputType.phone,
                         isFinal: true,
                         icon: 'assets/icons/phone_enroll.svg',
@@ -147,8 +136,7 @@ class _BodyRegister
   }
 }
 
-class _ContinueEnrollButton
-    extends ViewModelWidget<RegisterSocialNetworkViewModel> {
+class _ContinueEnrollButton extends ViewModelWidget<RegisterSocialNetworkViewModel> {
   const _ContinueEnrollButton({
     Key key,
   }) : super(key: key);
@@ -156,19 +144,14 @@ class _ContinueEnrollButton
   @override
   Widget build(BuildContext context, RegisterSocialNetworkViewModel model) {
     return Container(
-      padding: EdgeInsets.symmetric(
-          horizontal: MediaQuery.of(context).size.width * .18),
+      padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * .18),
       height: 50,
       child: RaisedButton(
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
         color: PalleteColor.actionButtonColor,
         disabledColor: PalleteColor.actionButtonColor.withOpacity(0.5),
-        child: Text(Keys.continue_label.localize(),
-            style: const TextStyle(color: Colors.white, fontSize: 16)),
-        onPressed: !model.enableBtnContinue
-            ? null
-            : () => !model.isBusy ? model.signin() : null,
+        child: Text(Keys.continue_label.localize(), style: const TextStyle(color: Colors.white, fontSize: 16)),
+        onPressed: !model.enableBtnContinue ? null : () => !model.isBusy ? model.signin() : null,
       ),
     );
   }

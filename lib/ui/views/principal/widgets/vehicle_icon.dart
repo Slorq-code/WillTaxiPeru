@@ -26,7 +26,7 @@ class VehicleIcon extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final animationController = useAnimationController(
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 200),
       initialValue: isSelected ? 1.2 : 1,
       lowerBound: 1,
       upperBound: 1.2,
@@ -56,8 +56,8 @@ class VehicleIcon extends HookWidget {
                     shape: BoxShape.circle,
                     border: Border.all(color: isSelected ? borderColor : Colors.transparent, width: 2.0),
                     color: const Color(0xfff0f0f0)),
-                height: 90,
-                width: 90,
+                height: 70,
+                width: 70,
               ),
             ),
             Positioned(bottom: bottomOffset, child: IgnorePointer(child: Image.asset(icon, width: width ?? size, height: size))),

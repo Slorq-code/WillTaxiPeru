@@ -6,8 +6,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:stacked/stacked.dart';
 import 'package:taxiapp/app/locator.dart';
-import 'package:taxiapp/models/enums/auth_type.dart';
-import 'package:taxiapp/models/enums/user_type.dart';
 import 'package:taxiapp/models/enums/vehicle_type.dart';
 import 'package:taxiapp/models/place.dart';
 import 'package:taxiapp/models/ride_request_model.dart';

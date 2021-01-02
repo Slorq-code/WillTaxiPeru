@@ -9,13 +9,15 @@ class AvatarProfile extends StatelessWidget {
     Key key,
     @required this.heroTag,
     this.image,
-    this.name,
+    @required this.name,
     this.height = 100,
     this.enableBorder = false,
     this.nameBold = true,
     this.fontSize = 12.0,
+    this.showName = true,
     this.updatePicture,
-  }) : super(key: key);
+  })  : assert(name != null),
+        super(key: key);
   final String heroTag;
   final String image;
   final String name;
@@ -23,6 +25,7 @@ class AvatarProfile extends StatelessWidget {
   final bool enableBorder;
   final bool nameBold;
   final double fontSize;
+  final bool showName;
 
   final VoidCallback updatePicture;
 
@@ -71,13 +74,14 @@ class AvatarProfile extends StatelessWidget {
             ),
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(
-            name,
-            style: TextStyle(fontSize: fontSize, fontWeight: nameBold ? FontWeight.w500 : FontWeight.normal),
+        if (showName)
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              name,
+              style: TextStyle(fontSize: fontSize, fontWeight: nameBold ? FontWeight.w500 : FontWeight.normal),
+            ),
           ),
-        ),
       ],
     );
   }

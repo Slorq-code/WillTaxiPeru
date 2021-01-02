@@ -13,32 +13,20 @@ import 'package:taxiapp/utils/utils.dart';
 import 'package:taxiapp/extensions/string_extension.dart';
 
 class RegisterSocialNetworkViewModel extends BaseViewModel {
-  BuildContext context;
-
-  RegisterSocialNetworkViewModel(BuildContext context) {
-    this.context = context;
-  }
-
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
-  // * Getters
-  GlobalKey<FormState> get formKey => _formKey;
-
-  // * Functions
+  RegisterSocialNetworkViewModel(BuildContext context) : _context = context;
 
   final AuthSocialNetwork _authSocialNetwork = locator<AuthSocialNetwork>();
   final FirestoreUser _firestoreUser = locator<FirestoreUser>();
-
-  void initial() async {
-    name = Utils.isNullOrEmpty(_authSocialNetwork.user.name) ? '' : _authSocialNetwork.user.name;
-    phone = Utils.isNullOrEmpty(_authSocialNetwork.user.phone) ? '' : _authSocialNetwork.user.phone;
-    email = Utils.isNullOrEmpty(_authSocialNetwork.user.email) ? '' : _authSocialNetwork.user.email;
-  }
-
+  final BuildContext _context;
   String _name;
   String _phone;
   String _email;
 
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  // * Getters & Setters
+
+  GlobalKey<FormState> get formKey => _formKey;
   String get name => _name;
 
   set name(name) {
@@ -64,12 +52,20 @@ class RegisterSocialNetworkViewModel extends BaseViewModel {
     return !Utils.isNullOrEmpty(name) && !Utils.isNullOrEmpty(email) && Utils.isValidEmail(email) && !Utils.isNullOrEmpty(phone) && Utils.isValidPhone(phone);
   }
 
+  // * Functions
+
+  void initial() async {
+    name = Utils.isNullOrEmpty(_authSocialNetwork.user.name) ? '' : _authSocialNetwork.user.name;
+    phone = Utils.isNullOrEmpty(_authSocialNetwork.user.phone) ? '' : _authSocialNetwork.user.phone;
+    email = Utils.isNullOrEmpty(_authSocialNetwork.user.email) ? '' : _authSocialNetwork.user.email;
+  }
+
   void signin() async {
     setBusy(true);
 
     var packageInfo = await Utils.getPackageInfo();
     try {
-      Alert(context: context).loading(Keys.loading.localize());
+      Alert(context: _context).loading(Keys.loading.localize());
 
       if (_authSocialNetwork.isLoggedIn) {
         _authSocialNetwork.user.name = name.toString().trim();
@@ -82,15 +78,15 @@ class RegisterSocialNetworkViewModel extends BaseViewModel {
 
         if (userRegister) {
           _authSocialNetwork.sendSignInLinkToEmail(email);
-          Alert(context: context, title: packageInfo.appName, label: Keys.user_created_successfully.localize()).alertCallBack(() {
+          Alert(context: _context, title: packageInfo.appName, label: Keys.user_created_successfully.localize()).alertCallBack(() {
             ExtendedNavigator.root.push(Routes.principalViewRoute);
           });
         } else {
-          Alert(context: context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();
+          Alert(context: _context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();
         }
       } else {
         ExtendedNavigator.root.pop();
-        Alert(context: context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();
+        Alert(context: _context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();
       }
     } catch (signUpError) {
       ExtendedNavigator.root.pop();
@@ -98,9 +94,9 @@ class RegisterSocialNetworkViewModel extends BaseViewModel {
       if (signUpError is FirebaseAuthException) {
         print(signUpError.code);
         if (signUpError.code == 'email-already-in-use') {
-          Alert(context: context, title: packageInfo.appName, label: Keys.email_already_registered.localize()).alertMessage();
+          Alert(context: _context, title: packageInfo.appName, label: Keys.email_already_registered.localize()).alertMessage();
         } else {
-          Alert(context: context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();
+          Alert(context: _context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();
         }
       }
     } finally {

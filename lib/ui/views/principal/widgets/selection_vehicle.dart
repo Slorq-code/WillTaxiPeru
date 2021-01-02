@@ -35,7 +35,7 @@ class SelectionVehicle extends ViewModelWidget<PrincipalViewModel> {
                   children: [
                     VehicleIcon(
                       icon: 'assets/icons/moto.png',
-                      size: 60,
+                      size: 85,
                       isSelected: model.vehicleSelected == VehicleType.moto,
                       bottomOffset: -2,
                       borderColor: const Color(0xff1a9ab7),
@@ -43,17 +43,17 @@ class SelectionVehicle extends ViewModelWidget<PrincipalViewModel> {
                     ),
                     VehicleIcon(
                       icon: 'assets/icons/taxi.png',
-                      size: 60,
-                      width: 80,
-                      bottomOffset: -5,
+                      size: 80,
+                      width: 120,
+                      bottomOffset: -10,
                       borderColor: const Color(0xfffea913),
                       onTap: () => model.updateVehicleSelected(VehicleType.taxi),
                       isSelected: model.vehicleSelected == VehicleType.taxi,
                     ),
                     VehicleIcon(
                       icon: 'assets/icons/mototaxi.png',
-                      size: 68,
-                      bottomOffset: -8,
+                      size: 98,
+                      bottomOffset: -12,
                       borderColor: const Color(0xffd12a19),
                       onTap: () => model.updateVehicleSelected(VehicleType.mototaxi),
                       isSelected: model.vehicleSelected == VehicleType.mototaxi,

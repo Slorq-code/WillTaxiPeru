@@ -3,18 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:taxiapp/theme/pallete_color.dart';
 
 class ActionButtonCustom extends StatelessWidget {
-  final VoidCallback action;
-  final String label;
-  final double fontSize;
-
   const ActionButtonCustom({
     Key key,
     @required this.action,
     @required this.label,
     this.fontSize = 16,
+    this.color = PalleteColor.actionButtonColor,
   })  : assert(action != null),
         assert(label != null),
         super(key: key);
+
+  final VoidCallback action;
+  final String label;
+  final double fontSize;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +25,7 @@ class ActionButtonCustom extends StatelessWidget {
       height: MediaQuery.of(context).size.height * 0.06,
       child: RaisedButton(
         onPressed: action,
-        color: PalleteColor.actionButtonColor,
+        color: color,
         elevation: 2,
         highlightElevation: 4,
         child: Container(

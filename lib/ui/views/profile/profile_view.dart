@@ -10,10 +10,10 @@ import 'package:taxiapp/localization/keys.dart';
 import 'package:taxiapp/models/enums/user_type.dart';
 import 'package:taxiapp/theme/pallete_color.dart';
 import 'package:taxiapp/ui/views/profile/profile_viewmodel.dart';
+import 'package:taxiapp/ui/widgets/avatar_profile/avatar_profile.dart';
 import 'package:taxiapp/ui/widgets/box_border_container.dart';
 import 'package:taxiapp/ui/widgets/buttons/action_button_custom.dart';
 import 'package:taxiapp/ui/widgets/buttons/platform_back_button.dart';
-import 'package:taxiapp/utils/network_image.dart';
 
 class ProfileView extends StatelessWidget {
   @override
@@ -59,7 +59,12 @@ class _BodyProfile extends HookViewModelWidget<ProfileViewModel> {
       mainAxisSize: MainAxisSize.max,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        const _AvatarProfile(),
+        AvatarProfile(
+          heroTag: model.user.uid,
+          image: model.user.image,
+          name: model.user.name,
+          updatePicture: () {},
+        ),
         const _BoxInformation(),
         const _CallCentralButton(),
         const _LogoutButton(),
@@ -152,65 +157,6 @@ class _CallCentralButton extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _AvatarProfile extends ViewModelWidget<ProfileViewModel> {
-  const _AvatarProfile({
-    Key key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context, ProfileViewModel model) {
-    return Column(
-      children: [
-        Hero(
-          tag: model.user.uid,
-          child: Container(
-            width: 100,
-            height: 100,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.black,
-            ),
-            child: ClipOval(
-              child: Stack(
-                children: [
-                  model.user.image != null && model.user.image.isNotEmpty
-                      ? PNetworkImage(
-                          model.user.image,
-                          fit: BoxFit.cover,
-                        )
-                      : Container(
-                          color: Colors.red,
-                          height: 100,
-                          width: 100,
-                          alignment: Alignment.center,
-                          child: Text(model.getNameInitials(), style: const TextStyle(fontSize: 40.0, color: Colors.white)),
-                        ),
-                  Positioned(
-                    bottom: 0,
-                    child: Container(
-                      height: 25,
-                      width: 100,
-                      color: Colors.black,
-                      child: SvgPicture.asset('assets/icons/camera.svg'),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(
-            model.user.name,
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-          ),
-        ),
-      ],
     );
   }
 }

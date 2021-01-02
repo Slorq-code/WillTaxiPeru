@@ -75,12 +75,35 @@ class Utils {
     return (password.trim().length > 5 && password.trim().length < 21);
   }
 
-  static Future<PackageInfo> getPackageInfo() async{
+  static Future<PackageInfo> getPackageInfo() async {
     return await PackageInfo.fromPlatform();
   }
 
   static bool isValidPhone(String phone) {
     return RegExp(r'^[0-9]{9}$').hasMatch(phone);
   }
-  
+
+  static String getNameInitials(String name) {
+    var nameInitials = '';
+    try {
+      final nameComponents = name.trim().split(' ');
+      switch (nameComponents.length) {
+        case 1:
+          nameInitials = nameComponents.first[0];
+          break;
+        case 2:
+        case 3:
+          nameInitials = nameComponents[0].characters.first + nameComponents[1].characters.first;
+          break;
+        case 4:
+          nameInitials = nameComponents[0].characters.first + nameComponents[2].characters.first;
+          break;
+        default:
+          nameInitials = nameComponents.first[0];
+      }
+    } catch (e) {
+      nameInitials = '';
+    }
+    return nameInitials;
+  }
 }

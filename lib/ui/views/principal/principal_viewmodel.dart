@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
@@ -6,6 +7,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:stacked/stacked.dart';
 import 'package:taxiapp/app/locator.dart';
+import 'package:taxiapp/app/router.gr.dart';
 import 'package:taxiapp/models/enums/vehicle_type.dart';
 import 'package:taxiapp/models/place.dart';
 import 'package:taxiapp/models/ride_request_model.dart';
@@ -141,7 +143,7 @@ class PrincipalViewModel extends ReactiveViewModel {
       updateCurrentSearchWidget(1);
       return false;
     } else {
-      return true;
+      logout();
     }
   }
 
@@ -296,6 +298,13 @@ class PrincipalViewModel extends ReactiveViewModel {
     _driverForRide = null;
     _destinationArrive = _getDestinationArrive();
     notifyListeners();
+  }
+
+  void logout() async {
+    setBusy(true);
+    await _authSocialNetwork.logout();
+    await ExtendedNavigator.root.pushAndRemoveUntil(Routes.loginViewRoute, (route) => false);
+    setBusy(false);
   }
 }
 

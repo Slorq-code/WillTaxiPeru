@@ -7,7 +7,6 @@ import 'package:taxiapp/extensions/string_extension.dart';
 import 'package:taxiapp/localization/keys.dart';
 import 'package:taxiapp/ui/views/principal/principal_viewmodel.dart';
 import 'package:taxiapp/ui/widgets/avatar_profile/avatar_profile.dart';
-import 'package:taxiapp/utils/network_image.dart';
 
 class FloatingSearch extends ViewModelWidget<PrincipalViewModel> {
   const FloatingSearch({

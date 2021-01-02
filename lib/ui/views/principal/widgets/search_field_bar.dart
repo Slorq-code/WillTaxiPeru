@@ -102,9 +102,10 @@ class SearchFieldBar extends ViewModelWidget<PrincipalViewModel> {
                   Expanded(
                     flex: 4,
                     child: Container(
+                      alignment: Alignment.center,
                       decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: const Color(0xfff0f0f0)),
                       padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 50.0),
-                      child: const Text('Tu GO esta en camino!'), //TODO: update with translate
+                      child: Text(Keys.comming_ride_message.localize()),
                     ),
                   ),
                   Expanded(

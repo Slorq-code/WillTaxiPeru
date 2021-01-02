@@ -2,9 +2,7 @@
 	"accept": "Accept",
 	"cancel": "Cancel",
 	"accept_terms_and_references": "I accept terms and references",
-	"addr_line": "Addr. Line",
 	"address": "Address",
-	"hello": "Hello",
 	"email": "E-mail",
 	"password": "Password",
 	"repeat_password": "Repeat password",
@@ -47,5 +45,6 @@
 	"mototaxi": "Mototaxi",
 	"new_destination": "New destination",
 	"locate_your_destination": "Locate your destination",
-	"set_location_on_map": "Set location on map"
+	"set_location_on_map": "Set location on map",
+	"comming_ride_message": "Your GO is on the way!"
 }

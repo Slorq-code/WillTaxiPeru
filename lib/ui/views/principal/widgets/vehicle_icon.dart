@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
-class VehicleIcon extends StatelessWidget {
+class VehicleIcon extends HookWidget {
   const VehicleIcon({
     Key key,
     @required this.icon,
-    @required this.onTap,
+    this.onTap,
     @required this.isSelected,
-    this.size = 80,
+    this.size = 100,
     this.width,
     this.bottomOffset = 0,
     this.borderColor,
   })  : assert(icon != null),
-        assert(onTap != null),
         assert(isSelected != null),
         super(key: key);
 
@@ -25,23 +25,44 @@ class VehicleIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final animationController = useAnimationController(
+      duration: const Duration(milliseconds: 200),
+      initialValue: isSelected ? 1.2 : 1,
+      lowerBound: 1,
+      upperBound: 1.2,
+    );
+
+    useEffect(() {
+      if (isSelected) {
+        animationController.forward();
+      } else {
+        animationController.reverse();
+      }
+      return null;
+    }, [isSelected]);
+
     return Padding(
-      padding: const EdgeInsets.only(bottom: 5.0),
-      child: Stack(
-        overflow: Overflow.visible,
-        alignment: Alignment.center,
-        children: [
-          GestureDetector(
-            onTap: onTap,
-            child: Container(
-              decoration: BoxDecoration(
-                  shape: BoxShape.circle, border: Border.all(color: isSelected ? borderColor : Colors.transparent, width: 2.0), color: const Color(0xfff0f0f0)),
-              height: 65,
-              width: 65,
+      padding: const EdgeInsets.only(bottom: 10.0),
+      child: ScaleTransition(
+        scale: animationController,
+        child: Stack(
+          overflow: Overflow.visible,
+          alignment: Alignment.center,
+          children: [
+            GestureDetector(
+              onTap: () => onTap != null ? onTap() : () {},
+              child: Container(
+                decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: isSelected ? borderColor : Colors.transparent, width: 2.0),
+                    color: const Color(0xfff0f0f0)),
+                height: 70,
+                width: 70,
+              ),
             ),
-          ),
-          Positioned(bottom: bottomOffset, child: IgnorePointer(child: Image.asset(icon, width: width ?? size, height: size))),
-        ],
+            Positioned(bottom: bottomOffset, child: IgnorePointer(child: Image.asset(icon, width: width ?? size, height: size))),
+          ],
+        ),
       ),
     );
   }

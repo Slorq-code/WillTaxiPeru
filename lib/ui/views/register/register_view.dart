@@ -97,7 +97,7 @@ class _BodyRegister extends HookViewModelWidget<RegisterViewModel> {
                         inputFormatters: [LengthLimitingTextInputFormatter(50)],
                         icon: 'assets/icons/profile_avatar.svg',
                       ),
-                      const SizedBox(height: 5.0),
+                      const SizedBox(height: 10.0),
                       TextFieldCustom(
                         controller: phoneController,
                         focus: phoneFocus,
@@ -108,7 +108,7 @@ class _BodyRegister extends HookViewModelWidget<RegisterViewModel> {
                         keyboardType: TextInputType.phone,
                         icon: 'assets/icons/phone_enroll.svg',
                       ),
-                      const SizedBox(height: 5.0),
+                      const SizedBox(height: 10.0),
                       TextFieldCustom(
                         controller: emailController,
                         focus: emailFocus,
@@ -119,7 +119,7 @@ class _BodyRegister extends HookViewModelWidget<RegisterViewModel> {
                         keyboardType: TextInputType.emailAddress,
                         icon: 'assets/icons/mail.svg',
                       ),
-                      const SizedBox(height: 5.0),
+                      const SizedBox(height: 10.0),
                       TextFieldCustom(
                         controller: passwordController,
                         focus: passwordFocus,
@@ -130,7 +130,7 @@ class _BodyRegister extends HookViewModelWidget<RegisterViewModel> {
                         isPassword: true,
                         icon: 'assets/icons/lock.svg',
                       ),
-                      const SizedBox(height: 5.0),
+                      const SizedBox(height: 10.0),
                       TextFieldCustom(
                         controller: retypePasswordController,
                         focus: retypePasswordFocus,

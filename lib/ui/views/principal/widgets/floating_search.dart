@@ -6,7 +6,7 @@ import 'package:taxiapp/app/router.gr.dart';
 import 'package:taxiapp/extensions/string_extension.dart';
 import 'package:taxiapp/localization/keys.dart';
 import 'package:taxiapp/ui/views/principal/principal_viewmodel.dart';
-import 'package:taxiapp/utils/network_image.dart';
+import 'package:taxiapp/ui/widgets/avatar_profile/avatar_profile.dart';
 
 class FloatingSearch extends ViewModelWidget<PrincipalViewModel> {
   const FloatingSearch({
@@ -92,25 +92,15 @@ class FloatingSearch extends ViewModelWidget<PrincipalViewModel> {
             ),
             Expanded(
               child: GestureDetector(
-                onTap: () => ExtendedNavigator.root.push(Routes.profileViewRoute),
-                child: Hero(
-                  tag: model.user.uid,
-                  child: CircleAvatar(
-                    backgroundColor: Colors.black,
-                    radius: MediaQuery.of(context).size.width * .07,
-                    child: ClipOval(
-                      child: SizedBox(
-                        height: MediaQuery.of(context).size.width * .14,
-                        width: MediaQuery.of(context).size.width * .14,
-                        child: PNetworkImage(
-                          model.user.image.isEmpty ? 'https://cdn.onlinewebfonts.com/svg/img_568657.png' : model.user.image,
-                          fit: BoxFit.fitHeight,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+                  onTap: () => ExtendedNavigator.root.push(Routes.profileViewRoute),
+                  child: AvatarProfile(
+                    heroTag: model.user.uid,
+                    height: MediaQuery.of(context).size.width * .15,
+                    image: model.user.image,
+                    name: model.user.name,
+                    enableBorder: true,
+                    showName: false,
+                  )),
             ),
           ],
         ),

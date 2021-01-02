@@ -19,9 +19,9 @@ class UserModel {
     uid = data['uid'] ?? '';
     phone = data['phone'] ?? '';
     email = data['email'] ?? '';
-    image = data['imagen'] ?? '';
-    userType = UserType.values[data['userType'] ?? 0];
-    authType = AuthType.values[data['authType'] ?? 0];
+    image = data['image'] ?? '';
+    userType = UserType.values[data['userType'] ?? UserType.Client];
+    authType = AuthType.values[data['authType'] ?? AuthType.User];
   }
 
   UserModel copyWith({

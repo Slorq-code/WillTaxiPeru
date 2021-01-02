@@ -2,9 +2,7 @@
 	"accept": "Aceptar",
 	"cancel": "Cancelar",
 	"accept_terms_and_references": "Acepto términos y referencias",
-	"addr_line": "Dirección",
 	"address": "Domicilio",
-	"hello": "Hola",
 	"email": "Correo electrónico",
 	"password": "Contraseña",
 	"repeat_password": "Confirmar contraseña",
@@ -47,5 +45,6 @@
 	"mototaxi": "Mototaxi",
 	"new_destination": "Nuevo destino",
 	"locate_your_destination": "Ubica tu destino",
-	"set_location_on_map": "Fijar ubicación en el mapa"
+	"set_location_on_map": "Fijar ubicación en el mapa",
+	"comming_ride_message": "¡Tu GO está en camino!"
 }

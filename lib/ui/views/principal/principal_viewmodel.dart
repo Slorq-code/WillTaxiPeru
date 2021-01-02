@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
@@ -6,8 +7,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:stacked/stacked.dart';
 import 'package:taxiapp/app/locator.dart';
-import 'package:taxiapp/models/enums/auth_type.dart';
-import 'package:taxiapp/models/enums/user_type.dart';
+import 'package:taxiapp/app/router.gr.dart';
 import 'package:taxiapp/models/enums/vehicle_type.dart';
 import 'package:taxiapp/models/place.dart';
 import 'package:taxiapp/models/ride_request_model.dart';
@@ -48,9 +48,12 @@ class PrincipalViewModel extends ReactiveViewModel {
   Widget _currentRideWidget = const SizedBox();
   VehicleType _vehicleSelected = VehicleType.moto;
   RouteMap _routeMap;
-  RideRequestModel rideRequest;
+  RideRequestModel _rideRequest;
+  UserModel _driverForRide;
   num ridePrice = 0;
-  DateTime destinationArrive;
+  DateTime _destinationArrive;
+  bool _searchingDriver = false;
+  bool _rideInProgress = false;
 
   // * Getters
   UserModel get user => _appService.user;
@@ -63,6 +66,11 @@ class PrincipalViewModel extends ReactiveViewModel {
   Map<String, Polyline> get polylines => _polylines;
   Map<String, Marker> get markers => _markers;
   VehicleType get vehicleSelected => _vehicleSelected;
+  DateTime get destinationArrive => _destinationArrive;
+  bool get isSearchingDriver => _searchingDriver;
+  bool get rideInProgress => _rideInProgress;
+  UserModel get driverForRide => _driverForRide;
+  RideRequestModel get rideRequest => _rideRequest;
 
   // * Functions
 
@@ -135,7 +143,7 @@ class PrincipalViewModel extends ReactiveViewModel {
       updateCurrentSearchWidget(1);
       return false;
     } else {
-      return true;
+      logout();
     }
   }
 
@@ -243,16 +251,60 @@ class PrincipalViewModel extends ReactiveViewModel {
   }
 
   void confirmVehicleSelection() {
-    destinationArrive = DateTime.now().add(Duration(seconds: _routeMap.timeNeeded.value.toInt()));
+    _destinationArrive = _getDestinationArrive();
     updateCurrentRideWidget(2);
     getPriceRide();
   }
 
+  DateTime _getDestinationArrive() => DateTime.now().add(Duration(seconds: _routeMap.timeNeeded.value.toInt()));
+
+  // * Mockup implementation
   Future<void> getPriceRide() async {
     setBusyForObject(ridePrice, true);
     await Future.delayed(const Duration(seconds: 2));
     ridePrice = 20;
     setBusyForObject(ridePrice, false);
+  }
+
+  Future<void> confirmRide() async {
+    _searchingDriver = true;
+    notifyListeners();
+    driverFound();
+  }
+
+  // * Mockup implementation
+  void driverFound() async {
+    await Future.delayed(const Duration(seconds: 3));
+    _searchingDriver = false;
+    _driverForRide = UserModel(
+      name: 'Paul Rider',
+      image: 'https://manofmany.com/wp-content/uploads/2019/06/50-Long-Haircuts-Hairstyle-Tips-for-Men-2.jpg',
+      uid: 'dasdsagfdgdfgdffgd234234',
+    );
+    _rideRequest = RideRequestModel(
+      driverId: 'dasdsagfdgdfgdffgd234234',
+      secondsArrive: 350,
+      id: 'sdagfgdfgfdgfdgf',
+      userId: _appService.user.uid,
+      price: ridePrice,
+    );
+    _rideInProgress = true;
+    notifyListeners();
+  }
+
+  Future<void> cancelRide() async {
+    _rideRequest = null;
+    _rideInProgress = false;
+    _driverForRide = null;
+    _destinationArrive = _getDestinationArrive();
+    notifyListeners();
+  }
+
+  void logout() async {
+    setBusy(true);
+    await _authSocialNetwork.logout();
+    await ExtendedNavigator.root.pushAndRemoveUntil(Routes.loginViewRoute, (route) => false);
+    setBusy(false);
   }
 }
 

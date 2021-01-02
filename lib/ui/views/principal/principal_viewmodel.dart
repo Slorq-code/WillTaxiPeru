@@ -6,19 +6,20 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:stacked/stacked.dart';
 import 'package:taxiapp/app/locator.dart';
-import 'package:taxiapp/extensions/string_extension.dart';
-import 'package:taxiapp/localization/keys.dart';
 import 'package:taxiapp/models/enums/auth_type.dart';
 import 'package:taxiapp/models/enums/user_type.dart';
 import 'package:taxiapp/models/enums/vehicle_type.dart';
 import 'package:taxiapp/models/place.dart';
-import 'package:taxiapp/models/route_map.dart';
 import 'package:taxiapp/models/user_location.dart';
 import 'package:taxiapp/models/user_model.dart';
 import 'package:taxiapp/services/app_service.dart';
 import 'package:taxiapp/services/location_service.dart';
 import 'package:taxiapp/services/maps_service/maps_general_service.dart';
-import 'package:taxiapp/ui/views/principal/principal_view.dart';
+import 'package:taxiapp/ui/views/principal/widgets/check_ride_details.dart';
+import 'package:taxiapp/ui/views/principal/widgets/floating_search.dart';
+import 'package:taxiapp/ui/views/principal/widgets/manual_pick_in_map.dart';
+import 'package:taxiapp/ui/views/principal/widgets/search_field_bar.dart';
+import 'package:taxiapp/ui/views/principal/widgets/selection_vehicle.dart';
 import 'package:taxiapp/ui/widgets/helpers.dart';
 
 class PrincipalViewModel extends ReactiveViewModel {
@@ -40,9 +41,11 @@ class PrincipalViewModel extends ReactiveViewModel {
   Map<String, Polyline> _polylines = {};
   Map<String, Marker> _markers = {};
   List<Place> placesFound = [];
-  final List<Widget> _switchingWidgets = [const FloatingSearch(), const SearchFieldBar(), const ManualMarker()];
+  final List<Widget> _switchSearchWidgets = [const FloatingSearch(), const SearchFieldBar(), const ManualPickInMap()];
+  final List<Widget> _switchRideWidgets = [const SizedBox(), const SelectionVehicle(), const CheckRideDetails(), const SizedBox()];
   GoogleMapController _mapController;
   Widget _currentSearchWidget = const SizedBox();
+  Widget _currentRideWidget = const SizedBox();
   VehicleType _vehicleSelected = VehicleType.moto;
 
   // * Getters
@@ -51,6 +54,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   UserLocation get userLocation => _locationService.location;
   LatLng get centralLocation => _centralLocation;
   Widget get currentSearchWidget => _currentSearchWidget;
+  Widget get currentRideWidget => _currentRideWidget;
   Place get destinationSelected => _destinationSelected;
 
   Map<String, Polyline> get polylines => _polylines;
@@ -63,7 +67,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   List<ReactiveServiceMixin> get reactiveServices => [_locationService, _appService];
 
   Future<void> initialize() async {
-    _currentSearchWidget = _switchingWidgets[0];
+    _currentSearchWidget = _switchSearchWidgets[0];
     if (await Geolocator().isLocationServiceEnabled()) {
       _state = PrincipalState.accessGPSEnable;
       _locationService.startTracking();
@@ -123,10 +127,16 @@ class PrincipalViewModel extends ReactiveViewModel {
   Future<String> getMapTheme() async => rootBundle.loadString('assets/map_theme/map_theme.json');
 
   bool onBack() {
-    if (_currentSearchWidget is SearchFieldBar) {
+    if (_currentRideWidget is SelectionVehicle) {
+      updateCurrentRideWidget(0);
+      return false;
+    } else if (_currentRideWidget is CheckRideDetails) {
+      updateCurrentRideWidget(1);
+      return false;
+    } else if (_currentSearchWidget is SearchFieldBar) {
       updateCurrentSearchWidget(0);
       return false;
-    } else if (_currentSearchWidget is ManualMarker) {
+    } else if (_currentSearchWidget is ManualPickInMap) {
       updateCurrentSearchWidget(1);
       return false;
     } else {
@@ -141,11 +151,15 @@ class PrincipalViewModel extends ReactiveViewModel {
     notifyListeners();
   }
 
-  RouteMap routeMapCache;
+  void confirmManualPickDestination(LatLng destinationPosition, BuildContext context) async {
+    final destinationPlace = await _locationService.getAddress(destinationPosition);
+    makeRoute(Place(latLng: destinationPosition, address: destinationPlace), context);
+  }
+
   void makeRoute(Place place, BuildContext context) async {
     _destinationSelected = place;
 
-    final route = routeMapCache ?? await _mapsService.getRouteByCoordinates(userLocation.location, place.latLng);
+    final route = await _mapsService.getRouteByCoordinates(userLocation.location, place.latLng);
     // routeMapCache = route;
 
     final routePoints = route.points.map((point) => LatLng(point[0], point[1])).toList();
@@ -196,9 +210,14 @@ class PrincipalViewModel extends ReactiveViewModel {
 
     _polylines = currentPolylines;
     _markers = newMarkers;
-    _currentSearchWidget = _switchingWidgets[1];
+    _showSecondSearchWidget();
+    _showSelectVehicle();
     notifyListeners();
   }
+
+  void _showSecondSearchWidget() => _currentSearchWidget = _switchSearchWidgets[1];
+
+  void _showSelectVehicle() => _currentRideWidget = _switchRideWidgets[1];
 
   void updateApiSelection(bool status) {
     apiSelected = status;
@@ -207,7 +226,12 @@ class PrincipalViewModel extends ReactiveViewModel {
   }
 
   void updateCurrentSearchWidget(int index) {
-    _currentSearchWidget = _switchingWidgets[index];
+    _currentSearchWidget = _switchSearchWidgets[index];
+    notifyListeners();
+  }
+
+  void updateCurrentRideWidget(int index) {
+    _currentRideWidget = _switchRideWidgets[index];
     notifyListeners();
   }
 

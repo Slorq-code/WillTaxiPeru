@@ -9,7 +9,7 @@ class RideRequestModel {
   int _secondsArrive;
   num _price;
   Map _position;
-  Map _destination;
+  String _destination;
 
   // * TEMPORAL constructor for test
   RideRequestModel({
@@ -21,7 +21,7 @@ class RideRequestModel {
     int secondsArrive,
     num price,
     Map position,
-    Map destination,
+    String destination,
   })  : _id = id,
         _username = username,
         _userId = userId,
@@ -40,7 +40,7 @@ class RideRequestModel {
   int get secondsArrive => _secondsArrive;
   num get price => _price;
   Map get position => _position;
-  Map get destination => _destination;
+  String get destination => _destination;
 
   RideRequestModel.fromSnapshot(DocumentSnapshot snapshot) {
     final data = snapshot.data();

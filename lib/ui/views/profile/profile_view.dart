@@ -19,7 +19,8 @@ class ProfileView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<ProfileViewModel>.nonReactive(
-      viewModelBuilder: () => ProfileViewModel(),
+      viewModelBuilder: () => ProfileViewModel(context),
+      onModelReady: (model) => model.initial(),
       builder: (context, model, child) => SafeArea(
         child: Scaffold(
           appBar: AppBar(
@@ -334,23 +335,13 @@ class _InformationField extends StatelessWidget {
 class HistorialTab extends ViewModelWidget<ProfileViewModel> {
   @override
   Widget build(BuildContext context,  ProfileViewModel model) {
-    model.loadHistorialData();
-    return ListView(
-      children: [
-        //TODO: complete with api
-        const _HistorialField(date: '23/01', price: 9.9),
-        const _HistorialField(date: '23/01', price: 9.9),
-        const _HistorialField(date: '23/01', price: 9.9),
-        const _HistorialField(date: '23/01', price: 1000),
-        const _HistorialField(date: '23/01', price: 9.9),
-        const _HistorialField(date: '23/01', price: 20.9),
-        const _HistorialField(date: '23/01', price: 9.9),
-        const _HistorialField(date: '23/01', price: 10.9),
-        const _HistorialField(date: '23/01', price: 9.9),
-        const _HistorialField(date: '23/01', price: 9.9),
-        const _HistorialField(date: '23/01', price: 9.9),
-      ],
-    );
+    if (!model.loadingUserHistorial) {
+      return ListView(
+        children: model.userHistorial.map((e) => _HistorialField(date: '23/01' , price: e.price)).toList(),
+      );
+    } else {
+      return Container();
+    }
   }
 }
 
@@ -363,7 +354,7 @@ class _HistorialField extends StatelessWidget {
         assert(price != null),
         super(key: key);
   final String date;
-  final double price;
+  final num price;
 
   @override
   Widget build(BuildContext context) {

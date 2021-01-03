@@ -6,6 +6,7 @@ import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:taxiapp/app/globals.dart';
 import 'package:taxiapp/app/locator.dart';
+import 'package:taxiapp/models/ride_request_model.dart';
 import 'package:taxiapp/models/token_model.dart';
 import 'package:taxiapp/services/storage_service.dart';
 import 'package:taxiapp/services/token.dart';
@@ -82,8 +83,9 @@ class Api {
     return tokenModel;
   }
 
-  Future<List<dynamic>> getAllUserHistorial(String uid) async {
-    var response = await _get('/rides/?idDriver=${uid}');
+  Future<List<RideRequestModel>> getAllUserHistorial(String uid) async {
+    var data = await _get('/rides/?idDriver=${uid}');
+    var response = data.map<RideRequestModel>((i) => RideRequestModel.fromJson(i)).toList();
     return response;
   }
   // User

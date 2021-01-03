@@ -11,11 +11,24 @@ import 'package:taxiapp/services/auth_social_network_service.dart';
 import 'package:taxiapp/ui/views/profile/profile_view.dart';
 
 class ProfileViewModel extends BaseViewModel {
+
+  BuildContext context;
+
+  ProfileViewModel(BuildContext context) {
+    this.context = context;
+  }
+
+  void initial() async {
+    await loadHistorialData();
+  }
+
   final AppService _appService = locator<AppService>();
   final AuthSocialNetwork _authSocialNetwork = locator<AuthSocialNetwork>();
   final Api _api = locator<Api>();
   int _currentIndex = 0;
   bool _driveStatus = false;
+  List<RideRequestModel> _userHistorial = [];
+  bool _loadingUserHistorial = false;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -31,6 +44,18 @@ class ProfileViewModel extends BaseViewModel {
   List<Widget> get children => _children;
   GlobalKey<FormState> get formKey => _formKey;
   UserModel get user => _appService.user;
+  List<RideRequestModel> get userHistorial => _userHistorial;
+  bool get loadingUserHistorial => _loadingUserHistorial;
+
+  set userHistorial(userHistorial) {
+    _userHistorial = userHistorial;
+    notifyListeners();
+  }
+
+  set loadingUserHistorial(loadingUserHistorial) {
+    _loadingUserHistorial = loadingUserHistorial;
+    notifyListeners();
+  }
 
   // * Functions
 
@@ -52,9 +77,14 @@ class ProfileViewModel extends BaseViewModel {
   }
 
   void loadHistorialData() async{
-    var data = await _api.getAllUserHistorial(_authSocialNetwork.user.uid);
-    print(data.length);
-    var listObject = data.map((i) => RideRequestModel.fromJson(i)).toList();
-    print(listObject.length);
+    loadingUserHistorial = true;
+    try{
+      userHistorial = await _api.getAllUserHistorial(_authSocialNetwork.user.uid);
+      print(userHistorial.length);
+    } catch (signUpError) {
+      print(signUpError);
+    } finally {
+      loadingUserHistorial = false;
+    }
   }
 }

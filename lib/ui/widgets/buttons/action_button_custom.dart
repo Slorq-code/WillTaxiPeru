@@ -31,7 +31,7 @@ class ActionButtonCustom extends StatelessWidget {
         child: Container(
           constraints: const BoxConstraints(minWidth: 88.0, minHeight: 36.0),
           alignment: Alignment.center,
-          child: Text(label, style: TextStyle(fontSize: fontSize, color: Colors.white, fontWeight: FontWeight.w500)),
+          child: Text(label, textAlign: TextAlign.center, style: TextStyle(fontSize: fontSize, color: Colors.white, fontWeight: FontWeight.w500)),
         ),
         padding: const EdgeInsets.all(0.0),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),

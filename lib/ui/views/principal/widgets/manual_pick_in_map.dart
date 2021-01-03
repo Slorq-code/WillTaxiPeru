@@ -49,7 +49,8 @@ class ManualPickInMap extends ViewModelWidget<PrincipalViewModel> {
                     child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 3.0),
                         decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), color: Colors.black),
-                        child: Text(Keys.locate_your_destination.localize(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500)))),
+                        child: Text(Keys.locate_your_destination.localize(),
+                            textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500)))),
                 SvgPicture.asset('assets/icons/move_in_map.svg', height: 30.0),
               ],
             ),
@@ -62,7 +63,7 @@ class ManualPickInMap extends ViewModelWidget<PrincipalViewModel> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 5.0),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 60.0),
+                  padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 40.0),
                   child: ActionButtonCustom(
                     action: () => model.confirmManualPickDestination(model.centralLocation, context),
                     label: Keys.confirm_destination.localize(),

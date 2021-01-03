@@ -69,7 +69,7 @@ class FloatingSearch extends ViewModelWidget<PrincipalViewModel> {
                             ),
                             const Divider(color: Color(0xffe5e5e5), height: 0, thickness: 2.0),
                             GestureDetector(
-                              onTap: () => model.updateCurrentSearchWidget(1),
+                              onTap: () => model.updateCurrentSearchWidget(SearchWidget.searchFieldBar),
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 5.0),
                                 child: Row(
@@ -95,10 +95,9 @@ class FloatingSearch extends ViewModelWidget<PrincipalViewModel> {
                   onTap: () => ExtendedNavigator.root.push(Routes.profileViewRoute),
                   child: AvatarProfile(
                     heroTag: model.user.uid,
-                    height: MediaQuery.of(context).size.width * .15,
+                    height: MediaQuery.of(context).size.width * .17,
                     image: model.user.image,
                     name: model.user.name,
-                    enableBorder: true,
                     showName: false,
                   )),
             ),

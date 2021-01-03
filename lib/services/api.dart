@@ -81,6 +81,11 @@ class Api {
     var tokenModel = TokenModel.fromJson(response);
     return tokenModel;
   }
+
+  Future<List<dynamic>> getAllUserHistorial(String uid) async {
+    var response = await _get('/rides/?idDriver=${uid}');
+    return response;
+  }
   // User
 
   // Others

@@ -52,9 +52,9 @@ class AditionaldriveinformationModel {
   String marc;
   String model;
   String plate;
-  String rating;
+  int rating;
   String token;
-  String trips;
+  int trips;
   String typeService;
   String votes;
 
@@ -65,9 +65,9 @@ class AditionaldriveinformationModel {
     marc = data['marc'] ?? '';
     model = data['model'] ?? '';
     plate = data['plate'] ?? '';
-    rating = data['rating'] ?? '';
+    rating = data['rating'] ?? 0;
     token = data['token'] ?? '';
-    trips = data['trips'] ?? '';
+    trips = data['trips'] ?? 0;
     typeService = data['typeService'] ?? '';
     votes = data['votes'] ?? '';
   }

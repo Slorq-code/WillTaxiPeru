@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:esys_flutter_share/esys_flutter_share.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
 import 'package:toast/toast.dart';
@@ -105,5 +106,9 @@ class Utils {
       nameInitials = '';
     }
     return nameInitials;
+  }
+
+  static void shareText(String title, content) {
+    Share.text(title, content, 'text/plain');
   }
 }

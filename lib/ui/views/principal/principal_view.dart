@@ -6,7 +6,9 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:stacked/stacked.dart';
 import 'package:taxiapp/extensions/string_extension.dart';
 import 'package:taxiapp/localization/keys.dart';
+import 'package:taxiapp/models/enums/ride_status.dart';
 import 'package:taxiapp/ui/views/principal/principal_viewmodel.dart';
+import 'package:taxiapp/ui/views/principal/widgets/finish_ride_widget.dart';
 
 class PrincipalView extends StatelessWidget {
   @override
@@ -86,6 +88,7 @@ class _HomeMap extends ViewModelWidget<PrincipalViewModel> {
                   bottom: 0,
                   child: _Ride(),
                 ),
+                if (model.rideStatus == RideStatus.finished) const Positioned(top: 0, child: FinishRideWidget())
               ],
             ),
           )

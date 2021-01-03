@@ -15,7 +15,54 @@ class CheckRideDetails extends ViewModelWidget<PrincipalViewModel> {
   const CheckRideDetails({Key key}) : super(key: key);
   @override
   Widget build(BuildContext context, PrincipalViewModel model) {
+    return Stack(
+      children: [
+        const _RideInformationSection(),
+        if (model.rideRequest != null) const _FloatingMessage(),
+        if (model.rideInProgress) const _PanicButton(),
+      ],
+    );
+  }
+}
+
+class _PanicButton extends StatelessWidget {
+  const _PanicButton({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
+
+    return SizedBox(
+      width: size.width,
+      height: size.height - 25,
+      child: Align(
+          alignment: Alignment.centerRight,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: FloatingActionButton(
+              heroTag: null,
+              elevation: 10,
+              hoverElevation: 10,
+              highlightElevation: 10,
+              isExtended: true,
+              onPressed: () {},
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              child: Image.asset('assets/icons/panic_button.png', height: 65.0),
+            ),
+          )),
+    );
+  }
+}
+
+class _RideInformationSection extends ViewModelWidget<PrincipalViewModel> {
+  const _RideInformationSection({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, PrincipalViewModel model) {
     List<Widget> vehicle;
     switch (model.vehicleSelected) {
       case VehicleType.moto:
@@ -57,6 +104,7 @@ class CheckRideDetails extends ViewModelWidget<PrincipalViewModel> {
         break;
       default:
     }
+    var size = MediaQuery.of(context).size;
 
     return SizedBox(
       width: size.width,
@@ -88,6 +136,7 @@ class CheckRideDetails extends ViewModelWidget<PrincipalViewModel> {
                             enableBorder: true,
                             nameBold: false,
                             fontSize: 14,
+                            height: 84,
                           ),
                         Column(mainAxisSize: MainAxisSize.min, children: vehicle),
                       ],
@@ -148,12 +197,13 @@ class CheckRideDetails extends ViewModelWidget<PrincipalViewModel> {
                         ),
                       ],
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 70.0, vertical: 10.0),
-                      child: !model.rideInProgress
-                          ? ActionButtonCustom(action: () => model.confirmRide(), label: Keys.continue_label.localize())
-                          : ActionButtonCustom(color: Colors.black, action: () => model.cancelRide(), label: Keys.cancel.localize()),
-                    ),
+                    if (!model.rideInProgress)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 70.0, vertical: 10.0),
+                        child: !model.driverOnTheWay
+                            ? ActionButtonCustom(action: () => model.confirmRide(), label: Keys.continue_label.localize())
+                            : ActionButtonCustom(color: Colors.black, action: () => model.cancelRide(), label: Keys.cancel.localize()),
+                      ),
                   ],
                 ),
               ),
@@ -161,6 +211,65 @@ class CheckRideDetails extends ViewModelWidget<PrincipalViewModel> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _FloatingMessage extends ViewModelWidget<PrincipalViewModel> {
+  const _FloatingMessage({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, PrincipalViewModel model) {
+    var size = MediaQuery.of(context).size;
+    return SizedBox(
+      width: size.width,
+      height: size.height - 25,
+      child: Column(
+        children: [
+          SizedBox(height: !model.rideInProgress ? 150.0 : 80.0),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                const Expanded(flex: 1, child: SizedBox()),
+                Expanded(
+                  flex: 4,
+                  child: Container(
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: const Color(0xfff0f0f0)),
+                    padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 20.0),
+                    child: Text(
+                      !model.rideInProgress ? Keys.comming_ride_message.localize() : Keys.enjoy_your_trip.localize(),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: !model.rideInProgress
+                      ? Container(
+                          padding: const EdgeInsets.all(2.0),
+                          decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: Colors.black), color: Colors.white),
+                          child: Center(
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 2.0),
+                              child: Text(
+                                '${(model.rideRequest.secondsArrive ~/ 60).toString()}\'',
+                                style: const TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ),
+                        )
+                      : const SizedBox(),
+                )
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

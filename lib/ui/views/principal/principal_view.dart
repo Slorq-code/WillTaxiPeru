@@ -20,10 +20,37 @@ class PrincipalView extends StatelessWidget {
             body: model.state == PrincipalState.loading
                 ? const Center(child: CircularProgressIndicator())
                 : model.state == PrincipalState.accessGPSEnable
-                    ? const _HomeMap()
+                    ? Home(model: model)
                     : const _ForceEnableGPS()),
       ),
     );
+  }
+}
+
+class Home extends StatefulWidget {
+  const Home({
+    Key key,
+    @required this.model,
+  })  : assert(model != null),
+        super(key: key);
+
+  final PrincipalViewModel model;
+
+  @override
+  _HomeState createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> with WidgetsBindingObserver {
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      widget.model.restoreMap();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const _HomeMap();
   }
 }
 

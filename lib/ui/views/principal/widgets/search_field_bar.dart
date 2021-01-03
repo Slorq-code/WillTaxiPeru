@@ -93,40 +93,6 @@ class SearchFieldBar extends ViewModelWidget<PrincipalViewModel> {
               ],
             ),
           ),
-          if (model.rideRequest != null)
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  const Expanded(flex: 1, child: SizedBox()),
-                  Expanded(
-                    flex: 4,
-                    child: Container(
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: const Color(0xfff0f0f0)),
-                      padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 50.0),
-                      child: Text(Keys.comming_ride_message.localize()),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Container(
-                      padding: const EdgeInsets.all(2.0),
-                      decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: Colors.black), color: Colors.white),
-                      child: Center(
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 2.0),
-                          child: Text(
-                            '${(model.rideRequest.secondsArrive ~/ 60).toString()}\'',
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
         ],
       ),
     );
@@ -198,7 +164,7 @@ class _PickInMapOption extends ViewModelWidget<PrincipalViewModel> {
   @override
   Widget build(BuildContext context, PrincipalViewModel model) {
     return GestureDetector(
-      onTap: () => model.updateCurrentSearchWidget(2),
+      onTap: () => model.updateCurrentSearchWidget(SearchWidget.manualPickInMap),
       child: Container(
         height: 50,
         decoration: const BoxDecoration(

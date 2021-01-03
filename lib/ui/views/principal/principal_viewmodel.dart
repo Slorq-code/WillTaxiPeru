@@ -53,6 +53,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   num ridePrice = 0;
   DateTime _destinationArrive;
   bool _searchingDriver = false;
+  bool _driverOnTheWay = false;
   bool _rideInProgress = false;
 
   // * Getters
@@ -68,6 +69,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   VehicleType get vehicleSelected => _vehicleSelected;
   DateTime get destinationArrive => _destinationArrive;
   bool get isSearchingDriver => _searchingDriver;
+  bool get driverOnTheWay => _driverOnTheWay;
   bool get rideInProgress => _rideInProgress;
   UserModel get driverForRide => _driverForRide;
   RideRequestModel get rideRequest => _rideRequest;
@@ -131,19 +133,20 @@ class PrincipalViewModel extends ReactiveViewModel {
 
   bool onBack() {
     if (_currentRideWidget is SelectionVehicle) {
-      updateCurrentRideWidget(0);
+      updateCurrentRideWidget(RideWidget.clear);
       return false;
     } else if (_currentRideWidget is CheckRideDetails) {
-      updateCurrentRideWidget(1);
+      updateCurrentRideWidget(RideWidget.selectionVehicle);
       return false;
     } else if (_currentSearchWidget is SearchFieldBar) {
-      updateCurrentSearchWidget(0);
+      updateCurrentSearchWidget(SearchWidget.floatingSearch);
       return false;
     } else if (_currentSearchWidget is ManualPickInMap) {
-      updateCurrentSearchWidget(1);
+      updateCurrentSearchWidget(SearchWidget.searchFieldBar);
       return false;
     } else {
       logout();
+      return true;
     }
   }
 
@@ -227,13 +230,13 @@ class PrincipalViewModel extends ReactiveViewModel {
     notifyListeners();
   }
 
-  void updateCurrentSearchWidget(int index) {
-    _currentSearchWidget = _switchSearchWidgets[index];
+  void updateCurrentSearchWidget(SearchWidget widget) {
+    _currentSearchWidget = _switchSearchWidgets[widget.index];
     notifyListeners();
   }
 
-  void updateCurrentRideWidget(int index) {
-    _currentRideWidget = _switchRideWidgets[index];
+  void updateCurrentRideWidget(RideWidget widget) {
+    _currentRideWidget = _switchRideWidgets[widget.index];
     notifyListeners();
   }
 
@@ -252,7 +255,7 @@ class PrincipalViewModel extends ReactiveViewModel {
 
   void confirmVehicleSelection() {
     _destinationArrive = _getDestinationArrive();
-    updateCurrentRideWidget(2);
+    updateCurrentRideWidget(RideWidget.checkRideDetails);
     getPriceRide();
   }
 
@@ -276,6 +279,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   void driverFound() async {
     await Future.delayed(const Duration(seconds: 3));
     _searchingDriver = false;
+    _driverOnTheWay = true;
     _driverForRide = UserModel(
       name: 'Paul Rider',
       image: 'https://manofmany.com/wp-content/uploads/2019/06/50-Long-Haircuts-Hairstyle-Tips-for-Men-2.jpg',
@@ -288,13 +292,21 @@ class PrincipalViewModel extends ReactiveViewModel {
       userId: _appService.user.uid,
       price: ridePrice,
     );
-    _rideInProgress = true;
     notifyListeners();
+    startRide();
+  }
+
+  void startRide() async {
+    await Future.delayed(const Duration(seconds: 10));
+    if (_rideRequest != null) {
+      _driverOnTheWay = false;
+      _rideInProgress = true;
+      updateCurrentSearchWidget(SearchWidget.floatingSearch);
+    }
   }
 
   Future<void> cancelRide() async {
     _rideRequest = null;
-    _rideInProgress = false;
     _driverForRide = null;
     _destinationArrive = _getDestinationArrive();
     notifyListeners();
@@ -306,10 +318,26 @@ class PrincipalViewModel extends ReactiveViewModel {
     await ExtendedNavigator.root.pushAndRemoveUntil(Routes.loginViewRoute, (route) => false);
     setBusy(false);
   }
+
+  void restoreMap() {
+    _mapController.setMapStyle('[]');
+  }
 }
 
 enum PrincipalState {
   loading,
   accessGPSDisable,
   accessGPSEnable,
+}
+
+enum SearchWidget {
+  floatingSearch,
+  searchFieldBar,
+  manualPickInMap,
+}
+
+enum RideWidget {
+  clear,
+  selectionVehicle,
+  checkRideDetails,
 }

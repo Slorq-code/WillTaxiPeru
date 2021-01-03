@@ -41,7 +41,6 @@ class FirestoreUser {
         var user = UserModel.fromMap(data);
         if (user.userType == UserType.Driver) {
           var documentDriverSnapshot = await databaseReference.collection(collectionDriver).doc(uid).get();
-          print(documentDriverSnapshot.data.toString());
           if (documentDriverSnapshot.exists) {
             user.aditionaldriveinformation = AditionaldriveinformationModel.fromMap(documentDriverSnapshot.data());
           }

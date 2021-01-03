@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
 import 'package:taxiapp/app/locator.dart';
 import 'package:taxiapp/app/router.gr.dart';
+import 'package:taxiapp/models/ride_request_model.dart';
 import 'package:taxiapp/models/user_model.dart';
+import 'package:taxiapp/services/api.dart';
 import 'package:taxiapp/services/app_service.dart';
 import 'package:taxiapp/services/auth_social_network_service.dart';
 import 'package:taxiapp/ui/views/profile/profile_view.dart';
@@ -11,6 +13,7 @@ import 'package:taxiapp/ui/views/profile/profile_view.dart';
 class ProfileViewModel extends BaseViewModel {
   final AppService _appService = locator<AppService>();
   final AuthSocialNetwork _authSocialNetwork = locator<AuthSocialNetwork>();
+  final Api _api = locator<Api>();
   int _currentIndex = 0;
   bool _driveStatus = false;
 
@@ -46,5 +49,12 @@ class ProfileViewModel extends BaseViewModel {
     await _authSocialNetwork.logout();
     await ExtendedNavigator.root.pushAndRemoveUntil(Routes.loginViewRoute, (route) => false);
     setBusy(false);
+  }
+
+  void loadHistorialData() async{
+    var data = await _api.getAllUserHistorial(_authSocialNetwork.user.uid);
+    print(data.length);
+    var listObject = data.map((i) => RideRequestModel.fromJson(i)).toList();
+    print(listObject.length);
   }
 }

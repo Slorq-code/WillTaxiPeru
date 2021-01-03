@@ -52,11 +52,11 @@ class AditionaldriveinformationModel {
   String marc;
   String model;
   String plate;
-  int rating;
+  double rating;
   String token;
   int trips;
-  String typeService;
-  String votes;
+  int typeService;
+  int votes;
 
   AditionaldriveinformationModel.fromMap(Map<String, dynamic> data) {
     document = data['document'] ?? '';
@@ -68,7 +68,7 @@ class AditionaldriveinformationModel {
     rating = data['rating'] ?? 0;
     token = data['token'] ?? '';
     trips = data['trips'] ?? 0;
-    typeService = data['typeService'] ?? '';
-    votes = data['votes'] ?? '';
+    typeService = data['typeService'] ?? 0;
+    votes = data['votes'] ?? 0;
   }
 }

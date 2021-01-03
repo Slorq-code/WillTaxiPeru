@@ -331,9 +331,10 @@ class _InformationField extends StatelessWidget {
   }
 }
 
-class HistorialTab extends StatelessWidget {
+class HistorialTab extends ViewModelWidget<ProfileViewModel> {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context,  ProfileViewModel model) {
+    model.loadHistorialData();
     return ListView(
       children: [
         //TODO: complete with api

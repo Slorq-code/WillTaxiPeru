@@ -53,4 +53,15 @@ class RideRequestModel {
     _price = data['price'];
     _destination = data['destination'];
   }
+
+  RideRequestModel.fromJson(Map<String, dynamic> data) {
+    _id = data['id'];
+    _username = data['username'];
+    _userId = data['userId'];
+    _driverId = data['driverId'];
+    _status = data['status'];
+    _position = data['position'];
+    _price = data['price'];
+    _destination = data['destination'];
+  }
 }

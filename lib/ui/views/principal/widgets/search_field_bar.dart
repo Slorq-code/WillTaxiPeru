@@ -42,7 +42,7 @@ class SearchFieldBar extends ViewModelWidget<PrincipalViewModel> {
                   elevation: 0,
                 ),
                 Container(
-                  padding: const EdgeInsets.only(left: 10.0, right: 30.0),
+                  padding: const EdgeInsets.only(left: 20.0, right: 30.0),
                   child: Row(
                     mainAxisSize: MainAxisSize.max,
                     children: [

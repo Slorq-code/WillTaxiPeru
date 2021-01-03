@@ -48,9 +48,8 @@ class RegisterSocialNetworkViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  bool get enableBtnContinue {
-    return !Utils.isNullOrEmpty(name) && !Utils.isNullOrEmpty(email) && Utils.isValidEmail(email) && !Utils.isNullOrEmpty(phone) && Utils.isValidPhone(phone);
-  }
+  bool get enableBtnContinue =>
+      !Utils.isNullOrEmpty(name) && !Utils.isNullOrEmpty(email) && Utils.isValidEmail(email) && !Utils.isNullOrEmpty(phone) && Utils.isValidPhone(phone);
 
   // * Functions
 
@@ -63,7 +62,7 @@ class RegisterSocialNetworkViewModel extends BaseViewModel {
   void signin() async {
     setBusy(true);
 
-    var packageInfo = await Utils.getPackageInfo();
+    final packageInfo = await Utils.getPackageInfo();
     try {
       Alert(context: _context).loading(Keys.loading.localize());
 
@@ -72,7 +71,7 @@ class RegisterSocialNetworkViewModel extends BaseViewModel {
         _authSocialNetwork.user.phone = phone.toString().trim();
         _authSocialNetwork.user.email = email.toString().toLowerCase().trim();
 
-        var userRegister = await _firestoreUser.userRegister(_authSocialNetwork.user);
+        final userRegister = await _firestoreUser.userRegister(_authSocialNetwork.user);
 
         ExtendedNavigator.root.pop();
 

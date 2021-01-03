@@ -101,21 +101,20 @@ class RegisterViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  bool get enableBtnContinue {
-    return !Utils.isNullOrEmpty(name) &&
-        !Utils.isNullOrEmpty(email) &&
-        !Utils.isNullOrEmpty(phone) &&
-        !Utils.isNullOrEmpty(password) &&
-        !Utils.isNullOrEmpty(repeatPassword) &&
-        Utils.isValidEmail(email) &&
-        Utils.isValidPhone(phone) &&
-        Utils.isValidPasswordLength(password);
-  }
+  bool get enableBtnContinue =>
+      !Utils.isNullOrEmpty(name) &&
+      !Utils.isNullOrEmpty(email) &&
+      !Utils.isNullOrEmpty(phone) &&
+      !Utils.isNullOrEmpty(password) &&
+      !Utils.isNullOrEmpty(repeatPassword) &&
+      Utils.isValidEmail(email) &&
+      Utils.isValidPhone(phone) &&
+      Utils.isValidPasswordLength(password);
 
   void signin() async {
     setBusy(true);
 
-    var packageInfo = await Utils.getPackageInfo();
+    final packageInfo = await Utils.getPackageInfo();
     try {
       Alert(context: context).loading(Keys.loading.localize());
 
@@ -125,12 +124,12 @@ class RegisterViewModel extends BaseViewModel {
         return;
       }
 
-      var userCredential = await _authSocialNetwork.createUser(email, password);
+      final userCredential = await _authSocialNetwork.createUser(email, password);
 
       if (userCredential != null) {
         // USER CREATED ON FIREBASE AUTHENTICATION
 
-        var userFounded = await _firestoreUser.userFind(_authSocialNetwork.user.uid);
+        final userFounded = await _firestoreUser.userFind(_authSocialNetwork.user.uid);
 
         if (userFounded != null) {
           // USER ALREADY EXISTS ON CLOUD FIRESTORE
@@ -148,7 +147,7 @@ class RegisterViewModel extends BaseViewModel {
           _authSocialNetwork.user.authType = AuthType.User;
           _authSocialNetwork.user.userType = UserType.Client;
 
-          var userRegister = await _firestoreUser.userRegister(_authSocialNetwork.user);
+          final userRegister = await _firestoreUser.userRegister(_authSocialNetwork.user);
 
           ExtendedNavigator.root.pop();
 

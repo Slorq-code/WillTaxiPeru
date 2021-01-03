@@ -8,6 +8,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:stacked/stacked.dart';
 import 'package:taxiapp/app/locator.dart';
 import 'package:taxiapp/app/router.gr.dart';
+import 'package:taxiapp/models/enums/ride_status.dart';
 import 'package:taxiapp/models/enums/vehicle_type.dart';
 import 'package:taxiapp/models/place.dart';
 import 'package:taxiapp/models/ride_request_model.dart';
@@ -40,7 +41,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   Place _destinationSelected;
   Map<String, Polyline> _polylines = {};
   Map<String, Marker> _markers = {};
-  List<Place> placesFound = [];
+  List<Place> _placesFound = [];
   final List<Widget> _switchSearchWidgets = [const FloatingSearch(), const SearchFieldBar(), const ManualPickInMap()];
   final List<Widget> _switchRideWidgets = [const SizedBox(), const SelectionVehicle(), const CheckRideDetails(), const SizedBox()];
   GoogleMapController _mapController;
@@ -53,8 +54,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   num ridePrice = 0;
   DateTime _destinationArrive;
   bool _searchingDriver = false;
-  bool _driverOnTheWay = false;
-  bool _rideInProgress = false;
+  RideStatus _rideStatus = RideStatus.none;
 
   // * Getters
   UserModel get user => _appService.user;
@@ -63,16 +63,16 @@ class PrincipalViewModel extends ReactiveViewModel {
   LatLng get centralLocation => _centralLocation;
   Widget get currentSearchWidget => _currentSearchWidget;
   Widget get currentRideWidget => _currentRideWidget;
+  List<Place> get placesFound => _placesFound;
   Place get destinationSelected => _destinationSelected;
   Map<String, Polyline> get polylines => _polylines;
   Map<String, Marker> get markers => _markers;
   VehicleType get vehicleSelected => _vehicleSelected;
   DateTime get destinationArrive => _destinationArrive;
   bool get isSearchingDriver => _searchingDriver;
-  bool get driverOnTheWay => _driverOnTheWay;
-  bool get rideInProgress => _rideInProgress;
   UserModel get driverForRide => _driverForRide;
   RideRequestModel get rideRequest => _rideRequest;
+  RideStatus get rideStatus => _rideStatus;
 
   // * Functions
 
@@ -151,9 +151,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   }
 
   void searchDestination(String destinationAddress) async {
-    final result = await _mapsService.getDestinationBySearch(destinationAddress, userLocation.location);
-
-    placesFound = result;
+    _placesFound = await _mapsService.getDestinationBySearch(destinationAddress, userLocation.location);
     notifyListeners();
   }
 
@@ -220,9 +218,9 @@ class PrincipalViewModel extends ReactiveViewModel {
     notifyListeners();
   }
 
-  void _showSecondSearchWidget() => _currentSearchWidget = _switchSearchWidgets[1];
+  void _showSecondSearchWidget() => _currentSearchWidget = _switchSearchWidgets[SearchWidget.searchFieldBar.index];
 
-  void _showSelectVehicle() => _currentRideWidget = _switchRideWidgets[1];
+  void _showSelectVehicle() => _currentRideWidget = _switchRideWidgets[RideWidget.selectionVehicle.index];
 
   void updateApiSelection(bool status) {
     apiSelected = status;
@@ -269,6 +267,7 @@ class PrincipalViewModel extends ReactiveViewModel {
     setBusyForObject(ridePrice, false);
   }
 
+  // * Mockup implementation
   Future<void> confirmRide() async {
     _searchingDriver = true;
     notifyListeners();
@@ -279,7 +278,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   void driverFound() async {
     await Future.delayed(const Duration(seconds: 3));
     _searchingDriver = false;
-    _driverOnTheWay = true;
+    _rideStatus = RideStatus.waitingDriver;
     _driverForRide = UserModel(
       name: 'Paul Rider',
       image: 'https://manofmany.com/wp-content/uploads/2019/06/50-Long-Haircuts-Hairstyle-Tips-for-Men-2.jpg',
@@ -296,20 +295,39 @@ class PrincipalViewModel extends ReactiveViewModel {
     startRide();
   }
 
+  // * Mockup implementation
   void startRide() async {
-    await Future.delayed(const Duration(seconds: 10));
+    await Future.delayed(const Duration(seconds: 5));
     if (_rideRequest != null) {
-      _driverOnTheWay = false;
-      _rideInProgress = true;
+      _rideStatus = RideStatus.inProgress;
       updateCurrentSearchWidget(SearchWidget.floatingSearch);
+      arriveToDestination();
     }
   }
 
+  // * Mockup implementation
   Future<void> cancelRide() async {
     _rideRequest = null;
     _driverForRide = null;
     _destinationArrive = _getDestinationArrive();
     notifyListeners();
+  }
+
+  // * Mockup implementation
+  void arriveToDestination() async {
+    await Future.delayed(const Duration(seconds: 5));
+    _rideStatus = RideStatus.finished;
+    _polylines.clear();
+    _markers.clear();
+    notifyListeners();
+  }
+
+  void finishRide() {
+    _rideStatus = RideStatus.none;
+    _rideRequest = null;
+    _driverForRide = null;
+    _destinationSelected = null;
+    updateCurrentRideWidget(RideWidget.clear);
   }
 
   void logout() async {
@@ -321,6 +339,7 @@ class PrincipalViewModel extends ReactiveViewModel {
 
   void restoreMap() {
     _mapController.setMapStyle('[]');
+    notifyListeners();
   }
 }
 

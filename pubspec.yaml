@@ -53,6 +53,7 @@ dependencies:
   cloud_firestore: ^0.14.4
   google_sign_in: ^4.5.6
   google_maps_flutter: ^1.0.6
+  maps_toolkit: ^1.1.0+2
   geolocator: ^5.3.2+2
   google_polyline_algorithm: ^2.0.0
   apple_sign_in: ^0.1.0

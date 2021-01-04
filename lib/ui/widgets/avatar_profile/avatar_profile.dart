@@ -35,6 +35,7 @@ class AvatarProfile extends StatelessWidget {
       children: [
         Hero(
           tag: heroTag,
+          flightShuttleBuilder: _flightShuttleBuilder,
           child: Container(
             width: height,
             height: height,
@@ -83,6 +84,19 @@ class AvatarProfile extends StatelessWidget {
             ),
           ),
       ],
+    );
+  }
+
+  Widget _flightShuttleBuilder(
+    BuildContext flightContext,
+    Animation<double> animation,
+    HeroFlightDirection flightDirection,
+    BuildContext fromHeroContext,
+    BuildContext toHeroContext,
+  ) {
+    return DefaultTextStyle(
+      style: DefaultTextStyle.of(toHeroContext).style,
+      child: toHeroContext.widget,
     );
   }
 }

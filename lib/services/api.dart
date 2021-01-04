@@ -7,6 +7,7 @@ import 'package:injectable/injectable.dart';
 import 'package:taxiapp/app/globals.dart';
 import 'package:taxiapp/app/locator.dart';
 import 'package:taxiapp/models/ride_request_model.dart';
+import 'package:taxiapp/models/ride_summary_model.dart';
 import 'package:taxiapp/models/token_model.dart';
 import 'package:taxiapp/services/storage_service.dart';
 import 'package:taxiapp/services/token.dart';
@@ -79,14 +80,20 @@ class Api {
 
   Future<TokenModel> inSessionUser() async {
     var response = await _post('/token/verify', {}).timeout(const Duration(milliseconds: 10000));
-    var tokenModel = TokenModel.fromJson(response);
-    return tokenModel;
+    var model = TokenModel.fromJson(response);
+    return model;
   }
 
   Future<List<RideRequestModel>> getAllUserHistorial(String uid) async {
-    var data = await _get('/rides/?idDriver=${uid}');
-    var response = data.map<RideRequestModel>((i) => RideRequestModel.fromJson(i)).toList();
-    return response;
+    var response = await _get('/rides/?idDriver=${uid}');
+    var model = response.map<RideRequestModel>((i) => RideRequestModel.fromJson(i)).toList();
+    return model;
+  }
+
+  Future<RideSummaryModel> getRideSummary(String uid) async {
+    var response = await _get('/rides/resume/${uid}');
+    var model = RideSummaryModel.fromJson(response);
+    return model;
   }
   // User
 

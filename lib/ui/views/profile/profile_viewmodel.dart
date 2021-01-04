@@ -1,11 +1,10 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:stacked/stacked.dart';
 import 'package:taxiapp/app/locator.dart';
 import 'package:taxiapp/app/router.gr.dart';
 import 'package:taxiapp/models/ride_request_model.dart';
+import 'package:taxiapp/models/ride_summary_model.dart';
 import 'package:taxiapp/models/user_model.dart';
 import 'package:taxiapp/services/api.dart';
 import 'package:taxiapp/services/app_service.dart';
@@ -21,7 +20,8 @@ class ProfileViewModel extends BaseViewModel {
   }
 
   void initial() async {
-    await loadHistorialData();
+    loadHistorialData();
+    loadRideSummary();
   }
 
   final AppService _appService = locator<AppService>();
@@ -31,6 +31,8 @@ class ProfileViewModel extends BaseViewModel {
   bool _driveStatus = false;
   List<RideRequestModel> _userHistorial = [];
   bool _loadingUserHistorial = false;
+  bool _loadingRideSummary = false;
+  RideSummaryModel _rideSummaryModel = RideSummaryModel();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -48,6 +50,8 @@ class ProfileViewModel extends BaseViewModel {
   UserModel get user => _appService.user;
   List<RideRequestModel> get userHistorial => _userHistorial;
   bool get loadingUserHistorial => _loadingUserHistorial;
+  bool get loadingRideSummary => _loadingRideSummary;
+  RideSummaryModel get rideSummaryModel => _rideSummaryModel;
 
   set userHistorial(userHistorial) {
     _userHistorial = userHistorial;
@@ -56,6 +60,16 @@ class ProfileViewModel extends BaseViewModel {
 
   set loadingUserHistorial(loadingUserHistorial) {
     _loadingUserHistorial = loadingUserHistorial;
+    notifyListeners();
+  }
+
+  set loadingRideSummary(loadingRideSummary) {
+    _loadingRideSummary = loadingRideSummary;
+    notifyListeners();
+  }
+
+  set rideSummaryModel(rideSummaryModel) {
+    _rideSummaryModel = rideSummaryModel;
     notifyListeners();
   }
 
@@ -82,7 +96,6 @@ class ProfileViewModel extends BaseViewModel {
     loadingUserHistorial = true;
     try{
       userHistorial = await _api.getAllUserHistorial(_authSocialNetwork.user.uid);
-      print(userHistorial.length);
     } catch (signUpError) {
       print(signUpError);
     } finally {
@@ -90,9 +103,14 @@ class ProfileViewModel extends BaseViewModel {
     }
   }
 
-  String timestampToDateFormat(int seconds, int nano, String dateFormat) {
-    var timestamp = Timestamp(seconds, nano);
-    var df = DateFormat(dateFormat);
-    return df.format(timestamp.toDate());
+  void loadRideSummary() async{
+    loadingRideSummary = true;
+    try{
+      rideSummaryModel = await _api.getRideSummary(_authSocialNetwork.user.uid);
+    } catch (signUpError) {
+      print(signUpError);
+    } finally {
+      loadingRideSummary = false;
+    }
   }
 }

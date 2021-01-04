@@ -48,5 +48,11 @@
 	"set_location_on_map": "Fijar ubicación en el mapa",
 	"comming_ride_message": "¡Tu GO está en camino!",
 	"enjoy_your_trip": "¡Disfruta de tu viaje!",
-	"you_have_reached_your_destination": "¡Has llegado a tu destino!"
+	"you_have_reached_your_destination": "¡Has llegado a tu destino!",
+	"ride_summary_day_rides": "Total de viajes del día",
+	"ride_summary_day_income": "Ingresos del día",
+	"ride_summary_date_afiliate": "Fecha de afiliación",
+	"ride_summary_total_rides": "Total de viajes",
+	"ride_summary_total_income": "Ingresos a la fecha",
+	"summary": "Resumen"
 }

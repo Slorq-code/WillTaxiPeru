@@ -189,19 +189,19 @@ class _TabBarCustom extends ViewModelWidget<ProfileViewModel> {
                   selected: model.currentIndex == 0,
                   icon: 'assets/icons/profile_information.svg',
                 ),
+                if (model.user.userType == UserType.Driver)
+                  _TabProfile(
+                    title: Keys.summary.localize(),
+                    onTap: () => model.updateIndex(2),
+                    selected: model.currentIndex == 2,
+                    icon: 'assets/icons/ride_summary.svg',
+                  ),
                 _TabProfile(
                   title: Keys.record.localize(),
                   onTap: () => model.updateIndex(1),
                   selected: model.currentIndex == 1,
                   icon: 'assets/icons/historial.svg',
                 ),
-                if (model.user.userType == UserType.Driver)
-                  _TabProfile(
-                    title: Keys.driving.localize(),
-                    onTap: () => model.updateIndex(2),
-                    selected: model.currentIndex == 2,
-                    icon: 'assets/icons/profile_information.svg',
-                  ),
               ],
             ),
           ),
@@ -414,9 +414,86 @@ class _HistorialField extends StatelessWidget {
   }
 }
 
-class DriverRecordTab extends StatelessWidget {
+class DriverRecordTab extends ViewModelWidget<ProfileViewModel> {
+  @override
+  Widget build(BuildContext context,  ProfileViewModel model) {
+    if (!model.loadingRideSummary) {
+      return ListView(
+        children: [
+          _RideSummaryField(title: Keys.ride_summary_day_rides.localize(), label: model.rideSummaryModel.dayRides.toString(),),
+          _RideSummaryField(title: Keys.ride_summary_day_income.localize(), label: model.rideSummaryModel.dayIncome.toStringAsFixed(2), isCurrency: true),
+          _RideSummaryField(title: Keys.ride_summary_date_afiliate.localize(), label: Utils.timestampToDateFormat(model.rideSummaryModel.dateAfiliate.seconds, model.rideSummaryModel.dateAfiliate.nanos, 'dd/MM/yyyy')),
+          _RideSummaryField(title: Keys.ride_summary_total_rides.localize(), label: model.rideSummaryModel.totalRides.toString(),),
+          _RideSummaryField(title: Keys.ride_summary_total_income.localize(), label: model.rideSummaryModel.totalIncome.toStringAsFixed(2), isCurrency: true),
+        ],
+      );
+    } else {
+      return Container(
+        child: Align(
+          alignment: Alignment.center,
+          child: Container(
+            width: 50.0,
+            height: 50.0,
+            child: const CircularProgressIndicator(
+              backgroundColor: Colors.transparent,
+              valueColor: AlwaysStoppedAnimation<Color>(Color(0xffFFA500)),
+              strokeWidth: 3,
+            ),
+          ),
+        ),
+      );
+    }
+  }
+}
+
+class _RideSummaryField extends StatelessWidget {
+  const _RideSummaryField({
+    Key key,
+    @required this.title,
+    @required this.label,
+    this.isCurrency = false,
+  })  : assert(title != null),
+        assert(label != null),
+        super(key: key);
+  final String title;
+  final String label;
+  final bool isCurrency;
+
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Container(
+      constraints: const BoxConstraints(minHeight: 40.0),
+      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12.0),
+      decoration: const BoxDecoration(
+        border: Border(bottom: BorderSide(color: Color(0xffF0F0F0), width: 3.0)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Text(
+              title,
+              style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12.0),
+            ),
+          ),
+          if (isCurrency)
+          const Expanded(
+            child: Text(
+              'S/',
+              textAlign: TextAlign.end,
+              style: TextStyle(fontSize: 12.0, color: Color(0xff858585), fontWeight: FontWeight.w400),
+            ),
+          ),
+          Container(
+            width: 100.0,
+            child: Text(
+              label,
+              textAlign: TextAlign.end,
+              style: const TextStyle(fontSize: 12.0, color: Color(0xff858585), fontWeight: FontWeight.w400),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

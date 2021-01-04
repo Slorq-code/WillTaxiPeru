@@ -7,6 +7,7 @@ import 'package:stacked/stacked.dart';
 import 'package:taxiapp/extensions/string_extension.dart';
 import 'package:taxiapp/localization/keys.dart';
 import 'package:taxiapp/models/enums/ride_status.dart';
+import 'package:taxiapp/models/enums/user_type.dart';
 import 'package:taxiapp/ui/views/principal/principal_viewmodel.dart';
 import 'package:taxiapp/ui/views/principal/widgets/finish_ride_widget.dart';
 
@@ -18,6 +19,7 @@ class PrincipalView extends StatelessWidget {
       onModelReady: (model) => model.initialize(),
       builder: (context, model, child) => SafeArea(
         child: Scaffold(
+            // floatingActionButton: FloatingActionButton(onPressed: () => model.updateRouteCamera()),
             backgroundColor: Colors.white,
             body: model.state == PrincipalState.loading
                 ? const Center(child: CircularProgressIndicator())
@@ -44,10 +46,22 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> with WidgetsBindingObserver {
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       widget.model.restoreMap();
     }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   @override
@@ -75,6 +89,7 @@ class _HomeMap extends ViewModelWidget<PrincipalViewModel> {
                   zoomControlsEnabled: false,
                   onMapCreated: model.initMapa,
                   polylines: model.polylines.values.toSet(),
+                  compassEnabled: false,
                   markers: model.markers.values.toSet(),
                   onCameraMove: (cameraPosition) {
                     model.updateCurrentLocation(cameraPosition.target);
@@ -84,10 +99,16 @@ class _HomeMap extends ViewModelWidget<PrincipalViewModel> {
                   top: 0,
                   child: _Search(),
                 ),
-                const Positioned(
-                  bottom: 0,
-                  child: _Ride(),
-                ),
+                if (model.user.userType == UserType.Client)
+                  const Positioned(
+                    bottom: 0,
+                    child: _Ride(),
+                  ),
+                if (model.user.userType == UserType.Driver)
+                  const Positioned(
+                    bottom: 0,
+                    child: _DriverRide(),
+                  ),
                 if (model.rideStatus == RideStatus.finished) const Positioned(top: 0, child: FinishRideWidget())
               ],
             ),
@@ -113,6 +134,17 @@ class _Ride extends ViewModelWidget<PrincipalViewModel> {
   @override
   Widget build(BuildContext context, PrincipalViewModel model) {
     return MorpheusTabView(child: model.currentRideWidget);
+  }
+}
+
+class _DriverRide extends ViewModelWidget<PrincipalViewModel> {
+  const _DriverRide({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, PrincipalViewModel model) {
+    return MorpheusTabView(child: model.currentDriverRideWidget);
   }
 }
 

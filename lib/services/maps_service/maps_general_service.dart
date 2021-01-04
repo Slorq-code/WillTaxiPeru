@@ -5,6 +5,7 @@ import 'package:taxiapp/models/place.dart';
 import 'package:taxiapp/models/route_map.dart';
 import 'package:taxiapp/services/maps_service/google_maps_service.dart';
 import 'package:taxiapp/services/maps_service/map_box_service.dart';
+import 'package:maps_toolkit/maps_toolkit.dart' as mp;
 
 @lazySingleton
 class MapsGeneralService {
@@ -36,6 +37,48 @@ class MapsGeneralService {
 
   void selectApi(ApiMap apiMap) {
     _apiSelected = apiMap;
+  }
+
+  Future<void> updateCameraLocation(LatLng source, LatLng destination, GoogleMapController mapController) async {
+    if (mapController == null) return;
+    final distanceBetweenPoints = mp.SphericalUtil.computeDistanceBetween(
+      mp.LatLng(source.latitude, source.longitude),
+      mp.LatLng(destination.latitude, destination.longitude),
+    );
+    LatLngBounds bounds;
+
+    if (source.latitude > destination.latitude && source.longitude > destination.longitude) {
+      bounds = LatLngBounds(southwest: destination, northeast: source);
+    } else if (source.longitude > destination.longitude) {
+      bounds = LatLngBounds(southwest: LatLng(source.latitude, destination.longitude), northeast: LatLng(destination.latitude, source.longitude));
+    } else if (source.latitude > destination.latitude) {
+      bounds = LatLngBounds(southwest: LatLng(destination.latitude, source.longitude), northeast: LatLng(source.latitude, destination.longitude));
+    } else {
+      bounds = LatLngBounds(southwest: source, northeast: destination);
+    }
+    double rate;
+    if (distanceBetweenPoints > 5000) {
+      rate = 2500;
+    } else if (distanceBetweenPoints > 3000) {
+      rate = 1200;
+    } else if (distanceBetweenPoints > 2000) {
+      rate = 300;
+    } else {
+      rate = 100;
+    }
+    final cameraUpdate = CameraUpdate.newLatLngBounds(bounds, 150 + (distanceBetweenPoints * rate) / 100000);
+
+    return checkCameraLocation(cameraUpdate, mapController);
+  }
+
+  Future<void> checkCameraLocation(CameraUpdate cameraUpdate, GoogleMapController mapController) async {
+    await mapController.animateCamera(cameraUpdate);
+    final l1 = await mapController.getVisibleRegion();
+    final l2 = await mapController.getVisibleRegion();
+
+    if (l1.southwest.latitude == -90 || l2.southwest.latitude == -90) {
+      return checkCameraLocation(cameraUpdate, mapController);
+    }
   }
 }
 

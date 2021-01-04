@@ -352,6 +352,10 @@ class PrincipalViewModel extends ReactiveViewModel {
   }
 
   Future<void> restoreMap() async {
+    await _mapController.setMapStyle('[]');
+    notifyListeners();
+    await _mapController.setMapStyle(await getMapTheme());
+    notifyListeners();
     if (userLocation.location != null) {
       final position = CameraPosition(target: userLocation.location, zoom: 16.5);
       await _mapController.animateCamera(CameraUpdate.newCameraPosition(position));

@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:esys_flutter_share/esys_flutter_share.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
@@ -110,5 +111,11 @@ class Utils {
 
   static void shareText(String title, content) {
     Share.text(title, content, 'text/plain');
+  }
+
+  static String timestampToDateFormat(int seconds, int nano, String dateFormat) {
+    var timestamp = Timestamp(seconds, nano);
+    var df = DateFormat(dateFormat);
+    return df.format(timestamp.toDate());
   }
 }

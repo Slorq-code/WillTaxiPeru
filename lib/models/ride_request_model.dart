@@ -10,6 +10,7 @@ class RideRequestModel {
   num _price;
   Map _position;
   String _destination;
+  DateRide _dateRide;
 
   // * TEMPORAL constructor for test
   RideRequestModel({
@@ -22,6 +23,7 @@ class RideRequestModel {
     num price,
     Map position,
     String destination,
+    DateRide dateRide,
   })  : _id = id,
         _username = username,
         _userId = userId,
@@ -30,7 +32,8 @@ class RideRequestModel {
         _secondsArrive = secondsArrive,
         _price = price,
         _position = position,
-        _destination = destination;
+        _destination = destination,
+        _dateRide = dateRide;
 
   String get id => _id;
   String get username => _username;
@@ -41,6 +44,7 @@ class RideRequestModel {
   num get price => _price;
   Map get position => _position;
   String get destination => _destination;
+  DateRide get dateRide => _dateRide;
 
   RideRequestModel.fromSnapshot(DocumentSnapshot snapshot) {
     final data = snapshot.data();
@@ -52,6 +56,9 @@ class RideRequestModel {
     _position = data['position'];
     _price = data['price'];
     _destination = data['destination'];
+    _dateRide = data['dateRide'] != null
+        ? DateRide.fromJson(data['dateRide'])
+        : null;
   }
 
   RideRequestModel.fromJson(Map<String, dynamic> data) {
@@ -63,5 +70,27 @@ class RideRequestModel {
     _position = data['position'];
     _price = data['price'];
     _destination = data['destination'];
+    _dateRide = data['dateRide'] != null
+        ? DateRide.fromJson(data['dateRide'])
+        : null;
+  }
+}
+
+class DateRide {
+  int seconds;
+  int nanos;
+
+  DateRide({this.seconds, this.nanos});
+
+  DateRide.fromJson(Map<String, dynamic> json) {
+    seconds = json['seconds'];
+    nanos = json['nanos'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final data = <String, dynamic>{};
+    data['seconds'] = seconds;
+    data['nanos'] = nanos;
+    return data;
   }
 }

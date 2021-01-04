@@ -14,6 +14,7 @@ import 'package:taxiapp/ui/widgets/avatar_profile/avatar_profile.dart';
 import 'package:taxiapp/ui/widgets/box_border_container.dart';
 import 'package:taxiapp/ui/widgets/buttons/action_button_custom.dart';
 import 'package:taxiapp/ui/widgets/buttons/platform_back_button.dart';
+import 'package:taxiapp/utils/utils.dart';
 
 class ProfileView extends StatelessWidget {
   @override
@@ -337,10 +338,23 @@ class HistorialTab extends ViewModelWidget<ProfileViewModel> {
   Widget build(BuildContext context,  ProfileViewModel model) {
     if (!model.loadingUserHistorial) {
       return ListView(
-        children: model.userHistorial.map((e) => _HistorialField(date: '23/01' , price: e.price)).toList(),
+        children: model.userHistorial.map((e) => _HistorialField(date: Utils.timestampToDateFormat(e.dateRide.seconds, e.dateRide.nanos, 'dd/MM') , price: e.price)).toList(),
       );
     } else {
-      return Container();
+      return Container(
+        child: Align(
+          alignment: Alignment.center,
+          child: Container(
+            width: 50.0,
+            height: 50.0,
+            child: const CircularProgressIndicator(
+              backgroundColor: Colors.transparent,
+              valueColor: AlwaysStoppedAnimation<Color>(Color(0xffFFA500)),
+              strokeWidth: 3,
+            ),
+          ),
+        ),
+      );
     }
   }
 }

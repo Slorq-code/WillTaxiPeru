@@ -1,5 +1,7 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:stacked/stacked.dart';
 import 'package:taxiapp/app/locator.dart';
 import 'package:taxiapp/app/router.gr.dart';
@@ -86,5 +88,11 @@ class ProfileViewModel extends BaseViewModel {
     } finally {
       loadingUserHistorial = false;
     }
+  }
+
+  String timestampToDateFormat(int seconds, int nano, String dateFormat) {
+    var timestamp = Timestamp(seconds, nano);
+    var df = DateFormat(dateFormat);
+    return df.format(timestamp.toDate());
   }
 }

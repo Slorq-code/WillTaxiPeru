@@ -41,10 +41,7 @@ class MapsGeneralService {
 
   Future<void> updateCameraLocation(LatLng source, LatLng destination, GoogleMapController mapController) async {
     if (mapController == null) return;
-    final distanceBetweenPoints = mp.SphericalUtil.computeDistanceBetween(
-      mp.LatLng(source.latitude, source.longitude),
-      mp.LatLng(destination.latitude, destination.longitude),
-    );
+
     LatLngBounds bounds;
 
     if (source.latitude > destination.latitude && source.longitude > destination.longitude) {
@@ -56,17 +53,7 @@ class MapsGeneralService {
     } else {
       bounds = LatLngBounds(southwest: source, northeast: destination);
     }
-    double rate;
-    if (distanceBetweenPoints > 5000) {
-      rate = 2500;
-    } else if (distanceBetweenPoints > 3000) {
-      rate = 1200;
-    } else if (distanceBetweenPoints > 2000) {
-      rate = 300;
-    } else {
-      rate = 100;
-    }
-    final cameraUpdate = CameraUpdate.newLatLngBounds(bounds, 150 + (distanceBetweenPoints * rate) / 100000);
+    final cameraUpdate = CameraUpdate.newLatLngBounds(bounds, 80);
 
     return checkCameraLocation(cameraUpdate, mapController);
   }

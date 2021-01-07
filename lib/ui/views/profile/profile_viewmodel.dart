@@ -1,15 +1,23 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:stacked/stacked.dart';
 import 'package:taxiapp/app/locator.dart';
 import 'package:taxiapp/app/router.gr.dart';
+import 'package:taxiapp/localization/keys.dart';
+import 'package:taxiapp/models/app_config_model.dart';
 import 'package:taxiapp/models/ride_request_model.dart';
 import 'package:taxiapp/models/ride_summary_model.dart';
 import 'package:taxiapp/models/user_model.dart';
 import 'package:taxiapp/services/api.dart';
 import 'package:taxiapp/services/app_service.dart';
 import 'package:taxiapp/services/auth_social_network_service.dart';
+import 'package:taxiapp/services/firestore_user_service.dart';
 import 'package:taxiapp/ui/views/profile/profile_view.dart';
+import 'package:taxiapp/utils/alerts.dart';
+import 'package:taxiapp/utils/utils.dart';
+
+import 'package:taxiapp/extensions/string_extension.dart';
 
 class ProfileViewModel extends BaseViewModel {
 
@@ -22,17 +30,21 @@ class ProfileViewModel extends BaseViewModel {
   void initial() async {
     loadHistorialData();
     loadRideSummary();
+    loadAppConfig();
   }
 
   final AppService _appService = locator<AppService>();
   final AuthSocialNetwork _authSocialNetwork = locator<AuthSocialNetwork>();
   final Api _api = locator<Api>();
+  final FirestoreUser _firestoreUser = locator<FirestoreUser>();
+  
   int _currentIndex = 0;
   bool _driveStatus = false;
   List<RideRequestModel> _userHistorial = [];
   bool _loadingUserHistorial = false;
   bool _loadingRideSummary = false;
   RideSummaryModel _rideSummaryModel = RideSummaryModel();
+  AppConfigModel _appConfigModel = null;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -111,6 +123,27 @@ class ProfileViewModel extends BaseViewModel {
       print(signUpError);
     } finally {
       loadingRideSummary = false;
+    }
+  }
+
+  void loadAppConfig() async{
+    _appConfigModel ??= await _firestoreUser.findAppConfig('eL29q5Iz0voRZU5CpGDU');
+  }
+
+  void callCentral() async{
+    setBusy(true);
+    var packageInfo = await Utils.getPackageInfo();
+    try{
+      await loadAppConfig();
+      if (_appConfigModel != null) {
+        await FlutterPhoneDirectCaller.callNumber(_appConfigModel.central);
+      } else {
+        Alert(context: context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();
+      }
+    } catch (signUpError) {
+      print(signUpError);
+    } finally {
+      setBusy(false);
     }
   }
 }

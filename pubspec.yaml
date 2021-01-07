@@ -60,6 +60,7 @@ dependencies:
   flutter_facebook_login: ^3.0.0
   intl: ^0.16.1
   device_info: ^1.0.0
+  flutter_phone_direct_caller: ^1.0.1
 
 dev_dependencies:
   flutter_test:

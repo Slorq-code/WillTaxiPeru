@@ -131,31 +131,34 @@ class _LogoutButton extends ViewModelWidget<ProfileViewModel> {
   }
 }
 
-class _CallCentralButton extends StatelessWidget {
+class _CallCentralButton extends ViewModelWidget<ProfileViewModel> {
   const _CallCentralButton({
     Key key,
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ProfileViewModel model) {
     return Padding(
       padding: const EdgeInsets.all(4.0),
-      child: CustomPaint(
-        painter: BoxBorderContainer(),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SvgPicture.asset('assets/icons/phone.svg'),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-                child: Text(
-                  Keys.central.localize(),
-                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: Color(0xff545253)),
+      child: GestureDetector(
+        onTap: () => !model.isBusy ? model.callCentral() : null,
+        child: CustomPaint(
+          painter: BoxBorderContainer(),
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SvgPicture.asset('assets/icons/phone.svg'),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  child: Text(
+                    Keys.central.localize(),
+                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: Color(0xff545253)),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

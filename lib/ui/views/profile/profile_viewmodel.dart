@@ -142,6 +142,7 @@ class ProfileViewModel extends BaseViewModel {
       }
     } catch (signUpError) {
       print(signUpError);
+      Alert(context: context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();
     } finally {
       setBusy(false);
     }

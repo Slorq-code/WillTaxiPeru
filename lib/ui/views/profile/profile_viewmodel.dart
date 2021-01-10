@@ -208,7 +208,7 @@ class ProfileViewModel extends BaseViewModel {
         password = '';
         isEditing = false;
         ExtendedNavigator.root.pop();
-        Alert(context: context, title: packageInfo.appName, label: Keys.user_created_successfully.localize()).alertMessage();
+        Alert(context: context, title: packageInfo.appName, label: Keys.your_data_updated_correctly.localize()).alertMessage();
       } else {
         ExtendedNavigator.root.pop();
         Alert(context: context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();

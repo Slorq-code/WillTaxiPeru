@@ -8,6 +8,7 @@ import 'package:stacked/stacked.dart';
 import 'package:stacked_hooks/stacked_hooks.dart';
 import 'package:taxiapp/extensions/string_extension.dart';
 import 'package:taxiapp/localization/keys.dart';
+import 'package:taxiapp/models/enums/auth_type.dart';
 
 import 'package:taxiapp/models/enums/user_type.dart';
 import 'package:taxiapp/theme/pallete_color.dart';
@@ -36,6 +37,7 @@ class ProfileView extends StatelessWidget {
               onPressed: () => Navigator.of(context).pop(),
             ),
             actions: [
+              if (model.user.authType.index == AuthType.User.index)
               _HeaderProfile(),
             ],
           ),

@@ -74,7 +74,7 @@ class Utils {
   }
 
   static bool isValidPasswordLength(String password) {
-    return (password.trim().length > 5 && password.trim().length < 21);
+    return (password.trim().length > 7 && password.trim().length < 21);
   }
 
   static Future<PackageInfo> getPackageInfo() async {

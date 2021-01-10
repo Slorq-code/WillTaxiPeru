@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:stacked/stacked.dart';
 import 'package:taxiapp/app/locator.dart';
@@ -44,7 +45,8 @@ class ProfileViewModel extends BaseViewModel {
   bool _loadingUserHistorial = false;
   bool _loadingRideSummary = false;
   RideSummaryModel _rideSummaryModel = RideSummaryModel();
-  AppConfigModel _appConfigModel = null;
+  AppConfigModel _appConfigModel;
+  bool _isEditing = false;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -64,6 +66,12 @@ class ProfileViewModel extends BaseViewModel {
   bool get loadingUserHistorial => _loadingUserHistorial;
   bool get loadingRideSummary => _loadingRideSummary;
   RideSummaryModel get rideSummaryModel => _rideSummaryModel;
+  bool get isEditing => _isEditing;
+
+  set isEditing(isEditing) {
+    _isEditing = isEditing;
+    notifyListeners();
+  }
 
   set userHistorial(userHistorial) {
     _userHistorial = userHistorial;
@@ -146,5 +154,15 @@ class ProfileViewModel extends BaseViewModel {
     } finally {
       setBusy(false);
     }
+  }
+
+  void onEditProfile() {
+    setBusy(true);
+    if (isEditing) {
+      isEditing = false;
+    } else {
+      isEditing = true;
+    }
+    setBusy(false);   
   }
 }

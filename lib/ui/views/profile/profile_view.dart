@@ -37,7 +37,6 @@ class ProfileView extends StatelessWidget {
               onPressed: () => Navigator.of(context).pop(),
             ),
             actions: [
-              if (model.user.authType.index == AuthType.User.index)
               _HeaderProfile(),
             ],
           ),
@@ -443,6 +442,7 @@ class _ProfileInformationFieldEdit extends ViewModelWidget<ProfileViewModel> {
               title: Keys.vehicle.localize(),
               label: model.user.aditionaldriveinformation.plate),
         
+        if (model.user.authType.index == AuthType.User.index)
         Container(
           constraints: const BoxConstraints(minHeight: 40.0),
           padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12.0),

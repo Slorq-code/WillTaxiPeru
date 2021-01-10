@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:morpheus/widgets/morpheus_tab_view.dart';
@@ -297,11 +298,22 @@ class ProfileInformationTab extends HookViewModelWidget<ProfileViewModel> {
   
   @override
   Widget buildViewModelWidget(BuildContext context, ProfileViewModel model) {
-    final phoneController = useTextEditingController();
+    final phoneController = useTextEditingController(text: model.user.phone);
     final passwordController = useTextEditingController();
     final phoneFocus = useFocusNode();
     final passwordFocus = useFocusNode();
 
+    if (!model.isEditing) {
+      return _ProfileInformationField();
+    } else {
+      return _ProfileInformationFieldEdit(phoneController: phoneController, passwordController: passwordController, phoneFocus: phoneFocus, passwordFocus: passwordFocus);
+    }    
+  }
+}
+
+class _ProfileInformationField extends ViewModelWidget<ProfileViewModel> {
+  @override
+  Widget build(BuildContext context, ProfileViewModel model) {
     final isDriver = model.user.userType == UserType.Driver;
     return ListView(
       children: [
@@ -331,23 +343,136 @@ class ProfileInformationTab extends HookViewModelWidget<ProfileViewModel> {
             ),
           ),
         _InformationField(title: Keys.names.localize(), label: model.user.name),
-        // _InformationField(title: Keys.birthdate.localize(), label: '01/01/1990'),
-        if (!model.isEditing)
         _InformationField(
             title: Keys.mobile_phone.localize(), label: model.user.phone),
-        if (model.isEditing)
-        _InformationFieldEdit(
-            title: Keys.mobile_phone.localize(), label: model.user.phone, controller: phoneController, nextFocus: passwordFocus),
         _InformationField(
             title: Keys.email.localize(), label: model.user.email),
         if (isDriver)
           _InformationField(
               title: Keys.vehicle.localize(),
               label: model.user.aditionaldriveinformation.plate),
-        if (!model.isEditing)
         _InformationField(title: Keys.password.localize(), label: '*******'),
-        if (model.isEditing)
-        _InformationFieldEdit(title: Keys.password.localize(), label: '*******', controller: passwordController, focus: passwordFocus, isFinal: true, isPassword: true,),
+      ],
+    );
+  }
+}
+
+class _ProfileInformationFieldEdit extends ViewModelWidget<ProfileViewModel> {
+
+  _ProfileInformationFieldEdit({
+    @required this.passwordController,
+    @required this.phoneFocus,
+    @required this.passwordFocus,
+    @required this.phoneController});
+
+  final phoneController;
+  final passwordController;
+  final phoneFocus;
+  final passwordFocus;
+
+  @override
+  Widget build(BuildContext context, ProfileViewModel model) {
+    final isDriver = model.user.userType == UserType.Driver;
+    return ListView(
+      children: [
+        if (isDriver)
+          Container(
+            height: 40.0,
+            padding:
+                const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12.0),
+            decoration: const BoxDecoration(
+              border: Border(
+                  bottom: BorderSide(color: Color(0xffF0F0F0), width: 3.0)),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  Keys.drive.localize(),
+                  style: const TextStyle(
+                      fontWeight: FontWeight.w500, fontSize: 12.0),
+                ),
+                Transform.scale(
+                    scale: 0.8,
+                    child: CupertinoSwitch(
+                        onChanged: model.changeDriveStatus,
+                        value: model.driveStatus)),
+              ],
+            ),
+          ),
+        _InformationField(title: Keys.names.localize(), label: model.user.name),
+        
+        Container(
+          constraints: const BoxConstraints(minHeight: 40.0),
+          padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12.0),
+          decoration: const BoxDecoration(
+            border:
+                Border(bottom: BorderSide(color: Color(0xffF0F0F0), width: 3.0)),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  Keys.mobile_phone.localize(),
+                  style:
+                      const TextStyle(fontWeight: FontWeight.w500, fontSize: 12.0),
+                ),
+              ),
+              Expanded(
+                child: TextFieldCustom(
+                  controller: phoneController,
+                  focus: phoneFocus,
+                  onChanged: (value) => model.phone = value,
+                  labelText: '',
+                  nextFocus: passwordFocus,
+                  inputFormatters: [LengthLimitingTextInputFormatter(9), FilteringTextInputFormatter.digitsOnly],
+                  keyboardType: TextInputType.phone,
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        _InformationField(
+            title: Keys.email.localize(), label: model.user.email),
+        if (isDriver)
+          _InformationField(
+              title: Keys.vehicle.localize(),
+              label: model.user.aditionaldriveinformation.plate),
+        
+        Container(
+          constraints: const BoxConstraints(minHeight: 40.0),
+          padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12.0),
+          decoration: const BoxDecoration(
+            border:
+                Border(bottom: BorderSide(color: Color(0xffF0F0F0), width: 3.0)),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  Keys.password.localize(),
+                  style:
+                      const TextStyle(fontWeight: FontWeight.w500, fontSize: 12.0),
+                ),
+              ),
+              Expanded(
+                child: TextFieldCustom(
+                  controller: passwordController,
+                  focus: passwordFocus,
+                  onChanged: (value) => model.password = value,
+                  labelText: '',
+                  inputFormatters: [LengthLimitingTextInputFormatter(20)],
+                  keyboardType: TextInputType.text,
+                  isFinal: true,
+                  isPassword: true,
+                ),
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -391,65 +516,6 @@ class _InformationField extends StatelessWidget {
                   fontSize: 12.0,
                   color: Color(0xff858585),
                   fontWeight: FontWeight.w400),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _InformationFieldEdit extends StatelessWidget {
-  const _InformationFieldEdit({
-    Key key,
-    @required this.title,
-    @required this.label,
-    @required this.controller,
-    this.focus,
-    this.nextFocus,
-    this.isFinal = false,
-    this.isPassword = false,
-  })  : assert(title != null),
-        assert(label != null),
-        super(key: key);
-  final String title;
-  final String label;
-  final TextEditingController controller;
-  final focus;
-  final nextFocus;
-  final bool isFinal;
-  final bool isPassword;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      constraints: const BoxConstraints(minHeight: 40.0),
-      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12.0),
-      decoration: const BoxDecoration(
-        border:
-            Border(bottom: BorderSide(color: Color(0xffF0F0F0), width: 3.0)),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Text(
-              title,
-              style:
-                  const TextStyle(fontWeight: FontWeight.w500, fontSize: 12.0),
-            ),
-          ),
-          Expanded(
-            child: TextFieldCustom(
-              controller: controller,
-              focus: focus,
-              onChanged: (value) {},
-              labelText: title,
-              nextFocus: nextFocus,
-                        // inputFormatters: [LengthLimitingTextInputFormatter(50)],
-              keyboardType: TextInputType.emailAddress,
-              isFinal: isFinal,
-              isPassword: isPassword,
             ),
           ),
         ],
@@ -668,12 +734,15 @@ class _ContinueButton extends ViewModelWidget<ProfileViewModel> {
 
   @override
   Widget build(BuildContext context, ProfileViewModel model) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 80.0),
-      child: ActionButtonCustom(
-        action: () => !model.isBusy ? model.logout() : null,
-        label: Keys.continue_label.localize(),
-        fontSize: 20,
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * .18),
+      height: 50,
+      child: RaisedButton(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+        color: PalleteColor.actionButtonColor,
+        disabledColor: PalleteColor.actionButtonColor.withOpacity(0.5),
+        child: Text(Keys.continue_label.localize(), style: const TextStyle(color: Colors.white, fontSize: 16)),
+        onPressed: !model.enableBtnContinue ? null : () => !model.isBusy ? model.saveProfileInformation() : null,
       ),
     );
   }

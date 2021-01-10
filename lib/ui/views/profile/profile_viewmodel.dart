@@ -1,6 +1,5 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:stacked/stacked.dart';
 import 'package:taxiapp/app/locator.dart';
@@ -47,6 +46,8 @@ class ProfileViewModel extends BaseViewModel {
   RideSummaryModel _rideSummaryModel = RideSummaryModel();
   AppConfigModel _appConfigModel;
   bool _isEditing = false;
+  String _phone = '';
+  String _password = '';
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -67,6 +68,18 @@ class ProfileViewModel extends BaseViewModel {
   bool get loadingRideSummary => _loadingRideSummary;
   RideSummaryModel get rideSummaryModel => _rideSummaryModel;
   bool get isEditing => _isEditing;
+  String get phone => _phone;
+  String get password => _password;
+
+  set phone(phone) {
+    _phone = phone;
+    notifyListeners();
+  }
+
+  set password(password) {
+    _password = password;
+    notifyListeners();
+  }
 
   set isEditing(isEditing) {
     _isEditing = isEditing;
@@ -165,4 +178,52 @@ class ProfileViewModel extends BaseViewModel {
     }
     setBusy(false);   
   }
+
+  void saveProfileInformation() async{
+    setBusy(true);
+    var packageInfo = await Utils.getPackageInfo();
+    try{
+      Alert(context: context).loading(Keys.loading.localize());
+
+      var userInformationModified = false;
+
+      if (password.trim().isNotEmpty) {
+        await _authSocialNetwork.modifyPassword(password.trim());
+        userInformationModified = true;
+      }
+
+      if (phone.trim().isNotEmpty) {
+        var userModel = UserModel();
+        userModel.uid = user.uid;
+        userModel.phone = phone.trim();
+
+        userInformationModified = await _firestoreUser.modifyUser(userModel);
+        if (userInformationModified) {
+          user.phone = userModel.phone;
+        }
+      }
+
+      if (userInformationModified) {
+        phone = '';
+        password = '';
+        isEditing = false;
+        ExtendedNavigator.root.pop();
+        Alert(context: context, title: packageInfo.appName, label: Keys.user_created_successfully.localize()).alertMessage();
+      } else {
+        ExtendedNavigator.root.pop();
+        Alert(context: context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();
+      }
+
+    } catch (signUpError) {
+      print(signUpError);
+      ExtendedNavigator.root.pop();
+      Alert(context: context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  bool get enableBtnContinue =>
+      (!Utils.isNullOrEmpty(phone) && Utils.isValidPhone(phone) && phone.trim().compareTo(user.phone.trim()) != 0)||
+      (!Utils.isNullOrEmpty(password) && Utils.isValidPasswordLength(password));
 }

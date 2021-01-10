@@ -12,6 +12,18 @@ class FirestoreUser {
   final String collectionDriver = 'driver';
   final String collectionAppConfig = 'app-config';
 
+  Future<bool> modifyUser(UserModel user) async {
+    try {
+      await databaseReference.collection(collectionUser).doc(user.uid).update({
+        'phone': user.phone,
+      });
+      return true;
+    } catch (err) {
+      print(err);
+      return false;
+    }
+  }
+
   Future<bool> userRegister(UserModel user) async {
     try {
       await databaseReference.collection(collectionUser).doc(user.uid).set({

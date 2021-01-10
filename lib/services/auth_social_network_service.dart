@@ -126,4 +126,8 @@ class AuthSocialNetwork {
   void sendSignInLinkToEmail(String email) async {
     await FirebaseAuth.instance.sendSignInLinkToEmail(email: email, actionCodeSettings: null);
   }
+
+  void modifyPassword(String newPassword) async {
+    await FirebaseAuth.instance.currentUser.updatePassword(newPassword);
+  }
 }

@@ -11,7 +11,7 @@
     <application
         android:name="io.flutter.app.FlutterApplication"
         android:label="taxiapp"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/icon_app">
 
         <meta-data android:name="com.google.android.geo.API_KEY"
                android:value="AIzaSyC5w0fmK1CYAiY8JvlFRmTASVepmwE9DjM"/>

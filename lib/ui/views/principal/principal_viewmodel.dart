@@ -308,7 +308,7 @@ class PrincipalViewModel extends ReactiveViewModel {
 
       _destinationArrive = DateTime.now().add(Duration(seconds: 180));
 
-      makeRoute(Place(latLng: destinationPosition, address: destinationPlace), context);
+      await makeRoute(Place(latLng: destinationPosition, address: destinationPlace), context);
 
       break;
       case RideStatus.continueClient:

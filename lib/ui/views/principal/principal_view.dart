@@ -95,6 +95,7 @@ class _HomeMap extends ViewModelWidget<PrincipalViewModel> {
                     model.updateCurrentLocation(cameraPosition.target);
                   },
                 ),
+                if (model.user.userType == UserType.Client)
                 const Positioned(
                   top: 0,
                   child: _Search(),

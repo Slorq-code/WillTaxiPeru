@@ -20,6 +20,7 @@ import 'package:taxiapp/services/auth_social_network_service.dart';
 import 'package:taxiapp/services/location_service.dart';
 import 'package:taxiapp/services/maps_service/maps_general_service.dart';
 import 'package:taxiapp/ui/views/principal/widgets/check_ride_details.dart';
+import 'package:taxiapp/ui/views/principal/widgets/driver_ride_details.dart';
 import 'package:taxiapp/ui/views/principal/widgets/floating_search.dart';
 import 'package:taxiapp/ui/views/principal/widgets/manual_pick_in_map.dart';
 import 'package:taxiapp/ui/views/principal/widgets/ride_requests_by_client.dart';
@@ -45,7 +46,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   List<Place> _placesFound = [];
   final List<Widget> _switchSearchWidgets = [const FloatingSearch(), const SearchFieldBar(), const ManualPickInMap()];
   final List<Widget> _switchRideWidgets = [const SizedBox(), const SelectionVehicle(), const CheckRideDetails(), const SizedBox()];
-  final List<Widget> _switchDriverRideWidgets = [const RideRequestsByClient(), const CheckRideDetails()];
+  final List<Widget> _switchDriverRideWidgets = [const RideRequestsByClient(), const DriverRideDetails()];
   GoogleMapController _mapController;
   Widget _currentSearchWidget = const SizedBox();
   Widget _currentRideWidget = const SizedBox();
@@ -54,6 +55,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   RouteMap _routeMap;
   RideRequestModel _rideRequest;
   UserModel _driverForRide;
+  UserModel _clientForRide;
   num ridePrice = 0;
   DateTime _destinationArrive;
   bool _searchingDriver = false;
@@ -76,6 +78,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   DateTime get destinationArrive => _destinationArrive;
   bool get isSearchingDriver => _searchingDriver;
   UserModel get driverForRide => _driverForRide;
+  UserModel get clientForRide => _clientForRide;
   RideRequestModel get rideRequest => _rideRequest;
   RideStatus get rideStatus => _rideStatus;
   bool get enableServiceDriver => _enableServiceDriver;
@@ -169,9 +172,7 @@ class PrincipalViewModel extends ReactiveViewModel {
 
   void makeRoute(Place place, BuildContext context) async {
     _destinationSelected = place;
-
     _routeMap = await _mapsService.getRouteByCoordinates(userLocation.location, place.latLng);
-
     final routePoints = _routeMap.points.map((point) => LatLng(point[0], point[1])).toList();
     final myDestinationRoute = Polyline(
       polylineId: PolylineId('my_destination_route'),
@@ -252,6 +253,11 @@ class PrincipalViewModel extends ReactiveViewModel {
     notifyListeners();
   }
 
+  void updateCurrentDriverRideWidget(DriverRideWidget widget) {
+    _currentDriverRideWidget = _switchDriverRideWidgets[widget.index];
+    notifyListeners();
+  }
+
   void clearOriginPosition() {
     // TODO: Make implementation
   }
@@ -269,6 +275,55 @@ class PrincipalViewModel extends ReactiveViewModel {
     _destinationArrive = _getDestinationArrive();
     updateCurrentRideWidget(RideWidget.checkRideDetails);
     getPriceRide();
+  }
+
+  void handlerDriverRide(BuildContext context) async {
+    switch (_rideStatus) {
+      case RideStatus.none:
+
+      // remove when get client from selection
+      _clientForRide = UserModel(
+        name: 'Paul Rider',
+        image: 'https://manofmany.com/wp-content/uploads/2019/06/50-Long-Haircuts-Hairstyle-Tips-for-Men-2.jpg',
+        uid: 'dasdsagfdgdfgdffgd234234',
+      );
+
+      // replace for destination ride
+      var destinationPosition = const LatLng(37.4219983, -122.084);
+
+      final destinationPlace = await _locationService.getAddress(destinationPosition);
+
+      _destinationSelected = Place(latLng: destinationPosition, address: destinationPlace);
+
+      // replace for ride information from DB
+      _rideRequest = RideRequestModel(
+        driverId: 'dasdsagfdgdfgdffgd234234',
+        secondsArrive: 350,
+        id: 'sdagfgdfgfdgfdgf',
+        userId: _appService.user.uid,
+        price: ridePrice,
+      );
+      
+      _rideStatus = RideStatus.continueClient;
+
+      _destinationArrive = DateTime.now().add(Duration(seconds: 180));
+
+      makeRoute(Place(latLng: destinationPosition, address: destinationPlace), context);
+
+      break;
+      case RideStatus.continueClient:
+      _rideStatus = RideStatus.startRide;
+      break;
+      case RideStatus.startRide:
+      _rideStatus = RideStatus.inProgress;
+      break;
+      case RideStatus.inProgress:
+      _rideStatus = RideStatus.finished;
+      break;
+      default:
+    }
+
+    updateCurrentDriverRideWidget(DriverRideWidget.driverRideDetails);
   }
 
   DateTime _getDestinationArrive() => DateTime.now().add(Duration(seconds: _routeMap.timeNeeded.value.toInt()));
@@ -388,5 +443,5 @@ enum RideWidget {
 
 enum DriverRideWidget {
   rideRequestByClient,
-  checkRideDetails,
+  driverRideDetails,
 }

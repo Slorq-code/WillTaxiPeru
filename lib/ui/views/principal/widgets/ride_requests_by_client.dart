@@ -58,7 +58,7 @@ class RideRequestsByClient extends ViewModelWidget<PrincipalViewModel> {
                                 physics: const ClampingScrollPhysics(),
                                 children: List.generate(
                                   20,
-                                  (index) => _RideRequestClientItem(onTap: () => model.handlerDriverRide(context),),
+                                  (index) => _RideRequestClientItem(onTap: () => model.selectRideRequest(null, context)),
                                 ),
                               ),
                             ),
@@ -73,7 +73,7 @@ class RideRequestsByClient extends ViewModelWidget<PrincipalViewModel> {
   }
 }
 
-class _RideRequestClientItem extends HookWidget{
+class _RideRequestClientItem extends HookWidget {
   const _RideRequestClientItem({
     Key key,
     this.onTap,

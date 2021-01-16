@@ -17,8 +17,8 @@ class DriverRideDetails extends ViewModelWidget<PrincipalViewModel> {
     return Stack(
       children: [
         const _RideInformationSection(),
-        if (model.rideStatus == RideStatus.waitingDriver || model.rideStatus == RideStatus.inProgress) const _FloatingMessage(),
-        if (model.rideStatus == RideStatus.inProgress) const _PanicButton(),
+        const _FloatingMessage(),
+        if (model.driverRequestFlow == DriverRequestFlow.inProgress) const _PanicButton(),
       ],
     );
   }
@@ -62,7 +62,6 @@ class _RideInformationSection extends ViewModelWidget<PrincipalViewModel> {
 
   @override
   Widget build(BuildContext context, PrincipalViewModel model) {
-
     var size = MediaQuery.of(context).size;
 
     return SizedBox(
@@ -156,17 +155,24 @@ class _RideInformationSection extends ViewModelWidget<PrincipalViewModel> {
                               ),
                             ],
                           ),
-                          if (!(model.rideStatus == RideStatus.none || model.rideStatus == RideStatus.inProgress))
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 70.0, vertical: 10.0),
-                              child: model.rideStatus == RideStatus.continueClient
-                                  ? ActionButtonCustom(action: () => model.handlerDriverRide(context), label: Keys.continue_label.localize())
-                                  : model.rideStatus == RideStatus.startRide
-                                  ? ActionButtonCustom(action: () => model.handlerDriverRide(context), label: 'Start')
-                                  : model.rideStatus == RideStatus.finished
-                                  ? ActionButtonCustom(action: () => model.handlerDriverRide(context), label: 'Finish')
-                                  : Container(),
-                            ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 70.0, vertical: 10.0),
+                            child: model.driverRequestFlow == DriverRequestFlow.none
+                                ? ActionButtonCustom(action: () => model.acceptRideRequest(), label: Keys.continue_label.localize())
+                                : model.driverRequestFlow == DriverRequestFlow.accept
+                                    ? ActionButtonCustom(
+                                        action: () => model.cancelRideRequestByDriver(), label: 'Cancel', color: Colors.black) // TODO: translate
+
+                                    : model.driverRequestFlow == DriverRequestFlow.onStartPoint
+                                        ? ActionButtonCustom(
+                                            action: () => model.startRidebyDriver(),
+                                            label: 'Start',
+                                          ) // TODO: translate
+
+                                        : model.driverRequestFlow == DriverRequestFlow.finished
+                                            ? ActionButtonCustom(action: () => model.finishRideByDriver(), label: 'Finish') // TODO: translate
+                                            : Container(),
+                          ),
                         ],
                       ),
                     ),
@@ -193,7 +199,7 @@ class _FloatingMessage extends ViewModelWidget<PrincipalViewModel> {
       height: size.height - 25,
       child: Column(
         children: [
-          SizedBox(height: model.rideStatus == RideStatus.waitingDriver ? 150.0 : 80.0),
+          const SizedBox(height: 120.0),
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(8.0),
@@ -202,19 +208,23 @@ class _FloatingMessage extends ViewModelWidget<PrincipalViewModel> {
                 const Expanded(flex: 1, child: SizedBox()),
                 Expanded(
                   flex: 4,
-                  child: Container(
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: const Color(0xfff0f0f0)),
-                    padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 20.0),
-                    child: Text(
-                      model.rideStatus == RideStatus.waitingDriver ? Keys.comming_ride_message.localize() : Keys.enjoy_your_trip.localize(),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
+                  child: model.driverRequestFlow == DriverRequestFlow.onStartPoint || model.driverRequestFlow == DriverRequestFlow.finished
+                      ? Container(
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: const Color(0xfff0f0f0)),
+                          padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 20.0),
+                          child: Text(
+                            model.driverRequestFlow == DriverRequestFlow.finished
+                                ? '¡Has llegado a tu destino!' // TODO: translate
+                                : '¡Has llegado al punto de partida!', // TODO: translate
+                            textAlign: TextAlign.center,
+                          ),
+                        )
+                      : const SizedBox(),
                 ),
                 Expanded(
                   flex: 1,
-                  child: model.rideStatus == RideStatus.waitingDriver
+                  child: model.driverRequestFlow == DriverRequestFlow.none || model.driverRequestFlow == DriverRequestFlow.accept
                       ? Container(
                           padding: const EdgeInsets.all(2.0),
                           decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: Colors.black), color: Colors.white),
@@ -228,7 +238,9 @@ class _FloatingMessage extends ViewModelWidget<PrincipalViewModel> {
                             ),
                           ),
                         )
-                      : const SizedBox(),
+                      : model.driverRequestFlow == DriverRequestFlow.onStartPoint
+                          ? Container(child: SvgPicture.asset('assets/icons/clock.svg', height: 28.0))
+                          : const SizedBox(),
                 )
               ],
             ),

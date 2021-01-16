@@ -17,8 +17,11 @@ import 'package:taxiapp/models/user_location.dart';
 import 'package:taxiapp/models/user_model.dart';
 import 'package:taxiapp/services/app_service.dart';
 import 'package:taxiapp/services/auth_social_network_service.dart';
+import 'package:taxiapp/services/fcm_service.dart';
+import 'package:taxiapp/services/firestore_user_service.dart';
 import 'package:taxiapp/services/location_service.dart';
 import 'package:taxiapp/services/maps_service/maps_general_service.dart';
+import 'package:taxiapp/services/ride_request_service.dart';
 import 'package:taxiapp/ui/views/principal/widgets/check_ride_details.dart';
 import 'package:taxiapp/ui/views/principal/widgets/driver_ride_details.dart';
 import 'package:taxiapp/ui/views/principal/widgets/floating_search.dart';
@@ -33,7 +36,14 @@ class PrincipalViewModel extends ReactiveViewModel {
   final LocationService _locationService = locator<LocationService>();
   final MapsGeneralService _mapsService = locator<MapsGeneralService>();
   final AuthSocialNetwork _authSocialNetwork = locator<AuthSocialNetwork>();
+  final RideRequestService _rideRequestServices = locator<RideRequestService>();
+  final FCMService _fcmService = locator<FCMService>();
+  final FirestoreUser _firestoreUser = locator<FirestoreUser>();
   PrincipalState _state = PrincipalState.loading;
+  static const DRIVER_AT_LOCATION_NOTIFICATION = 'DRIVER_AT_LOCATION';
+  static const REQUEST_ACCEPTED_NOTIFICATION = 'REQUEST_ACCEPTED';
+  static const TRIP_STARTED_NOTIFICATION = 'TRIP_STARTED';
+  String notificationType = '';
   // final bool _mapReady = false;
   // final bool _drawRoute = false;
   // final bool _followLocation = false;
@@ -61,6 +71,8 @@ class PrincipalViewModel extends ReactiveViewModel {
   bool _searchingDriver = false;
   RideStatus _rideStatus = RideStatus.none;
   bool _enableServiceDriver = false;
+  bool hasNewRideRequest = false;
+  RideRequestModel rideRequestModel;
 
   // * Getters
   UserModel get user => _appService.user;
@@ -98,6 +110,87 @@ class PrincipalViewModel extends ReactiveViewModel {
       _state = PrincipalState.accessGPSDisable;
     }
     _appService.updateUser(_authSocialNetwork.user);
+    await _fcmService.initializeFCM(_handleNotificationData);
+    notifyListeners();
+  }
+
+  Future<void> _handleNotificationData(Map<String, dynamic> data) async {
+    hasNewRideRequest = true;
+    rideRequestModel = RideRequestModel.fromJson(data['data']);
+    _driverForRide = await _firestoreUser.findById(rideRequestModel.userId);
+    notifyListeners();
+  }
+
+  // * PUSH NOTIFICATION METHODS
+  Future handleOnMessage(Map<String, dynamic> data) async {
+    print('=== data = ${data.toString()}');
+    notificationType = data['data']['type'];
+
+    if (notificationType == DRIVER_AT_LOCATION_NOTIFICATION) {
+    } else if (notificationType == TRIP_STARTED_NOTIFICATION) {
+      sendRequest(origin: pickupCoordinates, destination: destinationCoordinates);
+      notifyListeners();
+    } else if (notificationType == REQUEST_ACCEPTED_NOTIFICATION) {}
+    notifyListeners();
+  }
+
+  Future handleOnLaunch(Map<String, dynamic> data) async {
+    notificationType = data['data']['type'];
+    if (notificationType == DRIVER_AT_LOCATION_NOTIFICATION) {
+    } else if (notificationType == TRIP_STARTED_NOTIFICATION) {
+    } else if (notificationType == REQUEST_ACCEPTED_NOTIFICATION) {}
+    driverModel = await _driverService.getDriverById(data['data']['driverId']);
+    _stopListeningToDriversStream();
+
+    _listenToDriver();
+    notifyListeners();
+  }
+
+  Future handleOnResume(Map<String, dynamic> data) async {
+    notificationType = data['data']['type'];
+
+    _stopListeningToDriversStream();
+    if (notificationType == DRIVER_AT_LOCATION_NOTIFICATION) {
+    } else if (notificationType == TRIP_STARTED_NOTIFICATION) {
+    } else if (notificationType == REQUEST_ACCEPTED_NOTIFICATION) {}
+
+    if (lookingForDriver) Navigator.pop(mainContext);
+    lookingForDriver = false;
+    driverModel = await _driverService.getDriverById(data['data']['driverId']);
+    periodicTimer.cancel();
+    notifyListeners();
+  }
+
+  Future sendRequest({LatLng origin, LatLng destination}) async {
+    LatLng _org;
+    LatLng _dest;
+
+    if (origin == null && destination == null) {
+      _org = userLocation.location;
+      _dest = _destinationSelected.latLng;
+    } else {
+      _org = origin;
+      _dest = destination;
+    }
+
+    _routeMap = await _mapsService.getRouteByCoordinates(_org, _dest);
+
+    if (origin == null) {
+      ridePrice = double.parse((_routeMap.distance.value / 500).toStringAsFixed(2));
+    }
+    List<Marker> mks = _markers.where((element) => element.markerId.value == "location").toList();
+    if (mks.isNotEmpty) {
+      _markers.remove(mks[0]);
+    }
+    _addLocationMarker(destinationCoordinates, routeModel.distance.text);
+    _center = destinationCoordinates;
+    if (_poly != null) {
+      _createRoute(route.points, color: Colors.deepOrange);
+    }
+    _createRoute(
+      route.points,
+    );
+    _routeToDestinationPolys = _poly;
     notifyListeners();
   }
 
@@ -281,45 +374,45 @@ class PrincipalViewModel extends ReactiveViewModel {
     switch (_rideStatus) {
       case RideStatus.none:
 
-      // remove when get client from selection
-      _clientForRide = UserModel(
-        name: 'Paul Rider',
-        image: 'https://manofmany.com/wp-content/uploads/2019/06/50-Long-Haircuts-Hairstyle-Tips-for-Men-2.jpg',
-        uid: 'dasdsagfdgdfgdffgd234234',
-      );
+        // remove when get client from selection
+        _clientForRide = UserModel(
+          name: 'Paul Rider',
+          image: 'https://manofmany.com/wp-content/uploads/2019/06/50-Long-Haircuts-Hairstyle-Tips-for-Men-2.jpg',
+          uid: 'dasdsagfdgdfgdffgd234234',
+        );
 
-      // replace for destination ride
-      var destinationPosition = const LatLng(37.4219983, -122.084);
+        // replace for destination ride
+        var destinationPosition = const LatLng(37.4219983, -122.084);
 
-      final destinationPlace = await _locationService.getAddress(destinationPosition);
+        final destinationPlace = await _locationService.getAddress(destinationPosition);
 
-      _destinationSelected = Place(latLng: destinationPosition, address: destinationPlace);
+        _destinationSelected = Place(latLng: destinationPosition, address: destinationPlace);
 
-      // replace for ride information from DB
-      _rideRequest = RideRequestModel(
-        driverId: 'dasdsagfdgdfgdffgd234234',
-        secondsArrive: 350,
-        id: 'sdagfgdfgfdgfdgf',
-        userId: _appService.user.uid,
-        price: ridePrice,
-      );
-      
-      _rideStatus = RideStatus.continueClient;
+        // replace for ride information from DB
+        _rideRequest = RideRequestModel(
+          driverId: 'dasdsagfdgdfgdffgd234234',
+          secondsArrive: 350,
+          id: 'sdagfgdfgfdgfdgf',
+          userId: _appService.user.uid,
+          price: ridePrice,
+        );
 
-      _destinationArrive = DateTime.now().add(Duration(seconds: 180));
+        _rideStatus = RideStatus.continueClient;
 
-      await makeRoute(Place(latLng: destinationPosition, address: destinationPlace), context);
+        _destinationArrive = DateTime.now().add(Duration(seconds: 180));
 
-      break;
+        await makeRoute(Place(latLng: destinationPosition, address: destinationPlace), context);
+
+        break;
       case RideStatus.continueClient:
-      _rideStatus = RideStatus.startRide;
-      break;
+        _rideStatus = RideStatus.startRide;
+        break;
       case RideStatus.startRide:
-      _rideStatus = RideStatus.inProgress;
-      break;
+        _rideStatus = RideStatus.inProgress;
+        break;
       case RideStatus.inProgress:
-      _rideStatus = RideStatus.finished;
-      break;
+        _rideStatus = RideStatus.finished;
+        break;
       default:
     }
 

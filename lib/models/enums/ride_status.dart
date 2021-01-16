@@ -1,5 +1,6 @@
 enum RideStatus {
   none,
+  accepted,
   waitingDriver,
   continueClient,
   startRide,

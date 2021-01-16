@@ -39,7 +39,7 @@ class LoginViewModel extends BaseViewModel {
     await validateButtonAppleSignIn();
   }
 
-  void validateButtonAppleSignIn() async{
+  void validateButtonAppleSignIn() async {
     if (Platform.isIOS) {
       var iosInfo = await DeviceInfoPlugin().iosInfo;
       var version = iosInfo.systemVersion;
@@ -96,7 +96,7 @@ class LoginViewModel extends BaseViewModel {
       await _authSocialNetwork.login(user.toString().trim(), password.toString().trim(), authType);
 
       if (_authSocialNetwork.isLoggedIn) {
-        var userFounded = await _firestoreUser.userFind(_authSocialNetwork.user.uid);
+        var userFounded = await _firestoreUser.findById(_authSocialNetwork.user.uid);
 
         if (userFounded != null) {
           _authSocialNetwork.user = userFounded;

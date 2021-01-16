@@ -42,29 +42,22 @@ class FirestoreUser {
   }
 
   Future<bool> userExists(String uid) async {
-    var documentSnapshot =
-        await databaseReference.collection(collectionUser).doc(uid).get();
+    var documentSnapshot = await databaseReference.collection(collectionUser).doc(uid).get();
     return documentSnapshot.exists;
   }
 
-  Future<UserModel> userFind(String uid) async {
+  Future<UserModel> findById(String uid) async {
     try {
-      var documentSnapshot =
-          await databaseReference.collection(collectionUser).doc(uid).get();
+      var documentSnapshot = await databaseReference.collection(collectionUser).doc(uid).get();
 
       if (documentSnapshot.exists) {
         var data = documentSnapshot.data();
-        var user = UserModel.fromMap(data);
+        var user = UserModel.fromJson(data);
         user.uid = uid;
         if (user.userType == UserType.Driver) {
-          var documentDriverSnapshot = await databaseReference
-              .collection(collectionDriver)
-              .doc(uid)
-              .get();
+          var documentDriverSnapshot = await databaseReference.collection(collectionDriver).doc(uid).get();
           if (documentDriverSnapshot.exists) {
-            user.aditionaldriveinformation =
-                AditionaldriveinformationModel.fromMap(
-                    documentDriverSnapshot.data());
+            user.driverInformation = DriverInformation.fromJson(documentDriverSnapshot.data());
           }
         }
         return user;
@@ -77,10 +70,7 @@ class FirestoreUser {
 
   Future<AppConfigModel> findAppConfig(String key) async {
     try {
-      var documentSnapshot = await databaseReference
-          .collection(collectionAppConfig)
-          .doc(key)
-          .get();
+      var documentSnapshot = await databaseReference.collection(collectionAppConfig).doc(key).get();
 
       if (documentSnapshot.exists) {
         var data = documentSnapshot.data();
@@ -90,5 +80,9 @@ class FirestoreUser {
       print(err);
     }
     return null;
+  }
+
+  void addDeviceToken({String token, String userId}) {
+    databaseReference.collection(collectionUser).doc(userId).update({'token': token});
   }
 }

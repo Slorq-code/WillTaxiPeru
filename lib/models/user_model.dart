@@ -10,11 +10,11 @@ class UserModel {
   String image = '';
   UserType userType;
   AuthType authType;
-  AditionaldriveinformationModel aditionaldriveinformation;
+  DriverInformation driverInformation;
 
-  UserModel({this.name, this.uid, this.phone, this.email, this.image, this.userType, this.authType, this.aditionaldriveinformation});
+  UserModel({this.name, this.uid, this.phone, this.email, this.image, this.userType, this.authType, this.driverInformation});
 
-  UserModel.fromMap(Map<String, dynamic> data) {
+  UserModel.fromJson(Map<String, dynamic> data) {
     name = data['name'] ?? '';
     uid = data['uid'] ?? '';
     phone = data['phone'] ?? '';
@@ -22,6 +22,7 @@ class UserModel {
     image = data['image'] ?? '';
     userType = UserType.values[data['userType'] ?? UserType.Client];
     authType = AuthType.values[data['authType'] ?? AuthType.User];
+    driverInformation = DriverInformation.fromJson(data['driverInformation']);
   }
 
   UserModel copyWith({
@@ -45,7 +46,7 @@ class UserModel {
   }
 }
 
-class AditionaldriveinformationModel {
+class DriverInformation {
   String document;
   String documentType;
   String fabrishYear;
@@ -58,7 +59,7 @@ class AditionaldriveinformationModel {
   int typeService;
   int votes;
 
-  AditionaldriveinformationModel.fromMap(Map<String, dynamic> data) {
+  DriverInformation.fromJson(Map<String, dynamic> data) {
     document = data['document'] ?? '';
     documentType = data['documentType'] ?? '';
     fabrishYear = data['fabrishYear'] ?? '';

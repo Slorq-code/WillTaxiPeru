@@ -162,21 +162,16 @@ class _CallCentralButton extends ViewModelWidget<ProfileViewModel> {
         child: CustomPaint(
           painter: BoxBorderContainer(),
           child: Container(
-            padding:
-                const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
+            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 SvgPicture.asset('assets/icons/phone.svg'),
                 Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0, vertical: 4.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                   child: Text(
                     Keys.central.localize(),
-                    style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xff545253)),
+                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: Color(0xff545253)),
                   ),
                 ),
               ],
@@ -199,8 +194,7 @@ class _TabBarCustom extends ViewModelWidget<ProfileViewModel> {
   Widget build(BuildContext context, ProfileViewModel model) {
     return Container(
       padding: const EdgeInsets.only(top: 4.0),
-      decoration: const BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(25.0))),
+      decoration: const BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(25.0))),
       child: Column(
         children: <Widget>[
           Container(
@@ -234,10 +228,7 @@ class _TabBarCustom extends ViewModelWidget<ProfileViewModel> {
           const SizedBox(height: 10.0),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: Container(
-                width: double.infinity,
-                height: 4.0,
-                color: const Color(0xffF0F0F0)),
+            child: Container(width: double.infinity, height: 4.0, color: const Color(0xffF0F0F0)),
           )
         ],
       ),
@@ -276,16 +267,10 @@ class _TabProfile extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 3.0),
                 child: Text(
                   title,
-                  style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w400,
-                      color: Color(0xff545253)),
+                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: Color(0xff545253)),
                 ),
               ),
-              Container(
-                  width: 60.0,
-                  height: 2.0,
-                  color: selected ? Colors.red : Colors.transparent),
+              Container(width: 60.0, height: 2.0, color: selected ? Colors.red : Colors.transparent),
             ],
           )),
     );
@@ -296,7 +281,7 @@ class ProfileInformationTab extends HookViewModelWidget<ProfileViewModel> {
   ProfileInformationTab({
     Key key,
   }) : super(key: key);
-  
+
   @override
   Widget buildViewModelWidget(BuildContext context, ProfileViewModel model) {
     final phoneController = useTextEditingController(text: model.user.phone);
@@ -307,8 +292,9 @@ class ProfileInformationTab extends HookViewModelWidget<ProfileViewModel> {
     if (!model.isEditing) {
       return _ProfileInformationField();
     } else {
-      return _ProfileInformationFieldEdit(phoneController: phoneController, passwordController: passwordController, phoneFocus: phoneFocus, passwordFocus: passwordFocus);
-    }    
+      return _ProfileInformationFieldEdit(
+          phoneController: phoneController, passwordController: passwordController, phoneFocus: phoneFocus, passwordFocus: passwordFocus);
+    }
   }
 }
 
@@ -321,37 +307,25 @@ class _ProfileInformationField extends ViewModelWidget<ProfileViewModel> {
         if (isDriver)
           Container(
             height: 40.0,
-            padding:
-                const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12.0),
+            padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12.0),
             decoration: const BoxDecoration(
-              border: Border(
-                  bottom: BorderSide(color: Color(0xffF0F0F0), width: 3.0)),
+              border: Border(bottom: BorderSide(color: Color(0xffF0F0F0), width: 3.0)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   Keys.drive.localize(),
-                  style: const TextStyle(
-                      fontWeight: FontWeight.w500, fontSize: 12.0),
+                  style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12.0),
                 ),
-                Transform.scale(
-                    scale: 0.8,
-                    child: CupertinoSwitch(
-                        onChanged: model.changeDriveStatus,
-                        value: model.driveStatus)),
+                Transform.scale(scale: 0.8, child: CupertinoSwitch(onChanged: model.changeDriveStatus, value: model.driveStatus)),
               ],
             ),
           ),
         _InformationField(title: Keys.names.localize(), label: model.user.name),
-        _InformationField(
-            title: Keys.mobile_phone.localize(), label: model.user.phone),
-        _InformationField(
-            title: Keys.email.localize(), label: model.user.email),
-        if (isDriver)
-          _InformationField(
-              title: Keys.vehicle.localize(),
-              label: model.user.aditionaldriveinformation.plate),
+        _InformationField(title: Keys.mobile_phone.localize(), label: model.user.phone),
+        _InformationField(title: Keys.email.localize(), label: model.user.email),
+        if (isDriver) _InformationField(title: Keys.vehicle.localize(), label: model.user.driverInformation.plate),
         _InformationField(title: Keys.password.localize(), label: '*******'),
       ],
     );
@@ -359,12 +333,7 @@ class _ProfileInformationField extends ViewModelWidget<ProfileViewModel> {
 }
 
 class _ProfileInformationFieldEdit extends ViewModelWidget<ProfileViewModel> {
-
-  _ProfileInformationFieldEdit({
-    @required this.passwordController,
-    @required this.phoneFocus,
-    @required this.passwordFocus,
-    @required this.phoneController});
+  _ProfileInformationFieldEdit({@required this.passwordController, @required this.phoneFocus, @required this.passwordFocus, @required this.phoneController});
 
   final phoneController;
   final passwordController;
@@ -379,36 +348,27 @@ class _ProfileInformationFieldEdit extends ViewModelWidget<ProfileViewModel> {
         if (isDriver)
           Container(
             height: 40.0,
-            padding:
-                const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12.0),
+            padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12.0),
             decoration: const BoxDecoration(
-              border: Border(
-                  bottom: BorderSide(color: Color(0xffF0F0F0), width: 3.0)),
+              border: Border(bottom: BorderSide(color: Color(0xffF0F0F0), width: 3.0)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   Keys.drive.localize(),
-                  style: const TextStyle(
-                      fontWeight: FontWeight.w500, fontSize: 12.0),
+                  style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12.0),
                 ),
-                Transform.scale(
-                    scale: 0.8,
-                    child: CupertinoSwitch(
-                        onChanged: model.changeDriveStatus,
-                        value: model.driveStatus)),
+                Transform.scale(scale: 0.8, child: CupertinoSwitch(onChanged: model.changeDriveStatus, value: model.driveStatus)),
               ],
             ),
           ),
         _InformationField(title: Keys.names.localize(), label: model.user.name),
-        
         Container(
           constraints: const BoxConstraints(minHeight: 40.0),
           padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12.0),
           decoration: const BoxDecoration(
-            border:
-                Border(bottom: BorderSide(color: Color(0xffF0F0F0), width: 3.0)),
+            border: Border(bottom: BorderSide(color: Color(0xffF0F0F0), width: 3.0)),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -416,8 +376,7 @@ class _ProfileInformationFieldEdit extends ViewModelWidget<ProfileViewModel> {
               Expanded(
                 child: Text(
                   Keys.mobile_phone.localize(),
-                  style:
-                      const TextStyle(fontWeight: FontWeight.w500, fontSize: 12.0),
+                  style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12.0),
                 ),
               ),
               Expanded(
@@ -434,21 +393,13 @@ class _ProfileInformationFieldEdit extends ViewModelWidget<ProfileViewModel> {
             ],
           ),
         ),
-
-        _InformationField(
-            title: Keys.email.localize(), label: model.user.email),
-        if (isDriver)
-          _InformationField(
-              title: Keys.vehicle.localize(),
-              label: model.user.aditionaldriveinformation.plate),
-        
-        if (model.user.authType.index == AuthType.User.index)
+        _InformationField(title: Keys.email.localize(), label: model.user.email),
+        if (isDriver) _InformationField(title: Keys.vehicle.localize(), label: model.user.driverInformation.plate),
         Container(
           constraints: const BoxConstraints(minHeight: 40.0),
           padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12.0),
           decoration: const BoxDecoration(
-            border:
-                Border(bottom: BorderSide(color: Color(0xffF0F0F0), width: 3.0)),
+            border: Border(bottom: BorderSide(color: Color(0xffF0F0F0), width: 3.0)),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -456,8 +407,7 @@ class _ProfileInformationFieldEdit extends ViewModelWidget<ProfileViewModel> {
               Expanded(
                 child: Text(
                   Keys.password.localize(),
-                  style:
-                      const TextStyle(fontWeight: FontWeight.w500, fontSize: 12.0),
+                  style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12.0),
                 ),
               ),
               Expanded(
@@ -497,8 +447,7 @@ class _InformationField extends StatelessWidget {
       constraints: const BoxConstraints(minHeight: 40.0),
       padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12.0),
       decoration: const BoxDecoration(
-        border:
-            Border(bottom: BorderSide(color: Color(0xffF0F0F0), width: 3.0)),
+        border: Border(bottom: BorderSide(color: Color(0xffF0F0F0), width: 3.0)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -506,18 +455,14 @@ class _InformationField extends StatelessWidget {
           Expanded(
             child: Text(
               title,
-              style:
-                  const TextStyle(fontWeight: FontWeight.w500, fontSize: 12.0),
+              style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12.0),
             ),
           ),
           Expanded(
             child: Text(
               label,
               textAlign: TextAlign.end,
-              style: const TextStyle(
-                  fontSize: 12.0,
-                  color: Color(0xff858585),
-                  fontWeight: FontWeight.w400),
+              style: const TextStyle(fontSize: 12.0, color: Color(0xff858585), fontWeight: FontWeight.w400),
             ),
           ),
         ],
@@ -532,10 +477,7 @@ class HistorialTab extends ViewModelWidget<ProfileViewModel> {
     if (!model.loadingUserHistorial) {
       return ListView(
         children: model.userHistorial
-            .map((e) => _HistorialField(
-                date: Utils.timestampToDateFormat(
-                    e.dateRide.seconds, e.dateRide.nanos, 'dd/MM'),
-                price: e.price))
+            .map((e) => _HistorialField(date: Utils.timestampToDateFormat(e.dateRide.seconds, e.dateRide.nanos, 'dd/MM'), price: e.price))
             .toList(),
       );
     } else {
@@ -574,8 +516,7 @@ class _HistorialField extends StatelessWidget {
       constraints: const BoxConstraints(minHeight: 40.0),
       padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12.0),
       decoration: const BoxDecoration(
-        border:
-            Border(bottom: BorderSide(color: Color(0xffF0F0F0), width: 3.0)),
+        border: Border(bottom: BorderSide(color: Color(0xffF0F0F0), width: 3.0)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -587,8 +528,7 @@ class _HistorialField extends StatelessWidget {
                 const SizedBox(width: 5.0),
                 Text(
                   date,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.w500, fontSize: 12.0),
+                  style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12.0),
                 ),
               ],
             ),
@@ -597,10 +537,7 @@ class _HistorialField extends StatelessWidget {
             child: Text(
               'S/',
               textAlign: TextAlign.end,
-              style: TextStyle(
-                  fontSize: 12.0,
-                  color: Color(0xff858585),
-                  fontWeight: FontWeight.w400),
+              style: TextStyle(fontSize: 12.0, color: Color(0xff858585), fontWeight: FontWeight.w400),
             ),
           ),
           Container(
@@ -608,10 +545,7 @@ class _HistorialField extends StatelessWidget {
             child: Text(
               '${price.toStringAsFixed(2)}',
               textAlign: TextAlign.end,
-              style: const TextStyle(
-                  fontSize: 12.0,
-                  color: Color(0xff858585),
-                  fontWeight: FontWeight.w400),
+              style: const TextStyle(fontSize: 12.0, color: Color(0xff858585), fontWeight: FontWeight.w400),
             ),
           ),
         ],
@@ -630,24 +564,15 @@ class DriverRecordTab extends ViewModelWidget<ProfileViewModel> {
             title: Keys.ride_summary_day_rides.localize(),
             label: model.rideSummaryModel.dayRides.toString(),
           ),
-          _RideSummaryField(
-              title: Keys.ride_summary_day_income.localize(),
-              label: model.rideSummaryModel.dayIncome.toStringAsFixed(2),
-              isCurrency: true),
+          _RideSummaryField(title: Keys.ride_summary_day_income.localize(), label: model.rideSummaryModel.dayIncome.toStringAsFixed(2), isCurrency: true),
           _RideSummaryField(
               title: Keys.ride_summary_date_afiliate.localize(),
-              label: Utils.timestampToDateFormat(
-                  model.rideSummaryModel.dateAfiliate.seconds,
-                  model.rideSummaryModel.dateAfiliate.nanos,
-                  'dd/MM/yyyy')),
+              label: Utils.timestampToDateFormat(model.rideSummaryModel.dateAfiliate.seconds, model.rideSummaryModel.dateAfiliate.nanos, 'dd/MM/yyyy')),
           _RideSummaryField(
             title: Keys.ride_summary_total_rides.localize(),
             label: model.rideSummaryModel.totalRides.toString(),
           ),
-          _RideSummaryField(
-              title: Keys.ride_summary_total_income.localize(),
-              label: model.rideSummaryModel.totalIncome.toStringAsFixed(2),
-              isCurrency: true),
+          _RideSummaryField(title: Keys.ride_summary_total_income.localize(), label: model.rideSummaryModel.totalIncome.toStringAsFixed(2), isCurrency: true),
         ],
       );
     } else {
@@ -688,8 +613,7 @@ class _RideSummaryField extends StatelessWidget {
       constraints: const BoxConstraints(minHeight: 40.0),
       padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12.0),
       decoration: const BoxDecoration(
-        border:
-            Border(bottom: BorderSide(color: Color(0xffF0F0F0), width: 3.0)),
+        border: Border(bottom: BorderSide(color: Color(0xffF0F0F0), width: 3.0)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -697,8 +621,7 @@ class _RideSummaryField extends StatelessWidget {
           Expanded(
             child: Text(
               title,
-              style:
-                  const TextStyle(fontWeight: FontWeight.w500, fontSize: 12.0),
+              style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12.0),
             ),
           ),
           if (isCurrency)
@@ -706,10 +629,7 @@ class _RideSummaryField extends StatelessWidget {
               child: Text(
                 'S/',
                 textAlign: TextAlign.end,
-                style: TextStyle(
-                    fontSize: 12.0,
-                    color: Color(0xff858585),
-                    fontWeight: FontWeight.w400),
+                style: TextStyle(fontSize: 12.0, color: Color(0xff858585), fontWeight: FontWeight.w400),
               ),
             ),
           Container(
@@ -717,10 +637,7 @@ class _RideSummaryField extends StatelessWidget {
             child: Text(
               label,
               textAlign: TextAlign.end,
-              style: const TextStyle(
-                  fontSize: 12.0,
-                  color: Color(0xff858585),
-                  fontWeight: FontWeight.w400),
+              style: const TextStyle(fontSize: 12.0, color: Color(0xff858585), fontWeight: FontWeight.w400),
             ),
           ),
         ],

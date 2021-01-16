@@ -9,7 +9,7 @@ class RideRequestModel {
   int _secondsArrive;
   num _price;
   Map _position;
-  String _destination;
+  Map _destination;
   DateRide _dateRide;
 
   // * TEMPORAL constructor for test
@@ -22,7 +22,7 @@ class RideRequestModel {
     int secondsArrive,
     num price,
     Map position,
-    String destination,
+    Map destination,
     DateRide dateRide,
   })  : _id = id,
         _username = username,
@@ -43,11 +43,10 @@ class RideRequestModel {
   int get secondsArrive => _secondsArrive;
   num get price => _price;
   Map get position => _position;
-  String get destination => _destination;
+  Map get destination => _destination;
   DateRide get dateRide => _dateRide;
 
-  RideRequestModel.fromSnapshot(DocumentSnapshot snapshot) {
-    final data = snapshot.data();
+  RideRequestModel.json(Map data) {
     _id = data['id'];
     _username = data['username'];
     _userId = data['userId'];
@@ -56,9 +55,7 @@ class RideRequestModel {
     _position = data['position'];
     _price = data['price'];
     _destination = data['destination'];
-    _dateRide = data['dateRide'] != null
-        ? DateRide.fromJson(data['dateRide'])
-        : null;
+    _dateRide = data['dateRide'] != null ? DateRide.fromJson(data['dateRide']) : null;
   }
 
   RideRequestModel.fromJson(Map<String, dynamic> data) {
@@ -70,9 +67,7 @@ class RideRequestModel {
     _position = data['position'];
     _price = data['price'];
     _destination = data['destination'];
-    _dateRide = data['dateRide'] != null
-        ? DateRide.fromJson(data['dateRide'])
-        : null;
+    _dateRide = data['dateRide'] != null ? DateRide.fromJson(data['dateRide']) : null;
   }
 }
 

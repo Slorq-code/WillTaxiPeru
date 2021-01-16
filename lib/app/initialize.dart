@@ -40,7 +40,7 @@ class Initialize {
         if (tokenResponse == true) {
           _api.inSessionUser().then((response) {
             _firestoreUser
-                .userFind(response.uid)
+                .findById(response.uid)
                 .then((value) {
                   _authSocialNetwork.user = value;
                   setPage(auto_router.Routes.principalViewRoute);

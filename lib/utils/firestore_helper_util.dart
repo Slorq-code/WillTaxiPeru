@@ -101,4 +101,14 @@ class FirestoreHelperUtil {
     final snapshots = reference.snapshots();
     return snapshots.map((snapshot) => builder(snapshot.data()));
   }
+
+  Stream<T> documentStreamById<T>({
+    @required String path,
+    @required String id,
+    @required T Function(Map<String, dynamic> data) builder,
+  }) {
+    final reference = FirebaseFirestore.instance.collection(path).doc(id);
+    final snapshots = reference.snapshots();
+    return snapshots.map((snapshot) => builder(snapshot.data()));
+  }
 }

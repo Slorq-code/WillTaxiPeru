@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:injectable/injectable.dart';
 import 'package:taxiapp/models/app_config_model.dart';
-import 'package:taxiapp/models/enums/user_type.dart';
 import 'package:taxiapp/models/user_model.dart';
 import 'package:taxiapp/utils/firestore_helper_util.dart';
 
@@ -20,9 +19,8 @@ class FirestoreUser {
         'phone': user.phone,
       });
       return true;
-    } catch (err) {
-      print('modifyUser');
-      print(err);
+    } catch (err, stacktrace) {
+      print(stacktrace);
       return false;
     }
   }
@@ -38,9 +36,8 @@ class FirestoreUser {
         'image': user.image,
       });
       return true;
-    } catch (err) {
-      print('userRegister');
-      print(err);
+    } catch (err, stacktrace) {
+      print(stacktrace);
       return false;
     }
   }
@@ -51,7 +48,7 @@ class FirestoreUser {
     return documentSnapshot.exists;
   }
 
-  Future<UserModel> userFind(String uid) async {
+  Future<UserModel> findUserById(String uid) async {
     try {
       var documentSnapshot =
           await databaseReference.collection(collectionUser).doc(uid).get();
@@ -62,16 +59,16 @@ class FirestoreUser {
         user.uid = uid;
         return user;
       }
-    } catch (err) {
-      print('userFind');
-      print(err);
+    } catch (err, stacktrace) {
+      print(stacktrace);
     }
     return null;
   }
 
-  Stream<UserModel> userFindStream(String uid) async* {
-    yield* _fHelper.documentStream(
+  Stream<UserModel> findUserByIdStream(String uid) async* {
+    yield* _fHelper.documentStreamById(
       path: collectionUser,
+      id: uid,
       builder: (data) => UserModel.fromMap(data),
     );
   }
@@ -85,9 +82,8 @@ class FirestoreUser {
       if (documentSnapshot.docs != null || documentSnapshot.docs.isNotEmpty) {
         return AppConfigModel.fromMap(documentSnapshot.docs.first.data());
       }
-    } catch (err) {
-      print('findAppConfig');
-      print(err);
+    } catch (err, stacktrace) {
+      print(stacktrace);
     }
     return null;
   }

@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:auto_route/auto_route.dart';
 import 'package:device_info/device_info.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -36,7 +34,6 @@ class LoginViewModel extends BaseViewModel {
   final AuthSocialNetwork _authSocialNetwork = locator<AuthSocialNetwork>();
   final FirestoreUser _firestoreUser = locator<FirestoreUser>();
   final Token _token = locator<Token>();
-  StreamSubscription userSuscription;
 
   void initial() async {
     await validateButtonAppleSignIn();
@@ -99,7 +96,7 @@ class LoginViewModel extends BaseViewModel {
       await _authSocialNetwork.login(user.toString().trim(), password.toString().trim(), authType);
 
       if (_authSocialNetwork.isLoggedIn) {
-        var userFounded = await _firestoreUser.userFind(_authSocialNetwork.user.uid);
+        var userFounded = await _firestoreUser.findUserById(_authSocialNetwork.user.uid);
 
         if (userFounded != null) {
           _authSocialNetwork.user = userFounded;

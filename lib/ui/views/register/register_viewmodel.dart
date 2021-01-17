@@ -129,7 +129,7 @@ class RegisterViewModel extends BaseViewModel {
       if (userCredential != null) {
         // USER CREATED ON FIREBASE AUTHENTICATION
 
-        final userFounded = await _firestoreUser.userFind(_authSocialNetwork.user.uid);
+        final userFounded = await _firestoreUser.findUserById(_authSocialNetwork.user.uid);
 
         if (userFounded != null) {
           // USER ALREADY EXISTS ON CLOUD FIRESTORE

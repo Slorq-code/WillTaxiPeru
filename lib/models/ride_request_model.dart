@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:convert';
 
 class RideRequestModel {
   String _id;
@@ -9,7 +9,7 @@ class RideRequestModel {
   int _secondsArrive;
   num _price;
   Map _position;
-  Map _destination;
+  Destination _destination;
   DateRide _dateRide;
 
   // * TEMPORAL constructor for test
@@ -22,7 +22,7 @@ class RideRequestModel {
     int secondsArrive,
     num price,
     Map position,
-    Map destination,
+    Destination destination,
     DateRide dateRide,
   })  : _id = id,
         _username = username,
@@ -43,7 +43,7 @@ class RideRequestModel {
   int get secondsArrive => _secondsArrive;
   num get price => _price;
   Map get position => _position;
-  Map get destination => _destination;
+  Destination get destination => _destination;
   DateRide get dateRide => _dateRide;
 
   RideRequestModel.json(Map data) {
@@ -88,4 +88,68 @@ class DateRide {
     data['nanos'] = nanos;
     return data;
   }
+}
+
+class Destination {
+  String name;
+  String address;
+  LatLngPosition latLng;
+
+  Destination({
+    this.name,
+    this.address,
+    this.latLng,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'name': name,
+      'address': address,
+      'latLng': latLng?.toMap(),
+    };
+  }
+
+  factory Destination.fromMap(Map<String, dynamic> map) {
+    if (map == null) return null;
+
+    return Destination(
+      name: map['name'],
+      address: map['address'],
+      latLng: LatLngPosition.fromMap(map['latLng']),
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory Destination.fromJson(String source) => Destination.fromMap(json.decode(source));
+}
+
+class LatLngPosition {
+  num latitude;
+  num longitude;
+
+  LatLngPosition({
+    this.latitude,
+    this.longitude,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'latitude': latitude,
+      'longitude': longitude,
+    };
+  }
+
+  factory LatLngPosition.fromMap(Map<String, dynamic> map) {
+    if (map == null) return null;
+
+    return LatLngPosition(
+      latitude: map['latitude'],
+      longitude: map['longitude'],
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory LatLngPosition.fromJson(String source) => LatLngPosition.fromMap(json.decode(source));
 }

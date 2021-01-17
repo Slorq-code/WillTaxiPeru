@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:auto_route/auto_route.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
@@ -75,6 +78,10 @@ class PrincipalViewModel extends ReactiveViewModel {
   bool _enableServiceDriver = false;
   bool hasNewRideRequest = false;
   RideRequestModel rideRequestModel;
+  StreamSubscription<UserModel> _driverStream;
+  StreamSubscription<QuerySnapshot> requestStream;
+  Timer _periodicTimer;
+  int _timeCounter = 0;
 
   // * Getters
   UserModel get user => _appService.user;
@@ -131,7 +138,7 @@ class PrincipalViewModel extends ReactiveViewModel {
 
     if (notificationType == DRIVER_AT_LOCATION_NOTIFICATION) {
     } else if (notificationType == TRIP_STARTED_NOTIFICATION) {
-      sendRequest(origin: pickupCoordinates, destination: destinationCoordinates);
+      // await sendRequest(origin: userLocation.location, destination: destinationSelected.latLng);
       notifyListeners();
     } else if (notificationType == REQUEST_ACCEPTED_NOTIFICATION) {}
     notifyListeners();
@@ -142,60 +149,78 @@ class PrincipalViewModel extends ReactiveViewModel {
     if (notificationType == DRIVER_AT_LOCATION_NOTIFICATION) {
     } else if (notificationType == TRIP_STARTED_NOTIFICATION) {
     } else if (notificationType == REQUEST_ACCEPTED_NOTIFICATION) {}
-    driverModel = await _driverService.getDriverById(data['data']['driverId']);
-    _stopListeningToDriversStream();
+    _driverForRide = await _firestoreUser.findById(data['data']['driverId']);
+    _stopListeningToDriverStream();
 
-    _listenToDriver();
+    _listenToDriver(null);
     notifyListeners();
   }
 
   Future handleOnResume(Map<String, dynamic> data) async {
     notificationType = data['data']['type'];
 
-    _stopListeningToDriversStream();
+    _stopListeningToDriverStream();
     if (notificationType == DRIVER_AT_LOCATION_NOTIFICATION) {
     } else if (notificationType == TRIP_STARTED_NOTIFICATION) {
     } else if (notificationType == REQUEST_ACCEPTED_NOTIFICATION) {}
 
-    if (lookingForDriver) Navigator.pop(mainContext);
-    lookingForDriver = false;
-    driverModel = await _driverService.getDriverById(data['data']['driverId']);
-    periodicTimer.cancel();
+    _driverForRide = await _firestoreUser.findById(data['data']['driverId']);
+    _periodicTimer.cancel();
     notifyListeners();
   }
 
-  Future sendRequest({LatLng origin, LatLng destination}) async {
-    LatLng _org;
-    LatLng _dest;
-
-    if (origin == null && destination == null) {
-      _org = userLocation.location;
-      _dest = _destinationSelected.latLng;
-    } else {
-      _org = origin;
-      _dest = destination;
-    }
-
-    _routeMap = await _mapsService.getRouteByCoordinates(_org, _dest);
-
-    if (origin == null) {
-      ridePrice = double.parse((_routeMap.distance.value / 500).toStringAsFixed(2));
-    }
-    List<Marker> mks = _markers.where((element) => element.markerId.value == "location").toList();
-    if (mks.isNotEmpty) {
-      _markers.remove(mks[0]);
-    }
-    _addLocationMarker(destinationCoordinates, routeModel.distance.text);
-    _center = destinationCoordinates;
-    if (_poly != null) {
-      _createRoute(route.points, color: Colors.deepOrange);
-    }
-    _createRoute(
-      route.points,
-    );
-    _routeToDestinationPolys = _poly;
-    notifyListeners();
+  void _listenToDriver(Stream<UserModel> driverStream) {
+    _driverStream = driverStream.listen((event) {
+      _driverForRide = event;
+      notifyListeners();
+    });
   }
+
+  void listenToRequest({String id, BuildContext context}) async {
+    requestStream = _rideRequestServices.requestStream().listen((QuerySnapshot querySnapshot) {
+      querySnapshot.docChanges.forEach((document) async {
+        if (document.doc.data()['id'] == id) {
+          rideRequestModel = RideRequestModel.fromJson(document.doc.data());
+          notifyListeners();
+          switch (document.doc.data()['status']) {
+            case RideStatus.canceled:
+              break;
+            case RideStatus.accepted:
+              _rideStatus = RideStatus.accepted;
+              _driverForRide = await _firestoreUser.findById(document.doc.data()['driverId']);
+              _periodicTimer.cancel();
+              cleanRoute();
+              _stopListeningToDriverStream();
+              _listenToDriver(null); // TODO: set stream
+              notifyListeners();
+              break;
+            case RideStatus.expired:
+              // TODO: Show Alert
+              break;
+            default:
+              break;
+          }
+        }
+      });
+    });
+  }
+
+  void percentageCounter({String requestId, BuildContext context}) {
+    _periodicTimer = Timer.periodic(const Duration(seconds: 1), (time) {
+      _timeCounter = _timeCounter + 1;
+      print('====== Timer: $_timeCounter');
+      if (_timeCounter == 100) {
+        _timeCounter = 0;
+        _rideStatus = RideStatus.expired;
+        // TODO: implemente update ride request expired
+        time.cancel();
+        requestStream.cancel();
+      }
+      notifyListeners();
+    });
+  }
+
+  void _stopListeningToDriverStream() => _driverStream.cancel();
 
   @override
   void dispose() {
@@ -498,11 +523,11 @@ class PrincipalViewModel extends ReactiveViewModel {
       id: 'sdagfgdfgfdgfdgf',
       userId: _appService.user.uid,
       price: ridePrice,
-      destination: {
+      destination: Destination.fromMap({
         'name': 'Breack Lounge',
         'address': 'Av.Antunez',
         'latlng': {'lat': -11.431691, 'lng': -74.48670}
-      },
+      }),
     );
     // _rideRequest = rideRequest;
     // remove when get client from selection
@@ -513,11 +538,11 @@ class PrincipalViewModel extends ReactiveViewModel {
     );
 
     // replace for destination ride
-    final destinationPosition = LatLng(_rideRequest.destination['latlng']['lat'], _rideRequest.destination['latlng']['lng']);
+    final destinationPosition = LatLng(_rideRequest.destination.latLng.latitude, _rideRequest.destination.latLng.longitude);
 
-    final destinationPlace = _rideRequest.destination['address'];
+    final destinationPlace = _rideRequest.destination.address;
 
-    _destinationSelected = Place(latLng: destinationPosition, address: destinationPlace, name: _rideRequest.destination['name']);
+    _destinationSelected = Place(latLng: destinationPosition, address: destinationPlace, name: _rideRequest.destination.name);
 
     _destinationArrive = DateTime.now().add(Duration(seconds: _rideRequest.secondsArrive));
 

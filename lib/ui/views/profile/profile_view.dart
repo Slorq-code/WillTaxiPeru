@@ -351,7 +351,7 @@ class _ProfileInformationField extends ViewModelWidget<ProfileViewModel> {
         if (isDriver)
           _InformationField(
               title: Keys.vehicle.localize(),
-              label: model.user.aditionaldriveinformation.plate),
+              label: model.user.driverInfo.plate),
         _InformationField(title: Keys.password.localize(), label: '*******'),
       ],
     );
@@ -440,7 +440,7 @@ class _ProfileInformationFieldEdit extends ViewModelWidget<ProfileViewModel> {
         if (isDriver)
           _InformationField(
               title: Keys.vehicle.localize(),
-              label: model.user.aditionaldriveinformation.plate),
+              label: model.user.driverInfo.plate),
         
         if (model.user.authType.index == AuthType.User.index)
         Container(
@@ -624,32 +624,36 @@ class DriverRecordTab extends ViewModelWidget<ProfileViewModel> {
   @override
   Widget build(BuildContext context, ProfileViewModel model) {
     if (!model.loadingRideSummary) {
-      return ListView(
-        children: [
-          _RideSummaryField(
-            title: Keys.ride_summary_day_rides.localize(),
-            label: model.rideSummaryModel.dayRides.toString(),
-          ),
-          _RideSummaryField(
-              title: Keys.ride_summary_day_income.localize(),
-              label: model.rideSummaryModel.dayIncome.toStringAsFixed(2),
-              isCurrency: true),
-          _RideSummaryField(
-              title: Keys.ride_summary_date_afiliate.localize(),
-              label: Utils.timestampToDateFormat(
-                  model.rideSummaryModel.dateAfiliate.seconds,
-                  model.rideSummaryModel.dateAfiliate.nanos,
-                  'dd/MM/yyyy')),
-          _RideSummaryField(
-            title: Keys.ride_summary_total_rides.localize(),
-            label: model.rideSummaryModel.totalRides.toString(),
-          ),
-          _RideSummaryField(
-              title: Keys.ride_summary_total_income.localize(),
-              label: model.rideSummaryModel.totalIncome.toStringAsFixed(2),
-              isCurrency: true),
-        ],
-      );
+      if (model.rideSummaryModel != null) {
+        return ListView(
+          children: [
+            _RideSummaryField(
+              title: Keys.ride_summary_day_rides.localize(),
+              label: model.rideSummaryModel.dayRides.toString(),
+            ),
+            _RideSummaryField(
+                title: Keys.ride_summary_day_income.localize(),
+                label: model.rideSummaryModel.dayIncome.toStringAsFixed(2),
+                isCurrency: true),
+            _RideSummaryField(
+                title: Keys.ride_summary_date_afiliate.localize(),
+                label: Utils.timestampToDateFormat(
+                    model.rideSummaryModel.dateAfiliate.seconds,
+                    model.rideSummaryModel.dateAfiliate.nanos,
+                    'dd/MM/yyyy')),
+            _RideSummaryField(
+              title: Keys.ride_summary_total_rides.localize(),
+              label: model.rideSummaryModel.totalRides.toString(),
+            ),
+            _RideSummaryField(
+                title: Keys.ride_summary_total_income.localize(),
+                label: model.rideSummaryModel.totalIncome.toStringAsFixed(2),
+                isCurrency: true),
+          ],
+        );
+      } else {
+        return Container();
+      }
     } else {
       return Container(
         child: Align(

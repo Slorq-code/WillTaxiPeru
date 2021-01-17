@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:injectable/injectable.dart';
 import 'package:taxiapp/models/app_config_model.dart';
+import 'package:taxiapp/models/ride_request_model.dart';
 import 'package:taxiapp/models/user_model.dart';
 import 'package:taxiapp/utils/firestore_helper_util.dart';
 
@@ -12,6 +13,7 @@ class FirestoreUser {
   final String collectionUser = 'user';
   final String collectionDriver = 'driver';
   final String collectionAppConfig = 'app-config';
+  final String collectionRides = 'rides';
 
   Future<bool> modifyUser(UserModel user) async {
     try {
@@ -70,6 +72,19 @@ class FirestoreUser {
       path: collectionUser,
       id: uid,
       builder: (data) => UserModel.fromMap(data),
+    );
+  }
+
+  Stream<List<RideRequestModel>> findRides() async* {
+    yield* _fHelper.collectionStream(
+      path: collectionRides,
+      builder: (data) => RideRequestModel.fromJson(data),
+      queryBuilder: (query) => query
+          .where(
+            'status',
+            isEqualTo: '0',
+          )
+          //.orderBy('index'),
     );
   }
 

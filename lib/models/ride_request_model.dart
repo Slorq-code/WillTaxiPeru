@@ -1,16 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RideRequestModel {
-  String _id;
+  String _uid;
   String _username;
   String _userId;
   String _driverId;
   String _status;
   int _secondsArrive;
   num _price;
-  Map _position;
-  Map _destination;
+  PositionRide _position;
+  DestinationRide _destination;
   DateRide _dateRide;
+  String _route;
 
   // * TEMPORAL constructor for test
   RideRequestModel({
@@ -21,10 +22,11 @@ class RideRequestModel {
     String status,
     int secondsArrive,
     num price,
-    Map position,
-    Map destination,
+    PositionRide position,
+    DestinationRide destination,
     DateRide dateRide,
-  })  : _id = id,
+    String route,
+  })  : _uid = id,
         _username = username,
         _userId = userId,
         _driverId = driverId,
@@ -33,60 +35,112 @@ class RideRequestModel {
         _price = price,
         _position = position,
         _destination = destination,
-        _dateRide = dateRide;
+        _dateRide = dateRide,
+        _route = route;
 
-  String get id => _id;
+  String get uid => _uid;
   String get username => _username;
   String get userId => _userId;
   String get driverId => _driverId;
   String get status => _status;
   int get secondsArrive => _secondsArrive;
   num get price => _price;
-  Map get position => _position;
-  Map get destination => _destination;
+  PositionRide get position => _position;
+  DestinationRide get destination => _destination;
   DateRide get dateRide => _dateRide;
+  String get route => _route;
 
   RideRequestModel.fromSnapshot(DocumentSnapshot snapshot) {
     final data = snapshot.data();
-    _id = data['id'];
+    _uid = data['uid'];
     _username = data['username'];
     _userId = data['userId'];
     _driverId = data['driverId'];
     _status = data['status'];
-    _position = data['position'];
     _price = data['price'];
-    _destination = data['destination'];
-    _dateRide = data['dateRide'] != null ? DateRide.fromJson(data['dateRide']) : null;
+    _dateRide = data['dateRide'] != null ? DateRide.fromTimeStamp(data['dateRide']) : null;
+    _position = data['position'] != null ? PositionRide.fromJson(data['position']) : null;
+    _destination = data['destination'] != null ? DestinationRide.fromJson(data['destination']) : null;
+    _route = data['route'];
+    _secondsArrive = data['secondsArrive'];
   }
 
   RideRequestModel.fromJson(Map<String, dynamic> data) {
-    _id = data['id'];
+    _uid = data['uid'];
     _username = data['username'];
     _userId = data['userId'];
     _driverId = data['driverId'];
     _status = data['status'];
-    _position = data['position'];
     _price = data['price'];
-    _destination = data['destination'];
-    _dateRide = data['dateRide'] != null ? DateRide.fromJson(data['dateRide']) : null;
+    _dateRide = data['dateRide'] != null ? DateRide.fromTimeStamp(data['dateRide']) : null;
+    _position = data['position'] != null ? PositionRide.fromJson(data['position']) : null;
+    _destination = data['destination'] != null ? DestinationRide.fromJson(data['destination']) : null;
+    _route = data['route'];
+    _secondsArrive = data['secondsArrive'];
   }
 }
 
 class DateRide {
   int seconds;
-  int nanos;
+  int nanoseconds;
 
-  DateRide({this.seconds, this.nanos});
+  DateRide({this.seconds, this.nanoseconds});
 
   DateRide.fromJson(Map<String, dynamic> json) {
     seconds = json['seconds'];
-    nanos = json['nanos'];
+    nanoseconds = json['nanoseconds'];
+  }
+
+  DateRide.fromTimeStamp(Timestamp timestamp) {
+    seconds = timestamp.seconds;
+    nanoseconds = timestamp.nanoseconds;
   }
 
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
     data['seconds'] = seconds;
-    data['nanos'] = nanos;
+    data['nanoseconds'] = nanoseconds;
+    return data;
+  }
+}
+
+class PositionRide {
+  double latitude;
+  double longitude;
+
+  PositionRide({this.latitude, this.longitude});
+
+  PositionRide.fromJson(Map<String, dynamic> json) {
+    latitude = json['latitude'];
+    longitude = json['longitude'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final data = <String, dynamic>{};
+    data['latitude'] = latitude;
+    data['longitude'] = longitude;
+    return data;
+  }
+}
+
+class DestinationRide {
+  String name;
+  String address;
+  PositionRide position;
+
+  DestinationRide({this.name, this.address, this.position});
+
+  DestinationRide.fromJson(Map<String, dynamic> json) {
+    name = json['name'];
+    address = json['address'];
+    position = json['position'] != null ? PositionRide.fromJson(json['position']) : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final data = <String, dynamic>{};
+    data['name'] = name;
+    data['address'] = address;
+    data['position'] = position.toJson();
     return data;
   }
 }

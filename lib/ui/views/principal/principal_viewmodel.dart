@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
@@ -17,6 +19,7 @@ import 'package:taxiapp/models/user_location.dart';
 import 'package:taxiapp/models/user_model.dart';
 import 'package:taxiapp/services/app_service.dart';
 import 'package:taxiapp/services/auth_social_network_service.dart';
+import 'package:taxiapp/services/firestore_user_service.dart';
 import 'package:taxiapp/services/location_service.dart';
 import 'package:taxiapp/services/maps_service/maps_general_service.dart';
 import 'package:taxiapp/ui/views/principal/widgets/check_ride_details.dart';
@@ -34,7 +37,9 @@ class PrincipalViewModel extends ReactiveViewModel {
   final LocationService _locationService = locator<LocationService>();
   final MapsGeneralService _mapsService = locator<MapsGeneralService>();
   final AuthSocialNetwork _authSocialNetwork = locator<AuthSocialNetwork>();
+  final FirestoreUser _firestoreUser = locator<FirestoreUser>();
   PrincipalState _state = PrincipalState.loading;
+  StreamSubscription ridesSubscription;
   // final bool _mapReady = false;
   // final bool _drawRoute = false;
   // final bool _followLocation = false;
@@ -63,6 +68,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   RideStatus _rideStatus = RideStatus.none;
   DriverRequestFlow _driverRequestFlow = DriverRequestFlow.none;
   bool _enableServiceDriver = false;
+  List<RideRequestModel> _listRideRequest = [];
 
   // * Getters
   UserModel get user => _appService.user;
@@ -85,6 +91,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   RideStatus get rideStatus => _rideStatus;
   DriverRequestFlow get driverRequestFlow => _driverRequestFlow;
   bool get enableServiceDriver => _enableServiceDriver;
+  List<RideRequestModel> get listRideRequest => _listRideRequest;
 
   // * Functions
 
@@ -101,13 +108,26 @@ class PrincipalViewModel extends ReactiveViewModel {
       _state = PrincipalState.accessGPSDisable;
     }
     _appService.updateUser(_authSocialNetwork.user);
+    getRides();
     notifyListeners();
   }
 
   @override
   void dispose() {
     _locationService.cancelTracking();
+    ridesSubscription?.cancel();
     super.dispose();
+  }
+
+  void getRides() {
+    runZoned(() async {
+      ridesSubscription = _firestoreUser.findRides().listen((event) { 
+        _listRideRequest = event;
+        notifyListeners();
+      });
+    }, onError: (e, stackTrace) {
+      print(stackTrace);
+    });
   }
 
   Future accessGPS(PermissionStatus status) async {
@@ -398,33 +418,16 @@ class PrincipalViewModel extends ReactiveViewModel {
   }
 
   void selectRideRequest(RideRequestModel rideRequest, BuildContext context) async {
-    // replace for ride information from DB
-    _rideRequest = RideRequestModel(
-      driverId: 'dasdsagfdgdfgdffgd234234',
-      secondsArrive: 350,
-      id: 'sdagfgdfgfdgfdgf',
-      userId: _appService.user.uid,
-      price: ridePrice,
-      destination: {
-        'name': 'Breack Lounge',
-        'address': 'Av.Antunez',
-        'latlng': {'lat': -11.431691, 'lng': -74.48670}
-      },
-    );
-    // _rideRequest = rideRequest;
-    // remove when get client from selection
-    _clientForRide = UserModel(
-      name: 'Paul Rider',
-      image: 'https://manofmany.com/wp-content/uploads/2019/06/50-Long-Haircuts-Hairstyle-Tips-for-Men-2.jpg',
-      uid: 'dasdsagfdgdfgdffgd234234',
-    );
+    _rideRequest = rideRequest;
+
+    _clientForRide = await _firestoreUser.findUserById(_rideRequest.userId);
 
     // replace for destination ride
-    final destinationPosition = LatLng(_rideRequest.destination['latlng']['lat'], _rideRequest.destination['latlng']['lng']);
+    final destinationPosition = LatLng(_rideRequest.destination.position.latitude, _rideRequest.destination.position.longitude);
 
-    final destinationPlace = _rideRequest.destination['address'];
+    final destinationPlace = _rideRequest.destination.address;
 
-    _destinationSelected = Place(latLng: destinationPosition, address: destinationPlace, name: _rideRequest.destination['name']);
+    _destinationSelected = Place(latLng: destinationPosition, address: destinationPlace, name: _rideRequest.destination.name);
 
     _destinationArrive = DateTime.now().add(Duration(seconds: _rideRequest.secondsArrive));
 

@@ -56,10 +56,15 @@ class RideRequestsByClient extends ViewModelWidget<PrincipalViewModel> {
                               child: ListView(
                                 shrinkWrap: true,
                                 physics: const ClampingScrollPhysics(),
+                                /*
                                 children: List.generate(
                                   20,
                                   (index) => _RideRequestClientItem(onTap: () => model.selectRideRequest(null, context)),
                                 ),
+                                */
+                                children: model.listRideRequest
+                                  .map((e) => _RideRequestClientItem(onTap: () => model.selectRideRequest(e, context)))
+                                  .toList(),
                               ),
                             ),
                           ),

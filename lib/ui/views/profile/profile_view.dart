@@ -534,7 +534,7 @@ class HistorialTab extends ViewModelWidget<ProfileViewModel> {
         children: model.userHistorial
             .map((e) => _HistorialField(
                 date: Utils.timestampToDateFormat(
-                    e.dateRide.seconds, e.dateRide.nanos, 'dd/MM'),
+                    e.dateRide.seconds, e.dateRide.nanoseconds, 'dd/MM'),
                 price: e.price))
             .toList(),
       );

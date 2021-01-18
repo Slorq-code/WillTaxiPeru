@@ -11,6 +11,7 @@ import 'package:stacked/stacked.dart';
 import 'package:taxiapp/app/locator.dart';
 import 'package:taxiapp/app/router.gr.dart';
 import 'package:taxiapp/models/enums/ride_status.dart';
+import 'package:taxiapp/models/enums/user_type.dart';
 import 'package:taxiapp/models/enums/vehicle_type.dart';
 import 'package:taxiapp/models/place.dart';
 import 'package:taxiapp/models/ride_request_model.dart';
@@ -108,7 +109,9 @@ class PrincipalViewModel extends ReactiveViewModel {
       _state = PrincipalState.accessGPSDisable;
     }
     _appService.updateUser(_authSocialNetwork.user);
-    getRides();
+    if (UserType.Driver == _authSocialNetwork.user.userType){
+      getRides();
+    }
     notifyListeners();
   }
 

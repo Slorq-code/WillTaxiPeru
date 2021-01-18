@@ -131,9 +131,8 @@ class ProfileViewModel extends BaseViewModel {
     loadingUserHistorial = true;
     try{
       userHistorial = await _api.getAllUserHistorial(_authSocialNetwork.user.uid);
-    } catch (signUpError) {
-      print('loadHistorialData');
-      print(signUpError);
+    } catch (err, stackTrace) {
+      print(stackTrace);
     } finally {
       loadingUserHistorial = false;
     }
@@ -143,13 +142,13 @@ class ProfileViewModel extends BaseViewModel {
     loadingRideSummary = true;
     try{
       var data = await _api.getRideSummary(_authSocialNetwork.user.uid);
-      
-      if (!Utils.isNullOrEmpty(data)) {
-        rideSummaryModel = RideSummaryModel.fromJson(json.decode(data));
+      if (data != null && data is Map) {
+        if (data.isNotEmpty) {
+          rideSummaryModel = RideSummaryModel.fromJson(data);
+        }
       }
-    } catch (signUpError) {
-      print('loadRideSummary');
-      print(signUpError);
+    } catch (err, stackTrace) {
+      print(stackTrace);
     } finally {
       loadingRideSummary = false;
     }

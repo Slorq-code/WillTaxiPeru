@@ -72,7 +72,7 @@ class RideRequestModel {
     _driverId = data['driverId'];
     _status = data['status'];
     _price = data['price'];
-    _dateRide = data['dateRide'] != null ? DateRide.fromTimeStamp(data['dateRide']) : null;
+    _dateRide = data['dateRide'] != null ? (data['dateRide'] is Timestamp ? DateRide.fromTimeStamp(data['dateRide']) : DateRide.fromJson(data['dateRide'])) : null;
     _position = data['position'] != null ? PositionRide.fromJson(data['position']) : null;
     _destination = data['destination'] != null ? DestinationRide.fromJson(data['destination']) : null;
     _route = data['route'];
@@ -82,24 +82,24 @@ class RideRequestModel {
 
 class DateRide {
   int seconds;
-  int nanoseconds;
+  int nanos;
 
-  DateRide({this.seconds, this.nanoseconds});
+  DateRide({this.seconds, this.nanos});
 
   DateRide.fromJson(Map<String, dynamic> json) {
     seconds = json['seconds'];
-    nanoseconds = json['nanoseconds'];
+    nanos = json['nanos'];
   }
 
   DateRide.fromTimeStamp(Timestamp timestamp) {
     seconds = timestamp.seconds;
-    nanoseconds = timestamp.nanoseconds;
+    nanos = timestamp.nanoseconds;
   }
 
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
     data['seconds'] = seconds;
-    data['nanoseconds'] = nanoseconds;
+    data['nanos'] = nanos;
     return data;
   }
 }

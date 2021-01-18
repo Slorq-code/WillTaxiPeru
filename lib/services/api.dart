@@ -90,7 +90,7 @@ class Api {
     return model;
   }
 
-  Future<String> getRideSummary(String uid) async {
+  Future<dynamic> getRideSummary(String uid) async {
     var response = await _get('/rides/resume/${uid}');
     return response;
   }

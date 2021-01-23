@@ -5,4 +5,5 @@ enum RideStatus {
   inProgress,
   finished,
   canceled,
+  expired,
 }

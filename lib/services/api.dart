@@ -90,10 +90,9 @@ class Api {
     return model;
   }
 
-  Future<RideSummaryModel> getRideSummary(String uid) async {
+  Future<dynamic> getRideSummary(String uid) async {
     var response = await _get('/rides/resume/${uid}');
-    var model = RideSummaryModel.fromJson(response);
-    return model;
+    return response;
   }
   // User
 

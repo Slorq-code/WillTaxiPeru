@@ -1,16 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:injectable/injectable.dart';
 import 'package:taxiapp/models/app_config_model.dart';
-import 'package:taxiapp/models/enums/user_type.dart';
+import 'package:taxiapp/models/ride_request_model.dart';
 import 'package:taxiapp/models/user_model.dart';
+import 'package:taxiapp/utils/firestore_helper_util.dart';
 
 @lazySingleton
 class FirestoreUser {
   final databaseReference = FirebaseFirestore.instance;
+  final _fHelper = FirestoreHelperUtil.instance;
 
   final String collectionUser = 'user';
   final String collectionDriver = 'driver';
   final String collectionAppConfig = 'app-config';
+  final String collectionRides = 'rides';
 
   Future<bool> modifyUser(UserModel user) async {
     try {
@@ -18,8 +21,8 @@ class FirestoreUser {
         'phone': user.phone,
       });
       return true;
-    } catch (err) {
-      print(err);
+    } catch (err, stacktrace) {
+      print(stacktrace);
       return false;
     }
   }
@@ -35,8 +38,8 @@ class FirestoreUser {
         'image': user.image,
       });
       return true;
-    } catch (err) {
-      print(err);
+    } catch (err, stacktrace) {
+      print(stacktrace);
       return false;
     }
   }
@@ -46,7 +49,7 @@ class FirestoreUser {
     return documentSnapshot.exists;
   }
 
-  Future<UserModel> findById(String uid) async {
+  Future<UserModel> findUserById(String uid) async {
     try {
       var documentSnapshot = await databaseReference.collection(collectionUser).doc(uid).get();
 
@@ -54,30 +57,43 @@ class FirestoreUser {
         var data = documentSnapshot.data();
         var user = UserModel.fromJson(data);
         user.uid = uid;
-        if (user.userType == UserType.Driver) {
-          var documentDriverSnapshot = await databaseReference.collection(collectionDriver).doc(uid).get();
-          if (documentDriverSnapshot.exists) {
-            user.driverInformation = DriverInformation.fromJson(documentDriverSnapshot.data());
-          }
-        }
         return user;
       }
-    } catch (err) {
-      print(err);
+    } catch (err, stacktrace) {
+      print(stacktrace);
     }
     return null;
   }
 
-  Future<AppConfigModel> findAppConfig(String key) async {
-    try {
-      var documentSnapshot = await databaseReference.collection(collectionAppConfig).doc(key).get();
+  Stream<UserModel> findUserByIdStream(String uid) async* {
+    yield* _fHelper.documentStreamById(
+      path: collectionUser,
+      id: uid,
+      builder: (data) => UserModel.fromJson(data),
+    );
+  }
 
-      if (documentSnapshot.exists) {
-        var data = documentSnapshot.data();
-        return AppConfigModel.fromMap(data);
+  Stream<List<RideRequestModel>> findRides() async* {
+    yield* _fHelper.collectionStream(
+        path: collectionRides,
+        builder: (data) => RideRequestModel.fromJson(data),
+        queryBuilder: (query) => query.where(
+              'status',
+              isEqualTo: '0',
+            )
+        //.orderBy('index'),
+        );
+  }
+
+  Future<AppConfigModel> findAppConfig() async {
+    try {
+      var documentSnapshot = await databaseReference.collection(collectionAppConfig).get();
+
+      if (documentSnapshot.docs != null || documentSnapshot.docs.isNotEmpty) {
+        return AppConfigModel.fromMap(documentSnapshot.docs.first.data());
       }
-    } catch (err) {
-      print(err);
+    } catch (err, stacktrace) {
+      print(stacktrace);
     }
     return null;
   }

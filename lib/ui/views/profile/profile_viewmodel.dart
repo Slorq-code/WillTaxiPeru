@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
@@ -43,7 +45,7 @@ class ProfileViewModel extends BaseViewModel {
   List<RideRequestModel> _userHistorial = [];
   bool _loadingUserHistorial = false;
   bool _loadingRideSummary = false;
-  RideSummaryModel _rideSummaryModel = RideSummaryModel();
+  RideSummaryModel _rideSummaryModel;
   AppConfigModel _appConfigModel;
   bool _isEditing = false;
   String _phone = '';
@@ -129,8 +131,8 @@ class ProfileViewModel extends BaseViewModel {
     loadingUserHistorial = true;
     try{
       userHistorial = await _api.getAllUserHistorial(_authSocialNetwork.user.uid);
-    } catch (signUpError) {
-      print(signUpError);
+    } catch (err, stackTrace) {
+      print(stackTrace);
     } finally {
       loadingUserHistorial = false;
     }
@@ -139,16 +141,21 @@ class ProfileViewModel extends BaseViewModel {
   void loadRideSummary() async{
     loadingRideSummary = true;
     try{
-      rideSummaryModel = await _api.getRideSummary(_authSocialNetwork.user.uid);
-    } catch (signUpError) {
-      print(signUpError);
+      var data = await _api.getRideSummary(_authSocialNetwork.user.uid);
+      if (data != null && data is Map) {
+        if (data.isNotEmpty) {
+          rideSummaryModel = RideSummaryModel.fromJson(data);
+        }
+      }
+    } catch (err, stackTrace) {
+      print(stackTrace);
     } finally {
       loadingRideSummary = false;
     }
   }
 
   void loadAppConfig() async{
-    _appConfigModel ??= await _firestoreUser.findAppConfig('eL29q5Iz0voRZU5CpGDU');
+    _appConfigModel ??= await _firestoreUser.findAppConfig();
   }
 
   void callCentral() async{

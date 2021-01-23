@@ -48,6 +48,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   static const REQUEST_ACCEPTED_NOTIFICATION = 'REQUEST_ACCEPTED';
   static const TRIP_STARTED_NOTIFICATION = 'TRIP_STARTED';
   String notificationType = '';
+  StreamSubscription ridesSubscription;
   // final bool _mapReady = false;
   // final bool _drawRoute = false;
   // final bool _followLocation = false;
@@ -82,6 +83,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   StreamSubscription<QuerySnapshot> requestStream;
   Timer _periodicTimer;
   int _timeCounter = 0;
+  List<RideRequestModel> _listRideRequest = [];
 
   // * Getters
   UserModel get user => _appService.user;
@@ -104,6 +106,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   RideStatus get rideStatus => _rideStatus;
   DriverRequestFlow get driverRequestFlow => _driverRequestFlow;
   bool get enableServiceDriver => _enableServiceDriver;
+  List<RideRequestModel> get listRideRequest => _listRideRequest;
 
   // * Functions
 
@@ -127,7 +130,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   Future<void> _handleNotificationData(Map<String, dynamic> data) async {
     hasNewRideRequest = true;
     rideRequestModel = RideRequestModel.fromJson(data['data']);
-    _driverForRide = await _firestoreUser.findById(rideRequestModel.userId);
+    _driverForRide = await _firestoreUser.findUserById(rideRequestModel.userId);
     notifyListeners();
   }
 
@@ -149,7 +152,7 @@ class PrincipalViewModel extends ReactiveViewModel {
     if (notificationType == DRIVER_AT_LOCATION_NOTIFICATION) {
     } else if (notificationType == TRIP_STARTED_NOTIFICATION) {
     } else if (notificationType == REQUEST_ACCEPTED_NOTIFICATION) {}
-    _driverForRide = await _firestoreUser.findById(data['data']['driverId']);
+    _driverForRide = await _firestoreUser.findUserById(data['data']['driverId']);
     _stopListeningToDriverStream();
 
     _listenToDriver(null);
@@ -164,7 +167,7 @@ class PrincipalViewModel extends ReactiveViewModel {
     } else if (notificationType == TRIP_STARTED_NOTIFICATION) {
     } else if (notificationType == REQUEST_ACCEPTED_NOTIFICATION) {}
 
-    _driverForRide = await _firestoreUser.findById(data['data']['driverId']);
+    _driverForRide = await _firestoreUser.findUserById(data['data']['driverId']);
     _periodicTimer.cancel();
     notifyListeners();
   }
@@ -187,7 +190,7 @@ class PrincipalViewModel extends ReactiveViewModel {
               break;
             case RideStatus.accepted:
               _rideStatus = RideStatus.accepted;
-              _driverForRide = await _firestoreUser.findById(document.doc.data()['driverId']);
+              _driverForRide = await _firestoreUser.findUserById(document.doc.data()['driverId']);
               _periodicTimer.cancel();
               cleanRoute();
               _stopListeningToDriverStream();
@@ -225,7 +228,19 @@ class PrincipalViewModel extends ReactiveViewModel {
   @override
   void dispose() {
     _locationService.cancelTracking();
+    ridesSubscription?.cancel();
     super.dispose();
+  }
+
+  void getRides() {
+    runZoned(() async {
+      ridesSubscription = _firestoreUser.findRides().listen((event) {
+        _listRideRequest = event;
+        notifyListeners();
+      });
+    }, onError: (e, stackTrace) {
+      print(stackTrace);
+    });
   }
 
   Future accessGPS(PermissionStatus status) async {
@@ -516,29 +531,12 @@ class PrincipalViewModel extends ReactiveViewModel {
   }
 
   void selectRideRequest(RideRequestModel rideRequest, BuildContext context) async {
-    // replace for ride information from DB
-    _rideRequest = RideRequestModel(
-      driverId: 'dasdsagfdgdfgdffgd234234',
-      secondsArrive: 350,
-      id: 'sdagfgdfgfdgfdgf',
-      userId: _appService.user.uid,
-      price: ridePrice,
-      destination: Destination.fromMap({
-        'name': 'Breack Lounge',
-        'address': 'Av.Antunez',
-        'latlng': {'lat': -11.431691, 'lng': -74.48670}
-      }),
-    );
-    // _rideRequest = rideRequest;
-    // remove when get client from selection
-    _clientForRide = UserModel(
-      name: 'Paul Rider',
-      image: 'https://manofmany.com/wp-content/uploads/2019/06/50-Long-Haircuts-Hairstyle-Tips-for-Men-2.jpg',
-      uid: 'dasdsagfdgdfgdffgd234234',
-    );
+    _rideRequest = rideRequest;
+
+    _clientForRide = await _firestoreUser.findUserById(_rideRequest.userId);
 
     // replace for destination ride
-    final destinationPosition = LatLng(_rideRequest.destination.latLng.latitude, _rideRequest.destination.latLng.longitude);
+    final destinationPosition = LatLng(_rideRequest.destination.position.latitude, _rideRequest.destination.position.longitude);
 
     final destinationPlace = _rideRequest.destination.address;
 

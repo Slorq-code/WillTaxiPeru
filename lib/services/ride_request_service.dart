@@ -18,7 +18,7 @@ class RideRequestService {
   }
 
   Future<RideRequestModel> getRequestById(String id) => firebaseFiretore.collection(collectionRequests).doc(id).get().then((doc) {
-        return RideRequestModel.json(doc.data());
+        return RideRequestModel.fromJson(doc.data());
       });
 
   void createRideRequest({

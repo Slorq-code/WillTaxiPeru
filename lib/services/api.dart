@@ -7,7 +7,6 @@ import 'package:injectable/injectable.dart';
 import 'package:taxiapp/app/globals.dart';
 import 'package:taxiapp/app/locator.dart';
 import 'package:taxiapp/models/ride_request_model.dart';
-import 'package:taxiapp/models/ride_summary_model.dart';
 import 'package:taxiapp/models/token_model.dart';
 import 'package:taxiapp/services/storage_service.dart';
 import 'package:taxiapp/services/token.dart';

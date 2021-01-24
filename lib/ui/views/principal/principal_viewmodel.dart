@@ -10,6 +10,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:stacked/stacked.dart';
 import 'package:taxiapp/app/locator.dart';
 import 'package:taxiapp/app/router.gr.dart';
+import 'package:taxiapp/models/app_config_model.dart';
 import 'package:taxiapp/models/enums/ride_status.dart';
 import 'package:taxiapp/models/enums/user_type.dart';
 import 'package:taxiapp/models/enums/vehicle_type.dart';
@@ -70,6 +71,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   DriverRequestFlow _driverRequestFlow = DriverRequestFlow.none;
   bool _enableServiceDriver = false;
   List<RideRequestModel> _listRideRequest = [];
+  AppConfigModel _appConfigModel;
 
   // * Getters
   UserModel get user => _appService.user;
@@ -109,6 +111,7 @@ class PrincipalViewModel extends ReactiveViewModel {
       _state = PrincipalState.accessGPSDisable;
     }
     _appService.updateUser(_authSocialNetwork.user);
+    await loadAppConfig();
     if (UserType.Driver == _authSocialNetwork.user.userType){
       getRides();
     }
@@ -122,13 +125,34 @@ class PrincipalViewModel extends ReactiveViewModel {
     super.dispose();
   }
 
+  void loadAppConfig() async{
+    _appConfigModel ??= await _firestoreUser.findAppConfig();
+  }
+
   void getRides() {
     runZoned(() async {
-      ridesSubscription = _firestoreUser.findRides().listen((event) { 
-        _listRideRequest = event;
+      await loadAppConfig();
+      ridesSubscription = _firestoreUser.findRides().listen((event) async { 
+        var listRideFilter = <RideRequestModel>[];
+        for (var model in event) {
+          var distance = await Geolocator().distanceBetween(userLocation.location.latitude, userLocation.location.longitude,
+            model.position.latitude, model.position.longitude);
+          if (_appConfigModel != null) {
+            if (distance <= _appConfigModel.distancePickUpCustomer) {
+              listRideFilter.add(model);
+            }
+          } else {
+            // IF NOT RESPONSE CONFIGMODEL, VALIDATE DISTANCE WITH HARDCODE
+            if (distance <= 1000) {
+              listRideFilter.add(model);
+            }
+          }
+        }
+        _listRideRequest = listRideFilter;
         notifyListeners();
       });
     }, onError: (e, stackTrace) {
+      print(e);
       print(stackTrace);
     });
   }

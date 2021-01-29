@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:apple_sign_in/apple_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:injectable/injectable.dart';
 import 'package:taxiapp/models/enums/auth_type.dart';
 import 'package:taxiapp/models/user_model.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 
 @lazySingleton
 class AuthSocialNetwork {
@@ -64,6 +64,7 @@ class AuthSocialNetwork {
         userCredential = await _auth.signInWithCredential(googleCredential);
       }
     } else if (authType.index == AuthType.Facebook.index) {
+      _facebookSignIn.loginBehavior = FacebookLoginBehavior.webViewOnly;
       final result = await _facebookSignIn.logIn(['email']);
 
       switch (result.status) {
@@ -77,6 +78,7 @@ class AuthSocialNetwork {
         case FacebookLoginStatus.error:
           break;
       }
+
     } else if (authType == AuthType.Apple) {
       final result = await AppleSignIn.performRequests([
         const AppleIdRequest(requestedScopes: [Scope.email, Scope.fullName])

@@ -357,14 +357,16 @@ class PrincipalViewModel extends ReactiveViewModel {
     _selectOrigin = false;
     _locationService.location.descriptionAddress = '';
     _searchOriginController.text = '';
-    notifyListeners();
+    updateCurrentRideWidget(RideWidget.clear);
+    cleanRoute();
   }
 
   void clearDestinationPosition() {
     _selectDestination = false;
     _destinationSelected = null;
     _searchDestinationController.text = '';
-    notifyListeners();
+    updateCurrentRideWidget(RideWidget.clear);
+    cleanRoute();
   }
 
   void updateVehicleSelected(VehicleType vehicleType) {

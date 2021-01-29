@@ -31,7 +31,6 @@ class LocationService with ReactiveServiceMixin {
 
   void startTracking() async{
     final locationOptions = const LocationOptions(accuracy: LocationAccuracy.high, distanceFilter: 10);
-
     _positionSubscription = _geolocator.getPositionStream(locationOptions).listen((Position position) async {
       await updateLocation(LatLng(position.latitude, position.longitude));
     });
@@ -44,9 +43,7 @@ class LocationService with ReactiveServiceMixin {
   void updateLocation(LatLng newlocation) async {
     var userLocationTemp = _userLocation.value.copyWith();
     userLocationTemp.location = newlocation;
-    if (!userLocationTemp.existLocation) {
-      userLocationTemp.descriptionAddress = await getAddress(newlocation);
-    }
+    userLocationTemp.descriptionAddress = await getAddress(newlocation);
     userLocationTemp.existLocation = true;
     _userLocation.value = userLocationTemp;
   }

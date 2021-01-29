@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
@@ -18,6 +16,7 @@ import 'package:taxiapp/services/firestore_user_service.dart';
 import 'package:taxiapp/ui/views/profile/profile_view.dart';
 import 'package:taxiapp/utils/alerts.dart';
 import 'package:taxiapp/utils/utils.dart';
+import 'package:taxiapp/services/token.dart';
 
 import 'package:taxiapp/extensions/string_extension.dart';
 
@@ -39,6 +38,7 @@ class ProfileViewModel extends BaseViewModel {
   final AuthSocialNetwork _authSocialNetwork = locator<AuthSocialNetwork>();
   final Api _api = locator<Api>();
   final FirestoreUser _firestoreUser = locator<FirestoreUser>();
+  final Token _token = locator<Token>();
   
   int _currentIndex = 0;
   bool _driveStatus = false;
@@ -123,6 +123,7 @@ class ProfileViewModel extends BaseViewModel {
   void logout() async{
     setBusy(true);
     await _authSocialNetwork.logout();
+    _token.deleteToken();
     await ExtendedNavigator.root.pushAndRemoveUntil(Routes.loginViewRoute, (route) => false);
     setBusy(false);
   }

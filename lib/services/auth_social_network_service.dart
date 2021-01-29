@@ -24,7 +24,6 @@ class AuthSocialNetwork {
 
   void logout() async {
     if (isLoggedIn) {
-      print(user.authType.index);
       if (user.authType.index == AuthType.Google.index) {
         if (_googleSignIn != null) {
           await _googleSignIn.signOut();
@@ -34,6 +33,7 @@ class AuthSocialNetwork {
           await _facebookSignIn.logOut();
         }
       }
+      idToken = '';
       await _auth.signOut();
     }
 

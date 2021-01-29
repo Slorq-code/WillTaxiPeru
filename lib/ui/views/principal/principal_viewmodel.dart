@@ -246,7 +246,10 @@ class PrincipalViewModel extends ReactiveViewModel {
 
   void confirmManualPick(LatLng position, BuildContext context) async {
     final positionPlace = await _locationService.getAddress(position);
-    makeRoute(Place(latLng: position, address: positionPlace), context, isOriginSelected: _selectOrigin);
+    if (selectOrigin){
+      updateCurrentSearchWidget(SearchWidget.searchFieldBar);
+    }
+    makeRoute(Place(latLng: position, address: positionPlace), context, isOriginSelected: selectOrigin);
   }
 
   void makeRoute(Place place, BuildContext context, {bool isDriver = false, bool isOriginSelected = false}) async {
@@ -255,7 +258,7 @@ class PrincipalViewModel extends ReactiveViewModel {
       _locationService.location = UserLocation(existLocation: true, descriptionAddress: place.address, location: place.latLng);
       if (_destinationSelected == null) {
         // show camera to current position
-        await _mapsService.updateCameraLocation(userLocation.location, userLocation.location, _mapController);
+        await _mapsService.updateCameraSpecificLocationZoom(userLocation.location, 16, _mapController);
         return;
       }
     } else {

@@ -51,7 +51,8 @@ class PrincipalViewModel extends ReactiveViewModel {
   Place _destinationSelected;
   Map<String, Polyline> _polylines = {};
   Map<String, Marker> _markers = {};
-  List<Place> _placesFound = [];
+  List<Place> _placesDestinationFound = [];
+  List<Place> _placesOriginFound = [];
   final List<Widget> _switchSearchWidgets = [const FloatingSearch(), const SearchFieldBar(), const ManualPickInMap(), const NewRouteDriver()];
   final List<Widget> _switchRideWidgets = [const SizedBox(), const SelectionVehicle(), const CheckRideDetails(), const SizedBox()];
   final List<Widget> _switchDriverRideWidgets = [const RideRequestsByClient(), const DriverRideDetails()];
@@ -72,6 +73,10 @@ class PrincipalViewModel extends ReactiveViewModel {
   bool _enableServiceDriver = false;
   List<RideRequestModel> _listRideRequest = [];
   AppConfigModel _appConfigModel;
+  bool _selectOrigin = false;
+  bool _selectDestination = false;
+  final TextEditingController _searchOriginController = TextEditingController();
+  final TextEditingController _searchDestinationController = TextEditingController();
 
   // * Getters
   UserModel get user => _appService.user;
@@ -81,7 +86,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   Widget get currentSearchWidget => _currentSearchWidget;
   Widget get currentRideWidget => _currentRideWidget;
   Widget get currentDriverRideWidget => _currentDriverRideWidget;
-  List<Place> get placesFound => _placesFound;
+  List<Place> get placesDestinationFound => _placesDestinationFound;
   Place get destinationSelected => _destinationSelected;
   Map<String, Polyline> get polylines => _polylines;
   Map<String, Marker> get markers => _markers;
@@ -95,6 +100,11 @@ class PrincipalViewModel extends ReactiveViewModel {
   DriverRequestFlow get driverRequestFlow => _driverRequestFlow;
   bool get enableServiceDriver => _enableServiceDriver;
   List<RideRequestModel> get listRideRequest => _listRideRequest;
+  bool get selectOrigin => _selectOrigin;
+  bool get selectDestination => _selectDestination;
+  List<Place> get placesOriginFound => _placesOriginFound;
+  TextEditingController get searchOriginController => _searchOriginController;
+  TextEditingController get searchDestinationController => _searchDestinationController;
 
   // * Functions
 
@@ -106,7 +116,8 @@ class PrincipalViewModel extends ReactiveViewModel {
     _currentDriverRideWidget = _switchDriverRideWidgets[0];
     if (await Geolocator().isLocationServiceEnabled()) {
       _state = PrincipalState.accessGPSEnable;
-      _locationService.startTracking();
+      await _locationService.startTracking();
+      _searchOriginController.text = userLocation.descriptionAddress;
     } else {
       _state = PrincipalState.accessGPSDisable;
     }
@@ -122,6 +133,8 @@ class PrincipalViewModel extends ReactiveViewModel {
   void dispose() {
     _locationService.cancelTracking();
     ridesSubscription?.cancel();
+    _searchOriginController?.dispose();
+    _searchDestinationController?.dispose();
     super.dispose();
   }
 
@@ -161,7 +174,8 @@ class PrincipalViewModel extends ReactiveViewModel {
     switch (status) {
       case PermissionStatus.granted:
         _state = PrincipalState.accessGPSEnable;
-        _locationService.startTracking();
+        await _locationService.startTracking();
+        _searchOriginController.text = userLocation.descriptionAddress;
         notifyListeners();
         break;
 
@@ -217,18 +231,38 @@ class PrincipalViewModel extends ReactiveViewModel {
   }
 
   void searchDestination(String destinationAddress) async {
-    _placesFound = await _mapsService.getDestinationBySearch(destinationAddress, userLocation.location);
+    _selectDestination = true;
+    _selectOrigin = false;
+    _placesDestinationFound = await _mapsService.getDestinationBySearch(destinationAddress, userLocation.location);
     notifyListeners();
   }
 
-  void confirmManualPickDestination(LatLng destinationPosition, BuildContext context) async {
-    final destinationPlace = await _locationService.getAddress(destinationPosition);
-    makeRoute(Place(latLng: destinationPosition, address: destinationPlace), context);
+  void searchOrigin(String originAddress) async {
+    _selectOrigin = true;
+    _selectDestination = false;
+    _placesOriginFound = await _mapsService.getDestinationBySearch(originAddress, userLocation.location);
+    notifyListeners();
   }
 
-  void makeRoute(Place place, BuildContext context, {bool isDriver = false}) async {
-    _destinationSelected = place;
-    _routeMap = await _mapsService.getRouteByCoordinates(userLocation.location, place.latLng);
+  void confirmManualPick(LatLng position, BuildContext context) async {
+    final positionPlace = await _locationService.getAddress(position);
+    makeRoute(Place(latLng: position, address: positionPlace), context, isOriginSelected: _selectOrigin);
+  }
+
+  void makeRoute(Place place, BuildContext context, {bool isDriver = false, bool isOriginSelected = false}) async {
+    if (isOriginSelected) {
+      _selectOrigin = false;
+      _locationService.location = UserLocation(existLocation: true, descriptionAddress: place.address, location: place.latLng);
+      if (_destinationSelected == null) {
+        // show camera to current position
+        await _mapsService.updateCameraLocation(userLocation.location, userLocation.location, _mapController);
+        return;
+      }
+    } else {
+      _selectDestination = false;
+      _destinationSelected = place;
+    }
+    _routeMap = await _mapsService.getRouteByCoordinates(userLocation.location, destinationSelected.latLng);
     final routePoints = _routeMap.points.map((point) => LatLng(point[0], point[1])).toList();
     final myDestinationRoute = Polyline(
       polylineId: PolylineId('my_destination_route'),
@@ -317,11 +351,17 @@ class PrincipalViewModel extends ReactiveViewModel {
   }
 
   void clearOriginPosition() {
-    // TODO: Make implementation
+    _selectOrigin = false;
+    _locationService.location.descriptionAddress = '';
+    _searchOriginController.text = '';
+    notifyListeners();
   }
 
   void clearDestinationPosition() {
-    // TODO: Make implementation
+    _selectDestination = false;
+    _destinationSelected = null;
+    _searchDestinationController.text = '';
+    notifyListeners();
   }
 
   void updateVehicleSelected(VehicleType vehicleType) {

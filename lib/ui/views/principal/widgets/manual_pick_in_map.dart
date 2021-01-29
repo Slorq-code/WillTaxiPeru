@@ -65,7 +65,7 @@ class ManualPickInMap extends ViewModelWidget<PrincipalViewModel> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 40.0),
                   child: ActionButtonCustom(
-                    action: () => model.confirmManualPickDestination(model.centralLocation, context),
+                    action: () => model.confirmManualPick(model.centralLocation, context),
                     label: Keys.confirm_destination.localize(),
                     fontSize: 16,
                   ),

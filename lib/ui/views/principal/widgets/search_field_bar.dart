@@ -73,14 +73,31 @@ class SearchFieldBar extends ViewModelWidget<PrincipalViewModel> {
                     ],
                   ),
                 ),
-                if (model.destinationSelected == null)
+                if (model.selectOrigin)
                   Container(
                     height: MediaQuery.of(context).size.height * .5,
                     width: double.infinity,
                     color: Colors.white,
                     child: ListView(
                       children: [
-                        ...model.placesFound.map(
+                        ...model.placesOriginFound.map(
+                          (place) => _SugerationPlace(
+                            place: place,
+                            onTap: () => model.makeRoute(place, context, isOriginSelected: true),
+                          ),
+                        ),
+                        const _PickInMapOption(),
+                      ],
+                    ),
+                  ),
+                if (model.selectDestination)
+                  Container(
+                    height: MediaQuery.of(context).size.height * .5,
+                    width: double.infinity,
+                    color: Colors.white,
+                    child: ListView(
+                      children: [
+                        ...model.placesDestinationFound.map(
                           (place) => _SugerationPlace(
                             place: place,
                             onTap: () => model.makeRoute(place, context),
@@ -198,9 +215,9 @@ class _OriginLocationField extends HookViewModelWidget<PrincipalViewModel> {
 
   @override
   Widget buildViewModelWidget(BuildContext context, PrincipalViewModel model) {
-    final searchController = useTextEditingController();
+    // final searchController = useTextEditingController();
     useEffect(() {
-      searchController.text = model.userLocation.descriptionAddress;
+      model.searchOriginController.text = model.userLocation != null ? model.userLocation.descriptionAddress : '';
       return null;
     }, [model.userLocation]);
     return Padding(
@@ -211,8 +228,10 @@ class _OriginLocationField extends HookViewModelWidget<PrincipalViewModel> {
           children: [
             Flexible(
               child: TextField(
-                controller: searchController,
+                controller: model.searchOriginController,
                 autofocus: false,
+                onTap: () {},
+                onSubmitted: (text) => model.searchOrigin(text),
                 textAlignVertical: TextAlignVertical.center,
                 textInputAction: TextInputAction.done,
                 style: const TextStyle(color: Color(0xff545253), fontSize: 14),
@@ -225,7 +244,9 @@ class _OriginLocationField extends HookViewModelWidget<PrincipalViewModel> {
                   ),
                   contentPadding: const EdgeInsets.all(0),
                   alignLabelWithHint: true,
+                  hintText: Keys.destination.localize(),
                   isDense: true,
+                  hintStyle: const TextStyle(color: Color(0xff545253), fontSize: 14),
                 ),
               ),
             ),
@@ -249,9 +270,9 @@ class _DestinationLocationField extends HookViewModelWidget<PrincipalViewModel> 
 
   @override
   Widget buildViewModelWidget(BuildContext context, PrincipalViewModel model) {
-    final searchController = useTextEditingController();
+    // final searchController = useTextEditingController();
     useEffect(() {
-      searchController.text = model.destinationSelected != null ? model.destinationSelected.address : '';
+      model.searchDestinationController.text = model.destinationSelected != null ? model.destinationSelected.address : '';
       return null;
     }, [model.destinationSelected]);
     return Padding(
@@ -262,7 +283,7 @@ class _DestinationLocationField extends HookViewModelWidget<PrincipalViewModel> 
           children: [
             Flexible(
               child: TextField(
-                controller: searchController,
+                controller: model.searchDestinationController,
                 autofocus: false,
                 onTap: () {},
                 onSubmitted: (text) => model.searchDestination(text),

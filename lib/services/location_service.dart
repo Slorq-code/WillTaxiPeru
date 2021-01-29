@@ -25,11 +25,15 @@ class LocationService with ReactiveServiceMixin {
 
   UserLocation get location => _userLocation.value;
 
-  void startTracking() {
+  set location(userLocation) {
+    _userLocation.value = userLocation;
+  }
+
+  void startTracking() async{
     final locationOptions = const LocationOptions(accuracy: LocationAccuracy.high, distanceFilter: 10);
 
-    _positionSubscription = _geolocator.getPositionStream(locationOptions).listen((Position position) {
-      updateLocation(LatLng(position.latitude, position.longitude));
+    _positionSubscription = _geolocator.getPositionStream(locationOptions).listen((Position position) async {
+      await updateLocation(LatLng(position.latitude, position.longitude));
     });
   }
 

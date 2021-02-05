@@ -504,6 +504,7 @@ class PrincipalViewModel extends ReactiveViewModel {
     _rideRequest = null;
     _driverForRide = null;
     _destinationSelected = null;
+    cleanRoute();
     updateCurrentRideWidget(RideWidget.clear);
   }
 

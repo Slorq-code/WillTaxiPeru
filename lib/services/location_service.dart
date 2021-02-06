@@ -35,7 +35,7 @@ class LocationService with ReactiveServiceMixin {
       await updateLocation(LatLng(position.latitude, position.longitude));
     });
   }
-
+  
   void cancelTracking() {
     _positionSubscription?.cancel();
   }

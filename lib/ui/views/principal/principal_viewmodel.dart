@@ -78,6 +78,9 @@ class PrincipalViewModel extends ReactiveViewModel {
   final TextEditingController _searchOriginController = TextEditingController();
   final TextEditingController _searchDestinationController = TextEditingController();
 
+  UserLocation currentLocation;
+
+
   // * Getters
   UserModel get user => _appService.user;
   PrincipalState get state => _state;
@@ -128,7 +131,7 @@ class PrincipalViewModel extends ReactiveViewModel {
     }
     notifyListeners();
   }
-
+  
   @override
   void dispose() {
     _locationService.cancelTracking();
@@ -246,9 +249,9 @@ class PrincipalViewModel extends ReactiveViewModel {
 
   void confirmManualPick(LatLng position, BuildContext context) async {
     final positionPlace = await _locationService.getAddress(position);
-    if (selectOrigin){
-      updateCurrentSearchWidget(SearchWidget.searchFieldBar);
-    }
+    // if (selectOrigin){
+    //   updateCurrentSearchWidget(SearchWidget.searchFieldBar);
+    // }
     makeRoute(Place(latLng: position, address: positionPlace), context, isOriginSelected: selectOrigin);
   }
 

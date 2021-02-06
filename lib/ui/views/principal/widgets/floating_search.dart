@@ -135,8 +135,12 @@ class _ClientSearch extends ViewModelWidget<PrincipalViewModel> {
                         Expanded(
                           child: Text(model.userLocation.descriptionAddress ?? '', overflow: TextOverflow.ellipsis),
                         ),
-                        _OriginButton(icon: 'assets/icons/locate_position.svg', onTap: () {}),
-                        _OriginButton(icon: 'assets/icons/move_in_map.svg', onTap: () {}),
+                        _OriginButton(icon: 'assets/icons/locate_position.svg', onTap: () {
+                          
+                        }),
+                        _OriginButton(icon: 'assets/icons/move_in_map.svg', onTap: () {
+
+                        }),
                       ],
                     ),
                   ),

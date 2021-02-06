@@ -25,14 +25,17 @@ class LocationService with ReactiveServiceMixin {
 
   UserLocation get location => _userLocation.value;
 
-  void startTracking() {
-    final locationOptions = const LocationOptions(accuracy: LocationAccuracy.high, distanceFilter: 10);
-
-    _positionSubscription = _geolocator.getPositionStream(locationOptions).listen((Position position) {
-      updateLocation(LatLng(position.latitude, position.longitude));
-    });
+  set location(userLocation) {
+    _userLocation.value = userLocation;
   }
 
+  void startTracking() async{
+    final locationOptions = const LocationOptions(accuracy: LocationAccuracy.high, distanceFilter: 10);
+    _positionSubscription = _geolocator.getPositionStream(locationOptions).listen((Position position) async {
+      await updateLocation(LatLng(position.latitude, position.longitude));
+    });
+  }
+  
   void cancelTracking() {
     _positionSubscription?.cancel();
   }
@@ -40,9 +43,7 @@ class LocationService with ReactiveServiceMixin {
   void updateLocation(LatLng newlocation) async {
     var userLocationTemp = _userLocation.value.copyWith();
     userLocationTemp.location = newlocation;
-    if (!userLocationTemp.existLocation) {
-      userLocationTemp.descriptionAddress = await getAddress(newlocation);
-    }
+    userLocationTemp.descriptionAddress = await getAddress(newlocation);
     userLocationTemp.existLocation = true;
     _userLocation.value = userLocationTemp;
   }

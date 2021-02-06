@@ -78,8 +78,7 @@ dev_dependencies:
 flutter_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/icon/logoWill.png"
-  adaptive_icon_background: "assets/icon/logoWill.png"
+  image_path: "assets/icons/logoWill.jpg"
 
 flutter:
   uses-material-design: true

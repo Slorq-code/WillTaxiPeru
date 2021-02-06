@@ -38,6 +38,14 @@ class MapsGeneralService {
     _apiSelected = apiMap;
   }
 
+  Future<void> updateCameraSpecificLocationZoom(LatLng location, double zoom, GoogleMapController mapController) async {
+    if (mapController == null) return;
+    // zoom range 2 to 21
+    final cameraUpdate = CameraUpdate.newLatLngZoom(location, zoom);
+
+    return checkCameraLocation(cameraUpdate, mapController);
+  }
+
   Future<void> updateCameraLocation(LatLng source, LatLng destination, GoogleMapController mapController) async {
     if (mapController == null) return;
 

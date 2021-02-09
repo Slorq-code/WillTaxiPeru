@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:esys_flutter_share/esys_flutter_share.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
+import 'package:taxiapp/models/enums/vehicle_type.dart';
 import 'package:toast/toast.dart';
 import 'package:intl/intl.dart';
 
@@ -117,5 +118,21 @@ class Utils {
     var timestamp = Timestamp(seconds, nano);
     var df = DateFormat(dateFormat);
     return df.format(timestamp.toDate());
+  }
+
+  static int serviceType(VehicleType vehicleType){
+    switch (vehicleType) {
+      case VehicleType.moto:
+        return 0;
+        break;
+      case VehicleType.mototaxi:
+        return 1;
+        break;
+      case VehicleType.taxi:
+        return 2;
+        break;
+      default:
+        return 0;
+    }
   }
 }

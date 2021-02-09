@@ -4,7 +4,6 @@ import 'package:stacked/stacked.dart';
 import 'package:taxiapp/extensions/date_extension.dart';
 import 'package:taxiapp/extensions/string_extension.dart';
 import 'package:taxiapp/localization/keys.dart';
-import 'package:taxiapp/models/enums/ride_status.dart';
 import 'package:taxiapp/ui/views/principal/principal_viewmodel.dart';
 import 'package:taxiapp/ui/widgets/avatar_profile/avatar_profile.dart';
 import 'package:taxiapp/ui/widgets/buttons/action_button_custom.dart';

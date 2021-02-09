@@ -62,7 +62,7 @@ class Api {
   }
 
   Future<dynamic> _post(String method, Map data, {Map query}) async {
-    var response = await _dioBack.post(method,
+    var response = await  _dioBack.post(method,
         queryParameters: query,
         data: jsonEncode(data),
         options: Options(
@@ -122,5 +122,10 @@ class Api {
     var response = await _dioMap.get(
         'https://maps.googleapis.com/maps/api/directions/json?origin=${data['lat1']},${data['lng1']}&destination=${data['lat2']},${data['lng2']}&key=${Globals.googleMapsApiKey}');
     return response.data;
+  }
+
+  Future<Map> getPricing(Map data) async {
+    var response = await _post('/rides/pricing', data);
+    return response;
   }
 }

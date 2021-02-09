@@ -9,6 +9,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:stacked/stacked.dart';
+import 'package:taxiapp/services/api.dart';
+import 'package:taxiapp/utils/utils.dart';
 import 'package:taxiapp/app/locator.dart';
 import 'package:taxiapp/app/router.gr.dart';
 import 'package:taxiapp/models/app_config_model.dart';
@@ -45,6 +47,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   final RideRequestService _rideRequestServices = locator<RideRequestService>();
   final FCMService _fcmService = locator<FCMService>();
   final FirestoreUser _firestoreUser = locator<FirestoreUser>();
+  final Api _api = locator<Api>();
   PrincipalState _state = PrincipalState.loading;
   static const DRIVER_AT_LOCATION_NOTIFICATION = 'DRIVER_AT_LOCATION';
   static const REQUEST_ACCEPTED_NOTIFICATION = 'REQUEST_ACCEPTED';
@@ -62,9 +65,22 @@ class PrincipalViewModel extends ReactiveViewModel {
   Map<String, Marker> _markers = {};
   List<Place> _placesDestinationFound = [];
   List<Place> _placesOriginFound = [];
-  final List<Widget> _switchSearchWidgets = [const FloatingSearch(), const SearchFieldBar(), const ManualPickInMap(), const NewRouteDriver()];
-  final List<Widget> _switchRideWidgets = [const SizedBox(), const SelectionVehicle(), const CheckRideDetails(), const SizedBox()];
-  final List<Widget> _switchDriverRideWidgets = [const RideRequestsByClient(), const DriverRideDetails()];
+  final List<Widget> _switchSearchWidgets = [
+    const FloatingSearch(),
+    const SearchFieldBar(),
+    const ManualPickInMap(),
+    const NewRouteDriver()
+  ];
+  final List<Widget> _switchRideWidgets = [
+    const SizedBox(),
+    const SelectionVehicle(),
+    const CheckRideDetails(),
+    const SizedBox()
+  ];
+  final List<Widget> _switchDriverRideWidgets = [
+    const RideRequestsByClient(),
+    const DriverRideDetails()
+  ];
   GoogleMapController _mapController;
   Widget _currentSearchWidget = const SizedBox();
   Widget _currentRideWidget = const SizedBox();
@@ -91,10 +107,10 @@ class PrincipalViewModel extends ReactiveViewModel {
   bool _selectOrigin = false;
   bool _selectDestination = false;
   final TextEditingController _searchOriginController = TextEditingController();
-  final TextEditingController _searchDestinationController = TextEditingController();
+  final TextEditingController _searchDestinationController =
+      TextEditingController();
 
   UserLocation currentLocation;
-
 
   // * Getters
   UserModel get user => _appService.user;
@@ -122,12 +138,14 @@ class PrincipalViewModel extends ReactiveViewModel {
   bool get selectDestination => _selectDestination;
   List<Place> get placesOriginFound => _placesOriginFound;
   TextEditingController get searchOriginController => _searchOriginController;
-  TextEditingController get searchDestinationController => _searchDestinationController;
+  TextEditingController get searchDestinationController =>
+      _searchDestinationController;
 
   // * Functions
 
   @override
-  List<ReactiveServiceMixin> get reactiveServices => [_locationService, _appService];
+  List<ReactiveServiceMixin> get reactiveServices =>
+      [_locationService, _appService];
 
   Future<void> initialize() async {
     _currentSearchWidget = _switchSearchWidgets[0];
@@ -141,7 +159,7 @@ class PrincipalViewModel extends ReactiveViewModel {
     }
     _appService.updateUser(_authSocialNetwork.user);
     await loadAppConfig();
-    if (UserType.Driver == _authSocialNetwork.user.userType){
+    if (UserType.Driver == _authSocialNetwork.user.userType) {
       getRides();
     }
     await _fcmService.initializeFCM(_handleNotificationData);
@@ -173,7 +191,8 @@ class PrincipalViewModel extends ReactiveViewModel {
     if (notificationType == DRIVER_AT_LOCATION_NOTIFICATION) {
     } else if (notificationType == TRIP_STARTED_NOTIFICATION) {
     } else if (notificationType == REQUEST_ACCEPTED_NOTIFICATION) {}
-    _driverForRide = await _firestoreUser.findUserById(data['data']['driverId']);
+    _driverForRide =
+        await _firestoreUser.findUserById(data['data']['driverId']);
     _stopListeningToDriverStream();
 
     _listenToDriver(null);
@@ -188,7 +207,8 @@ class PrincipalViewModel extends ReactiveViewModel {
     } else if (notificationType == TRIP_STARTED_NOTIFICATION) {
     } else if (notificationType == REQUEST_ACCEPTED_NOTIFICATION) {}
 
-    _driverForRide = await _firestoreUser.findUserById(data['data']['driverId']);
+    _driverForRide =
+        await _firestoreUser.findUserById(data['data']['driverId']);
     _periodicTimer.cancel();
     notifyListeners();
   }
@@ -201,7 +221,9 @@ class PrincipalViewModel extends ReactiveViewModel {
   }
 
   void listenToRequest({String id, BuildContext context}) async {
-    requestStream = _rideRequestServices.requestStream().listen((QuerySnapshot querySnapshot) {
+    requestStream = _rideRequestServices
+        .requestStream()
+        .listen((QuerySnapshot querySnapshot) {
       querySnapshot.docChanges.forEach((document) async {
         if (document.doc.data()['id'] == id) {
           rideRequestModel = RideRequestModel.fromJson(document.doc.data());
@@ -211,7 +233,8 @@ class PrincipalViewModel extends ReactiveViewModel {
               break;
             case RideStatus.accepted:
               _rideStatus = RideStatus.accepted;
-              _driverForRide = await _firestoreUser.findUserById(document.doc.data()['driverId']);
+              _driverForRide = await _firestoreUser
+                  .findUserById(document.doc.data()['driverId']);
               _periodicTimer.cancel();
               cleanRoute();
               _stopListeningToDriverStream();
@@ -255,18 +278,21 @@ class PrincipalViewModel extends ReactiveViewModel {
     super.dispose();
   }
 
-  void loadAppConfig() async{
+  void loadAppConfig() async {
     _appConfigModel ??= await _firestoreUser.findAppConfig();
   }
 
   void getRides() {
     runZoned(() async {
       await loadAppConfig();
-      ridesSubscription = _firestoreUser.findRides().listen((event) async { 
+      ridesSubscription = _firestoreUser.findRides().listen((event) async {
         var listRideFilter = <RideRequestModel>[];
         for (var model in event) {
-          var distance = await Geolocator().distanceBetween(userLocation.location.latitude, userLocation.location.longitude,
-            model.position.latitude, model.position.longitude);
+          var distance = await Geolocator().distanceBetween(
+              userLocation.location.latitude,
+              userLocation.location.longitude,
+              model.position.latitude,
+              model.position.longitude);
           if (_appConfigModel != null) {
             if (distance <= _appConfigModel.distancePickUpCustomer) {
               listRideFilter.add(model);
@@ -320,7 +346,8 @@ class PrincipalViewModel extends ReactiveViewModel {
     _centralLocation = center;
   }
 
-  Future<String> getMapTheme() async => rootBundle.loadString('assets/map_theme/map_theme.json');
+  Future<String> getMapTheme() async =>
+      rootBundle.loadString('assets/map_theme/map_theme.json');
 
   bool onBack() {
     if (_currentDriverRideWidget is DriverRideDetails) {
@@ -350,14 +377,16 @@ class PrincipalViewModel extends ReactiveViewModel {
   void searchDestination(String destinationAddress) async {
     _selectDestination = true;
     _selectOrigin = false;
-    _placesDestinationFound = await _mapsService.getDestinationBySearch(destinationAddress, userLocation.location);
+    _placesDestinationFound = await _mapsService.getDestinationBySearch(
+        destinationAddress, userLocation.location);
     notifyListeners();
   }
 
   void searchOrigin(String originAddress) async {
     _selectOrigin = true;
     _selectDestination = false;
-    _placesOriginFound = await _mapsService.getDestinationBySearch(originAddress, userLocation.location);
+    _placesOriginFound = await _mapsService.getDestinationBySearch(
+        originAddress, userLocation.location);
     notifyListeners();
   }
 
@@ -366,24 +395,32 @@ class PrincipalViewModel extends ReactiveViewModel {
     // if (selectOrigin){
     //   updateCurrentSearchWidget(SearchWidget.searchFieldBar);
     // }
-    makeRoute(Place(latLng: position, address: positionPlace), context, isOriginSelected: selectOrigin);
+    makeRoute(Place(latLng: position, address: positionPlace), context,
+        isOriginSelected: selectOrigin);
   }
 
-  void makeRoute(Place place, BuildContext context, {bool isDriver = false, bool isOriginSelected = false}) async {
+  void makeRoute(Place place, BuildContext context,
+      {bool isDriver = false, bool isOriginSelected = false}) async {
     if (isOriginSelected) {
       _selectOrigin = false;
-      _locationService.location = UserLocation(existLocation: true, descriptionAddress: place.address, location: place.latLng);
+      _locationService.location = UserLocation(
+          existLocation: true,
+          descriptionAddress: place.address,
+          location: place.latLng);
       if (_destinationSelected == null) {
         // show camera to current position
-        await _mapsService.updateCameraSpecificLocationZoom(userLocation.location, 16, _mapController);
+        await _mapsService.updateCameraSpecificLocationZoom(
+            userLocation.location, 16, _mapController);
         return;
       }
     } else {
       _selectDestination = false;
       _destinationSelected = place;
     }
-    _routeMap = await _mapsService.getRouteByCoordinates(userLocation.location, destinationSelected.latLng);
-    final routePoints = _routeMap.points.map((point) => LatLng(point[0], point[1])).toList();
+    _routeMap = await _mapsService.getRouteByCoordinates(
+        userLocation.location, destinationSelected.latLng);
+    final routePoints =
+        _routeMap.points.map((point) => LatLng(point[0], point[1])).toList();
     final myDestinationRoute = Polyline(
       polylineId: PolylineId('my_destination_route'),
       width: 4,
@@ -402,7 +439,8 @@ class PrincipalViewModel extends ReactiveViewModel {
       anchor: const Offset(0.5, 0.5),
       markerId: MarkerId('start'),
       position: routePoints[0],
-      icon: await bitmapDescriptorFromSvgAsset(context, 'assets/icons/start_location.svg', 25),
+      icon: await bitmapDescriptorFromSvgAsset(
+          context, 'assets/icons/start_location.svg', 25),
       // infoWindow: InfoWindow(
       //   title: Keys.my_location.localize(),
       //   snippet: Keys.route_time_with_minutes.localize(['${(route.timeNeeded.value / 60).floor()}']),
@@ -412,7 +450,8 @@ class PrincipalViewModel extends ReactiveViewModel {
     final markerDestination = Marker(
       markerId: MarkerId('destination'),
       position: routePoints.last,
-      icon: await bitmapDescriptorFromSvgAsset(context, 'assets/icons/destination_marker.svg', 25),
+      icon: await bitmapDescriptorFromSvgAsset(
+          context, 'assets/icons/destination_marker.svg', 25),
       // anchor: const Offset(0.1, 0.90),
       // infoWindow: InfoWindow(
       //   title: place.name,
@@ -440,14 +479,18 @@ class PrincipalViewModel extends ReactiveViewModel {
   Future<void> updateRouteCamera() async {
     final source = userLocation.location;
     final destination = destinationSelected.latLng;
-    await _mapsService.updateCameraLocation(source, destination, _mapController);
+    await _mapsService.updateCameraLocation(
+        source, destination, _mapController);
   }
 
-  void _showSecondSearchWidget() => _currentSearchWidget = _switchSearchWidgets[SearchWidget.searchFieldBar.index];
+  void _showSecondSearchWidget() => _currentSearchWidget =
+      _switchSearchWidgets[SearchWidget.searchFieldBar.index];
 
-  void _showFourthSearchWidget() => _currentSearchWidget = _switchSearchWidgets[SearchWidget.newRouteDriver.index];
+  void _showFourthSearchWidget() => _currentSearchWidget =
+      _switchSearchWidgets[SearchWidget.newRouteDriver.index];
 
-  void _showSelectVehicle() => _currentRideWidget = _switchRideWidgets[RideWidget.selectionVehicle.index];
+  void _showSelectVehicle() => _currentRideWidget =
+      _switchRideWidgets[RideWidget.selectionVehicle.index];
 
   void updateApiSelection(bool status) {
     apiSelected = status;
@@ -497,21 +540,33 @@ class PrincipalViewModel extends ReactiveViewModel {
     getPriceRide();
   }
 
-  DateTime _getDestinationArrive() => DateTime.now().add(Duration(seconds: _routeMap.timeNeeded.value.toInt()));
+  DateTime _getDestinationArrive() =>
+      DateTime.now().add(Duration(seconds: _routeMap.timeNeeded.value.toInt()));
 
-  // * Mockup implementation
   Future<void> getPriceRide() async {
     setBusyForObject(ridePrice, true);
-    await Future.delayed(const Duration(seconds: 2));
-    ridePrice = 20;
+
+    var serviceDistance = _routeMap.distance.value;
+    var serviceType = Utils.serviceType(_vehicleSelected);
+    var serviceTime = _routeMap.timeNeeded.value;
+    var _params = <String, dynamic>{};
+    _params['distance'] = serviceDistance;
+    _params['typeService'] = 1;
+    _params['time'] = serviceTime;
+
+    await _api
+        .getPricing(_params)
+        .then((value) => (ridePrice = value['price'] ?? 0));
     setBusyForObject(ridePrice, false);
+    _searchingDriver = false;
   }
 
   // * Mockup implementation
   Future<void> confirmRide() async {
     _searchingDriver = true;
     notifyListeners();
-    driverFound();
+    // saveRide
+    // driverFound();
   }
 
   // * Mockup implementation
@@ -521,7 +576,8 @@ class PrincipalViewModel extends ReactiveViewModel {
     _rideStatus = RideStatus.waitingDriver;
     _driverForRide = UserModel(
       name: 'Paul Rider',
-      image: 'https://manofmany.com/wp-content/uploads/2019/06/50-Long-Haircuts-Hairstyle-Tips-for-Men-2.jpg',
+      image:
+          'https://manofmany.com/wp-content/uploads/2019/06/50-Long-Haircuts-Hairstyle-Tips-for-Men-2.jpg',
       uid: 'dasdsagfdgdfgdffgd234234',
     );
     _rideRequest = RideRequestModel(
@@ -587,7 +643,8 @@ class PrincipalViewModel extends ReactiveViewModel {
   void logout() async {
     setBusy(true);
     await _authSocialNetwork.logout();
-    await ExtendedNavigator.root.pushAndRemoveUntil(Routes.loginViewRoute, (route) => false);
+    await ExtendedNavigator.root
+        .pushAndRemoveUntil(Routes.loginViewRoute, (route) => false);
     setBusy(false);
   }
 
@@ -597,8 +654,10 @@ class PrincipalViewModel extends ReactiveViewModel {
     await _mapController.setMapStyle(await getMapTheme());
     notifyListeners();
     if (userLocation.location != null) {
-      final position = CameraPosition(target: userLocation.location, zoom: 16.5);
-      await _mapController.animateCamera(CameraUpdate.newCameraPosition(position));
+      final position =
+          CameraPosition(target: userLocation.location, zoom: 16.5);
+      await _mapController
+          .animateCamera(CameraUpdate.newCameraPosition(position));
     }
   }
 
@@ -607,19 +666,26 @@ class PrincipalViewModel extends ReactiveViewModel {
     notifyListeners();
   }
 
-  void selectRideRequest(RideRequestModel rideRequest, BuildContext context) async {
+  void selectRideRequest(
+      RideRequestModel rideRequest, BuildContext context) async {
     _rideRequest = rideRequest;
 
     _clientForRide = await _firestoreUser.findUserById(_rideRequest.userId);
 
     // replace for destination ride
-    final destinationPosition = LatLng(_rideRequest.destination.position.latitude, _rideRequest.destination.position.longitude);
+    final destinationPosition = LatLng(
+        _rideRequest.destination.position.latitude,
+        _rideRequest.destination.position.longitude);
 
     final destinationPlace = _rideRequest.destination.address;
 
-    _destinationSelected = Place(latLng: destinationPosition, address: destinationPlace, name: _rideRequest.destination.name);
+    _destinationSelected = Place(
+        latLng: destinationPosition,
+        address: destinationPlace,
+        name: _rideRequest.destination.name);
 
-    _destinationArrive = DateTime.now().add(Duration(seconds: _rideRequest.secondsArrive));
+    _destinationArrive =
+        DateTime.now().add(Duration(seconds: _rideRequest.secondsArrive));
 
     await makeRoute(_destinationSelected, context, isDriver: true);
     updateCurrentDriverRideWidget(DriverRideWidget.driverRideDetails);

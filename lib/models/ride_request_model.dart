@@ -12,6 +12,7 @@ class RideRequestModel {
   DestinationRide _destination;
   DateRide _dateRide;
   String _route;
+  DateTime _dateRideT;
 
   // * TEMPORAL constructor for test
   RideRequestModel({
@@ -26,6 +27,7 @@ class RideRequestModel {
     DestinationRide destination,
     DateRide dateRide,
     String route,
+    DateTime dateRideT
   })  : _uid = id,
         _username = username,
         _userId = userId,
@@ -36,7 +38,8 @@ class RideRequestModel {
         _position = position,
         _destination = destination,
         _dateRide = dateRide,
-        _route = route;
+        _route = route,
+        _dateRideT = dateRideT;
 
   String get uid => _uid;
   String get username => _username;
@@ -78,6 +81,22 @@ class RideRequestModel {
     _destination = data['destination'] != null ? DestinationRide.fromJson(data['destination']) : null;
     _route = data['route'];
     _secondsArrive = data['secondsArrive'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final data = <String, dynamic>{};
+    data['dateRide'] = _dateRideT;
+    data['destination'] = destination.toJson();
+    data['driverId'] = driverId;
+    data['position'] = position.toJson();
+    data['price'] = price;
+    data['route'] = route;
+    data['secondsArrive'] = secondsArrive;
+    data['status'] = status;
+    data['uid'] = uid;
+    data['userId'] = userId;
+    data['username'] = username;
+    return data;
   }
 }
 

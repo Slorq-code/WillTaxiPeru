@@ -159,7 +159,7 @@ class PrincipalViewModel extends ReactiveViewModel {
     }
     _appService.updateUser(_authSocialNetwork.user);
     await loadAppConfig();
-    if (UserType.Driver == _authSocialNetwork.user.userType ) {
+    if (UserType.Driver == _authSocialNetwork.user.userType) {
       getRides();
     }
     await _fcmService.initializeFCM(_handleNotificationData);
@@ -295,7 +295,7 @@ class PrincipalViewModel extends ReactiveViewModel {
               model.position.longitude);
           if (_appConfigModel != null) {
             // if (distance <= _appConfigModel.distancePickUpCustomer) {
-              listRideFilter.add(model);
+            listRideFilter.add(model);
             // }
           } else {
             // IF NOT RESPONSE CONFIGMODEL, VALIDATE DISTANCE WITH HARDCODE
@@ -558,7 +558,7 @@ class PrincipalViewModel extends ReactiveViewModel {
         .getPricing(_params)
         .then((value) => (ridePrice = value['price'] ?? 0));
     setBusyForObject(ridePrice, false);
-    _searchingDriver = false;//optional
+    _searchingDriver = false; //optional
   }
 
   // * Mockup implementation
@@ -566,32 +566,32 @@ class PrincipalViewModel extends ReactiveViewModel {
     _searchingDriver = true;
     notifyListeners();
     // saveRide
+    var _destination = DestinationRide(
+        address: destinationSelected.address,
+        name: destinationSelected.name,
+        position: PositionRide(
+            latitude: destinationSelected.latLng.latitude,
+            longitude: destinationSelected.latLng.longitude));
 
+    var _position = PositionRide(
+        latitude: userLocation.location.latitude,
+        longitude: userLocation.location.longitude);
+
+    var _rideRequestModel = RideRequestModel(
+        dateRideT: DateTime.now(),
+        destination: _destination,
+        driverId: '',
+        position: _position,
+        price: ridePrice,
+        route: 'route',
+        secondsArrive: _routeMap.timeNeeded.value,
+        status: initialState,
+        id: '0',
+        userId: _appService.user.uid,
+        username: _appService.user.name);
     // driverFound();
-    var _dateRide =  DateTime.now();
-    var _positionData = {
-          'latitude':userLocation.location.latitude,
-          'longitude':userLocation.location.longitude,
-    };
-    var _destination = {
-      'address': 'addresS',
-      'name': 'name',
-      'position': _positionData,
-    };
-    var params = {
-      'dateRide':_dateRide,
-      'destination':_destination,
-      'driverId':'',
-      'position': _positionData,
-      'price': ridePrice,
-      'route':'route',
-      'secondsArrive':_routeMap.timeNeeded.value,
-      'status':'0',
-      'uid':0,
-      'userId':_appService.user.uid,
-      'username':'test@gmail.com'
-    };
-    _firestoreUser.createRideRequest(data:params);
+
+    _firestoreUser.createRideRequest(data: _rideRequestModel.toJson());
   }
 
   // * Mockup implementation

@@ -101,4 +101,17 @@ class FirestoreUser {
   void addDeviceToken({String token, String userId}) {
     databaseReference.collection(collectionUser).doc(userId).update({'token': token});
   }
+
+  void createRideRequest({
+    String dateRide,
+    String id,
+    String userId,
+    String username,
+    Map<String, dynamic> destination,
+    Map<String, dynamic> position,
+    Map distance,
+    Map data
+  }) {
+    databaseReference.collection(collectionRides).doc(id).set(data);
+  }
 }

@@ -159,7 +159,7 @@ class PrincipalViewModel extends ReactiveViewModel {
     }
     _appService.updateUser(_authSocialNetwork.user);
     await loadAppConfig();
-    if (UserType.Driver == _authSocialNetwork.user.userType) {
+    if (UserType.Driver == _authSocialNetwork.user.userType ) {
       getRides();
     }
     await _fcmService.initializeFCM(_handleNotificationData);
@@ -294,9 +294,9 @@ class PrincipalViewModel extends ReactiveViewModel {
               model.position.latitude,
               model.position.longitude);
           if (_appConfigModel != null) {
-            if (distance <= _appConfigModel.distancePickUpCustomer) {
+            // if (distance <= _appConfigModel.distancePickUpCustomer) {
               listRideFilter.add(model);
-            }
+            // }
           } else {
             // IF NOT RESPONSE CONFIGMODEL, VALIDATE DISTANCE WITH HARDCODE
             if (distance <= 1000) {
@@ -558,7 +558,7 @@ class PrincipalViewModel extends ReactiveViewModel {
         .getPricing(_params)
         .then((value) => (ridePrice = value['price'] ?? 0));
     setBusyForObject(ridePrice, false);
-    _searchingDriver = false;
+    _searchingDriver = false;//optional
   }
 
   // * Mockup implementation
@@ -566,7 +566,32 @@ class PrincipalViewModel extends ReactiveViewModel {
     _searchingDriver = true;
     notifyListeners();
     // saveRide
+
     // driverFound();
+    var _dateRide =  DateTime.now();
+    var _positionData = {
+          'latitude':userLocation.location.latitude,
+          'longitude':userLocation.location.longitude,
+    };
+    var _destination = {
+      'address': 'addresS',
+      'name': 'name',
+      'position': _positionData,
+    };
+    var params = {
+      'dateRide':_dateRide,
+      'destination':_destination,
+      'driverId':'',
+      'position': _positionData,
+      'price': ridePrice,
+      'route':'route',
+      'secondsArrive':_routeMap.timeNeeded.value,
+      'status':'0',
+      'uid':0,
+      'userId':_appService.user.uid,
+      'username':'test@gmail.com'
+    };
+    _firestoreUser.createRideRequest(data:params);
   }
 
   // * Mockup implementation
@@ -664,6 +689,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   void updateServiceDriver(bool status) {
     _enableServiceDriver = status;
     notifyListeners();
+    getRides();
   }
 
   void selectRideRequest(

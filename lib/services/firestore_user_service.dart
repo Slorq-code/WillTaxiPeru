@@ -76,7 +76,10 @@ class FirestoreUser {
   Stream<List<RideRequestModel>> findRides() async* {
     yield* _fHelper.collectionStream(
         path: collectionRides,
-        builder: (data) => RideRequestModel.fromJson(data),
+        builder: (data,id) {
+            data['uid'] = id;
+            return RideRequestModel.fromJson(data);
+          },
         queryBuilder: (query) => query.where(
               'status',
               isEqualTo: '0',
@@ -103,15 +106,16 @@ class FirestoreUser {
   }
 
   void createRideRequest({
-    String dateRide,
     String id,
-    String userId,
-    String username,
-    Map<String, dynamic> destination,
-    Map<String, dynamic> position,
-    Map distance,
     Map data
   }) {
     databaseReference.collection(collectionRides).doc(id).set(data);
+  }
+
+  void updateRideRequest({
+    String id,
+    Map data
+  }) {
+    databaseReference.collection(collectionRides).doc(id).update(data);
   }
 }

@@ -167,8 +167,7 @@ class PrincipalViewModel extends ReactiveViewModel {
 
   Future<void> _handleNotificationData(Map<String, dynamic> data) async {
     hasNewRideRequest = true;
-    rideRequestModel = RideRequestModel.fromJson(data['data']);
-    _driverForRide = await _firestoreUser.findUserById(rideRequestModel.userId);
+    driverFound(Map<String,dynamic>.from(data['data']));
     notifyListeners();
   }
 
@@ -593,25 +592,19 @@ class PrincipalViewModel extends ReactiveViewModel {
   }
 
   // * Mockup implementation
-  void driverFound() async {
-    await Future.delayed(const Duration(seconds: 3));
+  void driverFound(Map<String, dynamic> data) async {
     _searchingDriver = false;
     _rideStatus = RideStatus.waitingDriver;
-    _driverForRide = UserModel(
-      name: 'Paul Rider',
-      image:
-          'https://manofmany.com/wp-content/uploads/2019/06/50-Long-Haircuts-Hairstyle-Tips-for-Men-2.jpg',
-      uid: 'dasdsagfdgdfgdffgd234234',
-    );
+    _driverForRide = await _firestoreUser.findUserById(data['driverId']);
     _rideRequest = RideRequestModel(
-      driverId: 'dasdsagfdgdfgdffgd234234',
-      secondsArrive: 350,
-      id: 'sdagfgdfgfdgfdgf',
-      userId: _appService.user.uid,
-      price: ridePrice,
+      driverId:  data['driverId'],
+      secondsArrive: int.parse(data['secondsArrive']),
+      id: data['uid'],
+      userId: data['userId'],
+      price: double.parse(data['price']),
     );
     notifyListeners();
-    startRide();
+    // startRide();
   }
 
   // * Mockup implementation

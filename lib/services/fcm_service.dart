@@ -20,7 +20,8 @@ class FCMService {
   }
 
   void _saveDeviceToken() async {
-    if (_secureStorage.getString('tokenFCM') == null) {
+    var token = await _secureStorage.getString('tokenFCM'); 
+    if (token == null) {
       var deviceToken = await _fcm.getToken();
       await _secureStorage.save('tokenFCM', deviceToken);
     }

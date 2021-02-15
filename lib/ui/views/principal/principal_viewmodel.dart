@@ -167,8 +167,15 @@ class PrincipalViewModel extends ReactiveViewModel {
 
   Future<void> _handleNotificationData(Map<String, dynamic> data) async {
     hasNewRideRequest = true;
-    driverFound(Map<String,dynamic>.from(data['data']));
-    notifyListeners();
+    var _datos =  Map<String,dynamic>.from(data['data']);
+    var _notificationType = _datos['type'];
+    if(_notificationType == REQUEST_ACCEPTED_NOTIFICATION){
+      driverFound(_datos);
+    }else if (_notificationType == TRIP_STARTED_NOTIFICATION){
+      startRide(_datos);
+    }else if (_notificationType == 'TRIP_FINISH'){
+      arriveToDestination(_datos);
+    }
   }
 
   // * PUSH NOTIFICATION METHODS
@@ -607,13 +614,12 @@ class PrincipalViewModel extends ReactiveViewModel {
     // startRide();
   }
 
-  // * Mockup implementation
-  void startRide() async {
-    await Future.delayed(const Duration(seconds: 5));
+  void startRide(Map<String, dynamic> data) async {
     if (_rideRequest != null) {
       _rideStatus = RideStatus.inProgress;
-      updateCurrentSearchWidget(SearchWidget.floatingSearch);
-      arriveToDestination();
+      // updateCurrentSearchWidget(SearchWidget.floatingSearch);
+      // arriveToDestination();
+      notifyListeners();
     }
   }
 
@@ -636,9 +642,9 @@ class PrincipalViewModel extends ReactiveViewModel {
   }
 
   // * Mockup implementation
-  void arriveToDestination() async {
-    await Future.delayed(const Duration(seconds: 5));
+  void arriveToDestination(Map<String, dynamic> data) async {
     _rideStatus = RideStatus.finished;
+     notifyListeners();
   }
 
   void cleanRoute() {

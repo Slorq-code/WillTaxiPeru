@@ -48,9 +48,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   final FirestoreUser _firestoreUser = locator<FirestoreUser>();
   final Api _api = locator<Api>();
   PrincipalState _state = PrincipalState.loading;
-  static const DRIVER_AT_LOCATION_NOTIFICATION = 'DRIVER_AT_LOCATION';
-  static const REQUEST_ACCEPTED_NOTIFICATION = 'REQUEST_ACCEPTED';
-  static const TRIP_STARTED_NOTIFICATION = 'TRIP_STARTED';
+
   String notificationType = '';
   StreamSubscription ridesSubscription;
   // final bool _mapReady = false;
@@ -80,6 +78,10 @@ class PrincipalViewModel extends ReactiveViewModel {
     const RideRequestsByClient(),
     const DriverRideDetails()
   ];
+  static const DRIVER_AT_LOCATION_NOTIFICATION = 'DRIVER_AT_LOCATION';
+  static const REQUEST_ACCEPTED_NOTIFICATION = 'REQUEST_ACCEPTED';
+  static const TRIP_STARTED_NOTIFICATION = 'TRIP_STARTED';
+  static const TRIP_FINISH_NOTIFICATION = 'TRIP_FINISH';
   GoogleMapController _mapController;
   Widget _currentSearchWidget = const SizedBox();
   Widget _currentRideWidget = const SizedBox();
@@ -167,13 +169,13 @@ class PrincipalViewModel extends ReactiveViewModel {
 
   Future<void> _handleNotificationData(Map<String, dynamic> data) async {
     hasNewRideRequest = true;
-    var _datos =  Map<String,dynamic>.from(data['data']);
+    var _datos = Map<String, dynamic>.from(data['data']);
     var _notificationType = _datos['type'];
-    if(_notificationType == REQUEST_ACCEPTED_NOTIFICATION){
+    if (_notificationType == REQUEST_ACCEPTED_NOTIFICATION) {
       driverFound(_datos);
-    }else if (_notificationType == TRIP_STARTED_NOTIFICATION){
+    } else if (_notificationType == TRIP_STARTED_NOTIFICATION) {
       startRide(_datos);
-    }else if (_notificationType == 'TRIP_FINISH'){
+    } else if (_notificationType == TRIP_FINISH_NOTIFICATION) {
       arriveToDestination(_datos);
     }
   }
@@ -595,7 +597,6 @@ class PrincipalViewModel extends ReactiveViewModel {
         userId: _appService.user.uid,
         username: _appService.user.name);
     _firestoreUser.createRideRequest(data: _rideRequestModel.toJson());
-
   }
 
   // * Mockup implementation
@@ -604,7 +605,7 @@ class PrincipalViewModel extends ReactiveViewModel {
     _rideStatus = RideStatus.waitingDriver;
     _driverForRide = await _firestoreUser.findUserById(data['driverId']);
     _rideRequest = RideRequestModel(
-      driverId:  data['driverId'],
+      driverId: data['driverId'],
       secondsArrive: int.parse(data['secondsArrive']),
       id: data['uid'],
       userId: data['userId'],
@@ -624,16 +625,6 @@ class PrincipalViewModel extends ReactiveViewModel {
   }
 
   // * Mockup implementation
-  void startRidebyDriver() async {
-    _driverRequestFlow = DriverRequestFlow.inProgress;
-    notifyListeners();
-    await Future.delayed(const Duration(seconds: 5));
-
-    _driverRequestFlow = DriverRequestFlow.finished;
-    notifyListeners();
-  }
-
-  // * Mockup implementation
   Future<void> cancelRide() async {
     _rideRequest = null;
     _driverForRide = null;
@@ -644,7 +635,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   // * Mockup implementation
   void arriveToDestination(Map<String, dynamic> data) async {
     _rideStatus = RideStatus.finished;
-     notifyListeners();
+    notifyListeners();
   }
 
   void cleanRoute() {
@@ -685,9 +676,9 @@ class PrincipalViewModel extends ReactiveViewModel {
 
   void updateServiceDriver(bool status) {
     _enableServiceDriver = status;
-    if(_enableServiceDriver){
+    if (_enableServiceDriver) {
       getRides();
-    }else{
+    } else {
       _listRideRequest = [];
     }
     notifyListeners();
@@ -699,7 +690,6 @@ class PrincipalViewModel extends ReactiveViewModel {
 
     _clientForRide = await _firestoreUser.findUserById(_rideRequest.userId);
     // _driverForRide = await _firestoreUser.findUserById(_appService.user.uid);
-    
 
     // replace for destination ride
     final destinationPosition = LatLng(
@@ -732,6 +722,15 @@ class PrincipalViewModel extends ReactiveViewModel {
     await drivingToStartPoint();
   }
 
+  void startRidebyDriver() async {
+    _driverRequestFlow = DriverRequestFlow.inProgress;
+    final newValue = <String, dynamic>{};
+    newValue['status'] = '3';
+    _firestoreUser.updateRideRequest(id: _rideRequest.uid, data: newValue);
+    _driverRequestFlow = DriverRequestFlow.finished;
+    notifyListeners();
+  }
+
   void cancelRideRequestByDriver() {
     _driverRequestFlow = DriverRequestFlow.none;
     final newValue = <String, dynamic>{};
@@ -742,15 +741,16 @@ class PrincipalViewModel extends ReactiveViewModel {
   }
 
   // * Mockup implementation
-  Future<void> drivingToStartPoint()async{
+  Future<void> drivingToStartPoint() async {
     _driverRequestFlow = DriverRequestFlow.onStartPoint;
     notifyListeners();
   }
 
   void finishRideByDriver() {
-    _driverRequestFlow = DriverRequestFlow.finished;
+    final newValue = <String, dynamic>{};
+    newValue['status'] = '4';
+    _firestoreUser.updateRideRequest(id: _rideRequest.uid, data: newValue);
     notifyListeners();
-    // TODO: implement update ride request
     onBack();
   }
 }

@@ -105,9 +105,6 @@ class LoginViewModel extends BaseViewModel {
 
           await _token.saveToken(_authSocialNetwork.idToken);
 
-          await _firestoreUser.addDeviceToken(token:_authSocialNetwork.idToken,
-                                              userId:_authSocialNetwork.user.uid);
-
           // LOGIN SUCESSFULL, NAVIGATE TO PRINCIPAL PAGE
           await ExtendedNavigator.root.push(Routes.principalViewRoute);
         } else {

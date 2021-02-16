@@ -159,11 +159,14 @@ class PrincipalViewModel extends ReactiveViewModel {
       _state = PrincipalState.accessGPSDisable;
     }
     _appService.updateUser(_authSocialNetwork.user);
-    await loadAppConfig();
-    // if (UserType.Driver == _authSocialNetwork.user.userType) {
-    //   getRides();
-    // }
+    await loadAppConfig();    
     await _fcmService.initializeFCM(_handleNotificationData);
+
+    var _tokenFCM = await _fcmService.getTokenFCM();
+    if(_appService.user.token != _tokenFCM){
+      await _firestoreUser.addDeviceToken(token: _tokenFCM,
+                                              userId:_appService.user.uid);  
+    }
     notifyListeners();
   }
 

@@ -19,10 +19,16 @@ class FCMService {
     );
   }
 
+  Future<String> getTokenFCM() async {
+    return await _secureStorage.getString('tokenFCM');
+  }
+
+
   void _saveDeviceToken() async {
-    var token = await _secureStorage.getString('tokenFCM'); 
+    var token = await _secureStorage.getString('tokenFCM');
     if (token == null) {
       var deviceToken = await _fcm.getToken();
+      print(deviceToken);
       await _secureStorage.save('tokenFCM', deviceToken);
     }
   }

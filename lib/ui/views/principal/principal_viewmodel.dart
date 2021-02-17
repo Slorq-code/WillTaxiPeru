@@ -561,7 +561,7 @@ class PrincipalViewModel extends ReactiveViewModel {
     var serviceTime = _routeMap.timeNeeded.value;
     var _params = <String, dynamic>{};
     _params['distance'] = serviceDistance;
-    _params['typeService'] = 1;
+    _params['typeService'] = serviceType;
     _params['time'] = serviceTime;
 
     await _api

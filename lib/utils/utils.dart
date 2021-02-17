@@ -110,6 +110,11 @@ class Utils {
     return nameInitials;
   }
 
+  static String getLocationTextGMaps(String latitude, String longitude) {
+     var _googleServ = 'https://www.google.com/maps/search/?api=1&query=';
+    return '$_googleServ$latitude,$longitude';
+  }
+
   static void shareText(String title, content) {
     Share.text(title, content, 'text/plain');
   }

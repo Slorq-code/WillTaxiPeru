@@ -59,5 +59,10 @@
 	"ride_summary_total_rides": "Total de viajes",
 	"ride_summary_total_income": "Ingresos a la fecha",
 	"summary": "Resumen",
-	"your_data_updated_correctly": "Sus datos se actualizaron correctamente"
+	"your_data_updated_correctly": "Sus datos se actualizaron correctamente",
+	"finish":"Finalizar",
+	"start":"Iniciar",
+	"activate":"Activar",
+	"your_destination":"¡Has llegado a tu destino!",
+	"starting_point":"¡Has llegado al punto de partida!"
 }

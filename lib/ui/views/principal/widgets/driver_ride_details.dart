@@ -166,16 +166,15 @@ class _RideInformationSection extends ViewModelWidget<PrincipalViewModel> {
                                 ? ActionButtonCustom(action: () => model.acceptRideRequest(), label: Keys.continue_label.localize())
                                 : model.driverRequestFlow == DriverRequestFlow.accept
                                     ? ActionButtonCustom(
-                                        action: () => model.cancelRideRequestByDriver(), label: 'Cancel', color: Colors.black) // TODO: translate
+                                        action: () => model.cancelRideRequestByDriver(), label: Keys.cancel.localize(), color: Colors.black)
 
                                     : model.driverRequestFlow == DriverRequestFlow.onStartPoint
                                         ? ActionButtonCustom(
                                             action: () => model.startRidebyDriver(),
-                                            label: 'Start',
-                                          ) // TODO: translate
-
+                                            label: Keys.start.localize(),
+                                          )
                                         : model.driverRequestFlow == DriverRequestFlow.finished
-                                            ? ActionButtonCustom(action: () => model.finishRideByDriver(), label: 'Finish') // TODO: translate
+                                            ? ActionButtonCustom(action: () => model.finishRideByDriver(), label: Keys.finish.localize())
                                             : Container(),
                           ),
                         ],
@@ -220,8 +219,8 @@ class _FloatingMessage extends ViewModelWidget<PrincipalViewModel> {
                           padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 20.0),
                           child: Text(
                             model.driverRequestFlow == DriverRequestFlow.finished
-                                ? '¡Has llegado a tu destino!' // TODO: translate
-                                : '¡Has llegado al punto de partida!', // TODO: translate
+                                ? Keys.your_destination.localize()
+                                : Keys.starting_point.localize(),
                             textAlign: TextAlign.center,
                           ),
                         )

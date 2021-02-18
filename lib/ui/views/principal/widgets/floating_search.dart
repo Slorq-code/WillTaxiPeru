@@ -81,9 +81,9 @@ class _SwitchStatusDriver extends ViewModelWidget<PrincipalViewModel> {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'Activar', // TODO: translate
-                style: TextStyle(fontWeight: FontWeight.w500, fontSize: 15),
+               Text(
+                Keys.activate.localize(),
+                style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 15),
               ),
               Transform.scale(
                   scale: 0.8,
@@ -160,10 +160,14 @@ class _ClientSearch extends ViewModelWidget<PrincipalViewModel> {
                           ),
                           _OriginButton(
                               icon: 'assets/icons/locate_position.svg',
-                              onTap: () {}),
+                              onTap: () {
+                                model.setMyLocation(context);
+                              }),
                           _OriginButton(
                               icon: 'assets/icons/move_in_map.svg',
-                              onTap: () {}),
+                              onTap: () {
+
+                              }),
                         ],
                       ),
                     ),

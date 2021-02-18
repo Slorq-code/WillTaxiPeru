@@ -677,6 +677,30 @@ class PrincipalViewModel extends ReactiveViewModel {
     }
   }
 
+  Future<void> setMyLocation(BuildContext context) async {
+    // clearOriginPosition();
+    // await _mapController.setMapStyle('[]');
+    // notifyListeners();
+    // await _mapController.setMapStyle(await getMapTheme());
+    // notifyListeners();
+    
+    if (userLocation.location != null) {
+      final position =
+          CameraPosition(target: userLocation.location, zoom: 16.5);
+      await _mapController
+          .animateCamera(CameraUpdate.newCameraPosition(position));
+
+      // final positionPlace = await _locationService.getAddress(userLocation.location);
+      // _selectOrigin = true;
+      // _locationService.location.descriptionAddress = positionPlace;
+      // _searchOriginController.text = positionPlace;
+      // makeRoute(Place(latLng: userLocation.location, address: positionPlace), context,
+      //   isOriginSelected: selectOrigin);
+      // notifyListeners();
+    }
+  }
+
+
   void updateServiceDriver(bool status) {
     _enableServiceDriver = status;
     if (_enableServiceDriver) {

@@ -159,13 +159,13 @@ class PrincipalViewModel extends ReactiveViewModel {
       _state = PrincipalState.accessGPSDisable;
     }
     _appService.updateUser(_authSocialNetwork.user);
-    await loadAppConfig();    
+    await loadAppConfig();
     await _fcmService.initializeFCM(_handleNotificationData);
 
     var _tokenFCM = await _fcmService.getTokenFCM();
-    if(_appService.user.token != _tokenFCM){
-      await _firestoreUser.addDeviceToken(token: _tokenFCM,
-                                              userId:_appService.user.uid);  
+    if (_appService.user.token != _tokenFCM) {
+      await _firestoreUser.addDeviceToken(
+          token: _tokenFCM, userId: _appService.user.uid);
     }
     notifyListeners();
   }
@@ -683,23 +683,20 @@ class PrincipalViewModel extends ReactiveViewModel {
     // notifyListeners();
     // await _mapController.setMapStyle(await getMapTheme());
     // notifyListeners();
-    
+    _selectOrigin = true;
+    _selectDestination = false;
+    notifyListeners();
+    var myposition = await _locationService.getCurrentPosition();
+    confirmManualPick(
+        LatLng(myposition.latitude, myposition.longitude), context);
     if (userLocation.location != null) {
       final position =
           CameraPosition(target: userLocation.location, zoom: 16.5);
       await _mapController
           .animateCamera(CameraUpdate.newCameraPosition(position));
-
-      // final positionPlace = await _locationService.getAddress(userLocation.location);
-      // _selectOrigin = true;
-      // _locationService.location.descriptionAddress = positionPlace;
-      // _searchOriginController.text = positionPlace;
-      // makeRoute(Place(latLng: userLocation.location, address: positionPlace), context,
-      //   isOriginSelected: selectOrigin);
-      // notifyListeners();
+      notifyListeners();
     }
   }
-
 
   void updateServiceDriver(bool status) {
     _enableServiceDriver = status;

@@ -57,7 +57,9 @@ class PrincipalViewModel extends ReactiveViewModel {
   bool apiSelected = false;
   LatLng _centralLocation;
   String addressCurrentPosition;
+  Place _originSelected;
   Place _destinationSelected;
+
   Map<String, Polyline> _polylines = {};
   Map<String, Marker> _markers = {};
   List<Place> _placesDestinationFound = [];
@@ -123,6 +125,8 @@ class PrincipalViewModel extends ReactiveViewModel {
   Widget get currentDriverRideWidget => _currentDriverRideWidget;
   List<Place> get placesDestinationFound => _placesDestinationFound;
   Place get destinationSelected => _destinationSelected;
+  Place get originSelected => _destinationSelected;
+
   Map<String, Polyline> get polylines => _polylines;
   Map<String, Marker> get markers => _markers;
   VehicleType get vehicleSelected => _vehicleSelected;
@@ -413,10 +417,12 @@ class PrincipalViewModel extends ReactiveViewModel {
       {bool isDriver = false, bool isOriginSelected = false}) async {
     if (isOriginSelected) {
       _selectOrigin = false;
-      _locationService.location = UserLocation(
-          existLocation: true,
-          descriptionAddress: place.address,
-          location: place.latLng);
+      _originSelected = place;
+      notifyListeners();
+      // _locationService.location = UserLocation(
+      //     existLocation: true,
+      //     descriptionAddress: place.address,
+      //     location: place.latLng);
       if (_destinationSelected == null) {
         // show camera to current position
         await _mapsService.updateCameraSpecificLocationZoom(
@@ -428,7 +434,7 @@ class PrincipalViewModel extends ReactiveViewModel {
       _destinationSelected = place;
     }
     _routeMap = await _mapsService.getRouteByCoordinates(
-        userLocation.location, destinationSelected.latLng);
+        _originSelected.latLng, destinationSelected.latLng);
     final routePoints =
         _routeMap.points.map((point) => LatLng(point[0], point[1])).toList();
     final myDestinationRoute = Polyline(
@@ -487,7 +493,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   }
 
   Future<void> updateRouteCamera() async {
-    final source = userLocation.location;
+    final source = originSelected.latLng;
     final destination = destinationSelected.latLng;
     await _mapsService.updateCameraLocation(
         source, destination, _mapController);
@@ -525,7 +531,7 @@ class PrincipalViewModel extends ReactiveViewModel {
 
   void clearOriginPosition() {
     _selectOrigin = false;
-    _locationService.location.descriptionAddress = '';
+    _originSelected = null;
     _searchOriginController.text = '';
     updateCurrentRideWidget(RideWidget.clear);
     cleanRoute();
@@ -584,8 +590,8 @@ class PrincipalViewModel extends ReactiveViewModel {
             longitude: destinationSelected.latLng.longitude));
 
     var _position = PositionRide(
-        latitude: userLocation.location.latitude,
-        longitude: userLocation.location.longitude);
+        latitude: originSelected.latLng.latitude,
+        longitude: originSelected.latLng.longitude);
 
     var _rideRequestModel = RideRequestModel(
         dateRideT: DateTime.now(),
@@ -652,6 +658,7 @@ class PrincipalViewModel extends ReactiveViewModel {
     _rideRequest = null;
     _driverForRide = null;
     _destinationSelected = null;
+    _originSelected = null;
     cleanRoute();
     updateCurrentRideWidget(RideWidget.clear);
   }

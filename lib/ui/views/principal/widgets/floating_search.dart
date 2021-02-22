@@ -81,9 +81,10 @@ class _SwitchStatusDriver extends ViewModelWidget<PrincipalViewModel> {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-               Text(
+              Text(
                 Keys.activate.localize(),
-                style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 15),
+                style:
+                    const TextStyle(fontWeight: FontWeight.w500, fontSize: 15),
               ),
               Transform.scale(
                   scale: 0.8,
@@ -153,9 +154,9 @@ class _ClientSearch extends ViewModelWidget<PrincipalViewModel> {
                         children: [
                           Expanded(
                             child: Text(
-                                model.userLocation.descriptionAddress.isEmpty
-                                    ? Keys.origin.localize()
-                                    : model.userLocation.descriptionAddress,
+                                model.originSelected != null
+                                    ? model.originSelected.address
+                                    : Keys.origin.localize(),
                                 overflow: TextOverflow.ellipsis),
                           ),
                           _OriginButton(
@@ -165,9 +166,7 @@ class _ClientSearch extends ViewModelWidget<PrincipalViewModel> {
                               }),
                           _OriginButton(
                               icon: 'assets/icons/move_in_map.svg',
-                              onTap: () {
-
-                              }),
+                              onTap: () {}),
                         ],
                       ),
                     ),

@@ -90,7 +90,7 @@ class SearchFieldBar extends ViewModelWidget<PrincipalViewModel> {
                 ),
                 if (model.selectOrigin)
                   Container(
-                    height: MediaQuery.of(context).size.height * .5,
+                    height: MediaQuery.of(context).size.height * .3,
                     width: double.infinity,
                     color: Colors.white,
                     child: ListView(
@@ -108,7 +108,7 @@ class SearchFieldBar extends ViewModelWidget<PrincipalViewModel> {
                   ),
                 if (model.selectDestination)
                   Container(
-                    height: MediaQuery.of(context).size.height * .5,
+                    height: MediaQuery.of(context).size.height * .3,
                     width: double.infinity,
                     color: Colors.white,
                     child: ListView(

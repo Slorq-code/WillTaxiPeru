@@ -125,7 +125,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   Widget get currentDriverRideWidget => _currentDriverRideWidget;
   List<Place> get placesDestinationFound => _placesDestinationFound;
   Place get destinationSelected => _destinationSelected;
-  Place get originSelected => _destinationSelected;
+  Place get originSelected => _originSelected;
 
   Map<String, Polyline> get polylines => _polylines;
   Map<String, Marker> get markers => _markers;

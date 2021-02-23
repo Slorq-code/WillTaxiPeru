@@ -577,7 +577,6 @@ class PrincipalViewModel extends ReactiveViewModel {
     _searchingDriver = false; //optional
   }
 
-  // * Mockup implementation
   Future<void> confirmRide() async {
     _searchingDriver = true;
     notifyListeners();
@@ -589,13 +588,21 @@ class PrincipalViewModel extends ReactiveViewModel {
             latitude: destinationSelected.latLng.latitude,
             longitude: destinationSelected.latLng.longitude));
 
+    var _origin = DestinationRide(
+        address: originSelected.address,
+        name: originSelected.name,
+        position: PositionRide(
+            latitude: originSelected.latLng.latitude,
+            longitude: originSelected.latLng.longitude));
+
     var _position = PositionRide(
-        latitude: originSelected.latLng.latitude,
-        longitude: originSelected.latLng.longitude);
+        latitude: userLocation.location.latitude,
+        longitude: userLocation.location.longitude);
 
     var _rideRequestModel = RideRequestModel(
         dateRideT: DateTime.now(),
         destination: _destination,
+        origin: _origin,
         driverId: '',
         position: _position,
         price: ridePrice,
@@ -722,21 +729,21 @@ class PrincipalViewModel extends ReactiveViewModel {
     _clientForRide = await _firestoreUser.findUserById(_rideRequest.userId);
     // _driverForRide = await _firestoreUser.findUserById(_appService.user.uid);
 
-    // replace for destination ride
-    final destinationPosition = LatLng(
-        _rideRequest.destination.position.latitude,
-        _rideRequest.destination.position.longitude);
-
-    final destinationPlace = _rideRequest.destination.address;
-
     _destinationSelected = Place(
-        latLng: destinationPosition,
-        address: destinationPlace,
+        latLng: LatLng(_rideRequest.destination.position.latitude,
+            _rideRequest.destination.position.longitude),
+        address: _rideRequest.destination.address,
         name: _rideRequest.destination.name);
+
+    _originSelected = Place(
+        latLng: LatLng(_rideRequest.origin.position.latitude,
+            _rideRequest.origin.position.longitude),
+        address: _rideRequest.origin.address,
+        name: _rideRequest.origin.name);
 
     _destinationArrive =
         DateTime.now().add(Duration(seconds: _rideRequest.secondsArrive));
-
+    notifyListeners();
     await makeRoute(_destinationSelected, context, isDriver: true);
     updateCurrentDriverRideWidget(DriverRideWidget.driverRideDetails);
   }

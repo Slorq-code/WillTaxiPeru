@@ -166,7 +166,10 @@ class _ClientSearch extends ViewModelWidget<PrincipalViewModel> {
                               }),
                           _OriginButton(
                               icon: 'assets/icons/move_in_map.svg',
-                              onTap: () {}),
+                              onTap: () {
+                                model.selectOrigin = true;
+                                model.updateCurrentSearchWidget(SearchWidget.manualPickInMap);
+                              }),
                         ],
                       ),
                     ),

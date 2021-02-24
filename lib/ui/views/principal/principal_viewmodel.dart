@@ -140,6 +140,11 @@ class PrincipalViewModel extends ReactiveViewModel {
   bool get enableServiceDriver => _enableServiceDriver;
   List<RideRequestModel> get listRideRequest => _listRideRequest;
   bool get selectOrigin => _selectOrigin;
+
+  set selectOrigin(value) {
+    _selectOrigin  = value;
+    // notifyListeners();
+  } 
   bool get selectDestination => _selectDestination;
   List<Place> get placesOriginFound => _placesOriginFound;
   TextEditingController get searchOriginController => _searchOriginController;

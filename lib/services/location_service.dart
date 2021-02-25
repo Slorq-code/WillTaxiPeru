@@ -30,13 +30,14 @@ class LocationService with ReactiveServiceMixin {
     _userLocation.value = userLocation;
   }
 
-  void startTracking() async {
+  void startTracking({Function callbackZoomMap}) async {
     final locationOptions = const LocationOptions(
         accuracy: LocationAccuracy.high, distanceFilter: 10);
     _positionSubscription = _geolocator
         .getPositionStream(locationOptions)
         .listen((Position position) async {
       await updateLocation(LatLng(position.latitude, position.longitude));
+        callbackZoomMap();
     });
   }
 

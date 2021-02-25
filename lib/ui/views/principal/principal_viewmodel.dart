@@ -162,7 +162,7 @@ class PrincipalViewModel extends ReactiveViewModel {
     _currentDriverRideWidget = _switchDriverRideWidgets[0];
     if (await Geolocator().isLocationServiceEnabled()) {
       _state = PrincipalState.accessGPSEnable;
-      await _locationService.startTracking();
+      await _locationService.startTracking(callbackZoomMap:updateZoomMap);
       _searchOriginController.text = userLocation.descriptionAddress;
     } else {
       _state = PrincipalState.accessGPSDisable;
@@ -336,7 +336,7 @@ class PrincipalViewModel extends ReactiveViewModel {
     switch (status) {
       case PermissionStatus.granted:
         _state = PrincipalState.accessGPSEnable;
-        await _locationService.startTracking();
+        await _locationService.startTracking(callbackZoomMap:updateZoomMap);
         _searchOriginController.text = userLocation.descriptionAddress;
         notifyListeners();
         break;
@@ -360,8 +360,15 @@ class PrincipalViewModel extends ReactiveViewModel {
     _mapController = controller;
     await _mapController.setMapStyle(await getMapTheme());
   }
+  void updateZoomMap()async{
+    final position =
+            CameraPosition(target:userLocation.location, zoom: 16.5);
+        await _mapController
+            .animateCamera(CameraUpdate.newCameraPosition(position));
+        // notifyListeners();
+  }
 
-  void updateCurrentLocation(LatLng center) {
+  void updateCurrentLocation(LatLng center)async {
     _centralLocation = center;
   }
 

@@ -770,7 +770,7 @@ class PrincipalViewModel extends ReactiveViewModel {
     final newValue = <String, dynamic>{};
     newValue['status'] = '3';
     _firestoreUser.updateRideRequest(id: _rideRequest.uid, data: newValue);
-    // _driverRequestFlow = DriverRequestFlow.finished;
+    _driverRequestFlow = DriverRequestFlow.finished;
     notifyListeners();
   }
 

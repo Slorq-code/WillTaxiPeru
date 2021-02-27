@@ -59,7 +59,8 @@ class PrincipalViewModel extends ReactiveViewModel {
   String addressCurrentPosition;
   Place _originSelected;
   Place _destinationSelected;
-
+  Place _destinationClientSelected;
+  
   Map<String, Polyline> _polylines = {};
   Map<String, Marker> _markers = {};
   List<Place> _placesDestinationFound = [];
@@ -132,7 +133,8 @@ class PrincipalViewModel extends ReactiveViewModel {
   Place get originSelected => _originSelected;
   List<Place> get placesOriginFound => _placesOriginFound;
   TextEditingController get searchOriginController => _searchOriginController;
-  
+
+  Place get destinationClienteSelected => _destinationClientSelected;
 
   Widget get currentSearchWidget => _currentSearchWidget;
   Widget get currentRideWidget => _currentRideWidget;
@@ -191,19 +193,21 @@ class PrincipalViewModel extends ReactiveViewModel {
     } else if (_notificationType == TRIP_FINISH_NOTIFICATION) {
       arriveToDestination(_datos);
     }
+    //DRIVER_AT_LOCATION_NOTIFICATION
   }
 
   // * PUSH NOTIFICATION METHODS
   Future handleOnMessage(Map<String, dynamic> data) async {
-    print('=== data = ${data.toString()}');
-    notificationType = data['data']['type'];
-
-    if (notificationType == DRIVER_AT_LOCATION_NOTIFICATION) {
-    } else if (notificationType == TRIP_STARTED_NOTIFICATION) {
-      // await sendRequest(origin: userLocation.location, destination: destinationSelected.latLng);
-      notifyListeners();
-    } else if (notificationType == REQUEST_ACCEPTED_NOTIFICATION) {}
-    notifyListeners();
+    hasNewRideRequest = true;
+    var _datos = Map<String, dynamic>.from(data['data']);
+    var _notificationType = _datos['type'];
+    if (_notificationType == REQUEST_ACCEPTED_NOTIFICATION) {
+      driverFound(_datos);
+    } else if (_notificationType == TRIP_STARTED_NOTIFICATION) {
+      startRide(_datos);
+    } else if (_notificationType == TRIP_FINISH_NOTIFICATION) {
+      arriveToDestination(_datos);
+    }
   }
 
   Future handleOnLaunch(Map<String, dynamic> data) async {
@@ -464,12 +468,21 @@ class PrincipalViewModel extends ReactiveViewModel {
 
     // final iconDestino = await getMarkerDestinoIcon(place.name, route.distance.value.toDouble());
 
+    var iconStart = 'assets/icons/start_location.svg'; 
+    var iconDestination = 'assets/icons/destination_marker.svg';
+    var iconVehicle = 'assets/icons/profile_avatar.svg';
+    
+    if( destinationClienteSelected !=null ){
+      iconDestination = iconStart;
+      iconStart = iconVehicle;
+    }
+
     final markerStart = Marker(
       anchor: const Offset(0.5, 0.5),
       markerId: MarkerId('start'),
       position: routePoints[0],
       icon: await bitmapDescriptorFromSvgAsset(
-          context, 'assets/icons/start_location.svg', 25),
+          context,   iconStart, 25),
       // infoWindow: InfoWindow(
       //   title: Keys.my_location.localize(),
       //   snippet: Keys.route_time_with_minutes.localize(['${(route.timeNeeded.value / 60).floor()}']),
@@ -480,7 +493,7 @@ class PrincipalViewModel extends ReactiveViewModel {
       markerId: MarkerId('destination'),
       position: routePoints.last,
       icon: await bitmapDescriptorFromSvgAsset(
-          context, 'assets/icons/destination_marker.svg', 25),
+          context, iconDestination, 25),
       // anchor: const Offset(0.1, 0.90),
       // infoWindow: InfoWindow(
       //   title: place.name,
@@ -679,6 +692,7 @@ class PrincipalViewModel extends ReactiveViewModel {
     _driverForRide = null;
     _destinationSelected = null;
     _originSelected = null;
+    _destinationClientSelected=null;
     cleanRoute();
     updateCurrentRideWidget(RideWidget.clear);
   }
@@ -761,7 +775,7 @@ class PrincipalViewModel extends ReactiveViewModel {
     updateCurrentDriverRideWidget(DriverRideWidget.driverRideDetails);
   }
 
-  void acceptRideRequest() async {
+  void acceptRideRequest(BuildContext context) async {
     _driverRequestFlow = DriverRequestFlow.accept;
     notifyListeners();
     //update ride
@@ -769,14 +783,40 @@ class PrincipalViewModel extends ReactiveViewModel {
     newValue['driverId'] = _appService.user.uid;
     newValue['status'] = '1';
     _firestoreUser.updateRideRequest(id: _rideRequest.uid, data: newValue);
+
     _driverRequestFlow = DriverRequestFlow.preDrivingToStartPoint;
+    notifyListeners();
+
+    _destinationClientSelected = _destinationSelected;
+    
+    _destinationSelected = _originSelected;
+    _originSelected = Place(
+        latLng: LatLng(userLocation.location.latitude,
+            userLocation.location.longitude),
+        address: userLocation.descriptionAddress,
+        name: userLocation.descriptionAddress);
+    await makeRoute(_originSelected, context, 
+                    isOriginSelected: true, isDriver: true);
+    
+    await makeRoute(_destinationSelected, context, isDriver: true);
+
+    updateCurrentDriverRideWidget(DriverRideWidget.driverRideDetails);
     notifyListeners();
   }
 
-  void preDrivingToStartPoint(){
+  void preDrivingToStartPoint(BuildContext context) async{
     _driverRequestFlow = DriverRequestFlow.preDrivingToStartPoint;
     notifyListeners();
-    drivingToStartPoint();
+
+    _originSelected =_destinationSelected;
+    _destinationSelected =_destinationClientSelected;
+    _destinationClientSelected = null;
+    
+    await makeRoute(_originSelected, context, 
+                    isOriginSelected: true, isDriver: true);
+    
+    await makeRoute(_destinationSelected, context, isDriver: true);
+    await drivingToStartPoint();
   }
 
   void startRidebyDriver() async {
@@ -799,6 +839,9 @@ class PrincipalViewModel extends ReactiveViewModel {
 
   // * Mockup implementation
   Future<void> drivingToStartPoint() async {
+    final newValue = <String, dynamic>{};
+    newValue['status'] = '2';
+    _firestoreUser.updateRideRequest(id: _rideRequest.uid, data: newValue);
     _driverRequestFlow = DriverRequestFlow.onStartPoint;
     notifyListeners();
   }

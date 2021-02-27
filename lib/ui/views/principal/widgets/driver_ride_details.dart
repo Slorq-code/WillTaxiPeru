@@ -198,7 +198,9 @@ class _RideInformationSection extends ViewModelWidget<PrincipalViewModel> {
                             child: model.driverRequestFlow ==
                                     DriverRequestFlow.none
                                 ? ActionButtonCustom(
-                                    action: () => model.acceptRideRequest(),
+                                    action: () => model.acceptRideRequest(
+                                      context
+                                    ),
                                     label: Keys.continue_label.localize())
                                 : model.driverRequestFlow ==
                                         DriverRequestFlow.accept
@@ -212,7 +214,7 @@ class _RideInformationSection extends ViewModelWidget<PrincipalViewModel> {
                                                 .preDrivingToStartPoint
                                         ? ActionButtonCustom(
                                             action: () =>
-                                                model.preDrivingToStartPoint(),
+                                                model.preDrivingToStartPoint(context),
                                             label: Keys.arrival_at_the_starting.localize(),
                                           )
                                         : model.driverRequestFlow ==

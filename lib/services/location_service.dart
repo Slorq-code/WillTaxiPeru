@@ -54,7 +54,7 @@ class LocationService with ReactiveServiceMixin {
     var userLocationTemp = _userLocation.value.copyWith();
     userLocationTemp.location = newlocation;
     userLocationTemp.descriptionAddress = await getAddress(newlocation);
-    userLocationTemp.existLocation = true;
+    userLocationTemp.existLocation = true;    
     _userLocation.value = userLocationTemp;
   }
 

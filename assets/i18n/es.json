@@ -64,5 +64,6 @@
 	"start":"Iniciar",
 	"activate":"Activar",
 	"your_destination":"¡Has llegado a tu destino!",
-	"starting_point":"¡Has llegado al punto de partida!"
+	"starting_point":"¡Has llegado al punto de partida!",
+	"arrival_at_the_starting": "Arrival at the starting point"
 }

@@ -120,39 +120,40 @@ class PrincipalViewModel extends ReactiveViewModel {
   PrincipalState get state => _state;
   UserLocation get userLocation => _locationService.location;
   LatLng get centralLocation => _centralLocation;
+
+  bool get selectDestination => _selectDestination;
+  Place get destinationSelected => _destinationSelected;
+  List<Place> get placesDestinationFound => _placesDestinationFound;
+  TextEditingController get searchDestinationController =>
+      _searchDestinationController;
+
+  bool get selectOrigin => _selectOrigin;
+  set selectOrigin(value) =>_selectOrigin  = value;
+  Place get originSelected => _originSelected;
+  List<Place> get placesOriginFound => _placesOriginFound;
+  TextEditingController get searchOriginController => _searchOriginController;
+  
+
   Widget get currentSearchWidget => _currentSearchWidget;
   Widget get currentRideWidget => _currentRideWidget;
   Widget get currentDriverRideWidget => _currentDriverRideWidget;
-  List<Place> get placesDestinationFound => _placesDestinationFound;
-  Place get destinationSelected => _destinationSelected;
-  Place get originSelected => _originSelected;
+  
+  RideRequestModel get rideRequest => _rideRequest;
 
   Map<String, Polyline> get polylines => _polylines;
   Map<String, Marker> get markers => _markers;
+
   VehicleType get vehicleSelected => _vehicleSelected;
   DateTime get destinationArrive => _destinationArrive;
   bool get isSearchingDriver => _searchingDriver;
   UserModel get driverForRide => _driverForRide;
   UserModel get clientForRide => _clientForRide;
-  RideRequestModel get rideRequest => _rideRequest;
+  
   RideStatus get rideStatus => _rideStatus;
   DriverRequestFlow get driverRequestFlow => _driverRequestFlow;
   bool get enableServiceDriver => _enableServiceDriver;
   List<RideRequestModel> get listRideRequest => _listRideRequest;
-  bool get selectOrigin => _selectOrigin;
-
-  set selectOrigin(value) {
-    _selectOrigin  = value;
-    // notifyListeners();
-  } 
-  bool get selectDestination => _selectDestination;
-  List<Place> get placesOriginFound => _placesOriginFound;
-  TextEditingController get searchOriginController => _searchOriginController;
-  TextEditingController get searchDestinationController =>
-      _searchDestinationController;
-
-  // * Functions
-
+  
   @override
   List<ReactiveServiceMixin> get reactiveServices =>
       [_locationService, _appService];
@@ -594,11 +595,11 @@ class PrincipalViewModel extends ReactiveViewModel {
     notifyListeners();
     //Save Ride
     var _destination = DestinationRide(
-        address: destinationSelected.address,
-        name: destinationSelected.name,
+        address: _destinationSelected.address,
+        name: _destinationSelected.name,
         position: PositionRide(
-            latitude: destinationSelected.latLng.latitude,
-            longitude: destinationSelected.latLng.longitude));
+            latitude: _destinationSelected.latLng.latitude,
+            longitude: _destinationSelected.latLng.longitude));
 
     var _origin = DestinationRide(
         address: originSelected.address,
@@ -768,8 +769,14 @@ class PrincipalViewModel extends ReactiveViewModel {
     newValue['driverId'] = _appService.user.uid;
     newValue['status'] = '1';
     _firestoreUser.updateRideRequest(id: _rideRequest.uid, data: newValue);
-    await Future.delayed(const Duration(seconds: 10));
-    await drivingToStartPoint();
+    _driverRequestFlow = DriverRequestFlow.preDrivingToStartPoint;
+    notifyListeners();
+  }
+
+  void preDrivingToStartPoint(){
+    _driverRequestFlow = DriverRequestFlow.preDrivingToStartPoint;
+    notifyListeners();
+    drivingToStartPoint();
   }
 
   void startRidebyDriver() async {
@@ -832,6 +839,7 @@ enum DriverRideWidget {
 enum DriverRequestFlow {
   none,
   accept,
+  preDrivingToStartPoint,
   onStartPoint,
   inProgress,
   finished,

@@ -17,6 +17,7 @@ class SearchFieldBar extends ViewModelWidget<PrincipalViewModel> {
   @override
   Widget build(BuildContext context, PrincipalViewModel model) {
     var size = MediaQuery.of(context).size;
+    const sugerationSizeHeightSS = .02;
     const sugerationSizeHeightS = .07;
     const sugerationSizeHeightM = .15;
     return SizedBox(
@@ -95,9 +96,11 @@ class SearchFieldBar extends ViewModelWidget<PrincipalViewModel> {
                     children: [
                       Container(
                         height: MediaQuery.of(context).size.height *
-                            (model.placesOriginFound.length > 1
-                                ? sugerationSizeHeightM
-                                : sugerationSizeHeightS),
+                            (model.placesOriginFound.isEmpty
+                                ? sugerationSizeHeightSS
+                                : (model.placesOriginFound.length > 1
+                                    ? sugerationSizeHeightM
+                                    : sugerationSizeHeightS)),
                         width: double.infinity,
                         color: Colors.white,
                         child: ListView(
@@ -120,9 +123,11 @@ class SearchFieldBar extends ViewModelWidget<PrincipalViewModel> {
                     children: [
                       Container(
                         height: MediaQuery.of(context).size.height *
-                            (model.placesDestinationFound.length > 1
-                                ? sugerationSizeHeightM
-                                : sugerationSizeHeightS),
+                            (model.placesDestinationFound.isEmpty
+                                ? sugerationSizeHeightSS
+                                : (model.placesDestinationFound.length > 1
+                                    ? sugerationSizeHeightM
+                                    : sugerationSizeHeightS)),
                         width: double.infinity,
                         color: Colors.white,
                         child: ListView(
@@ -168,7 +173,7 @@ class _SugerationPlace extends StatelessWidget {
         child: Container(
           width: double.infinity,
           height: 50,
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.only(left: 8.0,top: 5.0,bottom: 3.0,right: 8.0),
           decoration: const BoxDecoration(
             border: Border(
               top: BorderSide(color: Colors.transparent, width: 0),

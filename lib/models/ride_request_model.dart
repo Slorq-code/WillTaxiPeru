@@ -10,23 +10,27 @@ class RideRequestModel {
   num _price;
   PositionRide _position;
   DestinationRide _destination;
+  DestinationRide _origin;
   DateRide _dateRide;
   String _route;
+  DateTime _dateRideT;
 
   // * TEMPORAL constructor for test
-  RideRequestModel({
-    String id,
-    String username,
-    String userId,
-    String driverId,
-    String status,
-    int secondsArrive,
-    num price,
-    PositionRide position,
-    DestinationRide destination,
-    DateRide dateRide,
-    String route,
-  })  : _uid = id,
+  RideRequestModel(
+      {String id,
+      String username,
+      String userId,
+      String driverId,
+      String status,
+      int secondsArrive,
+      num price,
+      PositionRide position,
+      DestinationRide destination,
+      DestinationRide origin,
+      DateRide dateRide,
+      String route,
+      DateTime dateRideT})
+      : _uid = id,
         _username = username,
         _userId = userId,
         _driverId = driverId,
@@ -35,8 +39,10 @@ class RideRequestModel {
         _price = price,
         _position = position,
         _destination = destination,
+        _origin = origin,
         _dateRide = dateRide,
-        _route = route;
+        _route = route,
+        _dateRideT = dateRideT;
 
   String get uid => _uid;
   String get username => _username;
@@ -47,6 +53,7 @@ class RideRequestModel {
   num get price => _price;
   PositionRide get position => _position;
   DestinationRide get destination => _destination;
+  DestinationRide get origin => _origin;
   DateRide get dateRide => _dateRide;
   String get route => _route;
 
@@ -58,9 +65,18 @@ class RideRequestModel {
     _driverId = data['driverId'];
     _status = data['status'];
     _price = data['price'];
-    _dateRide = data['dateRide'] != null ? DateRide.fromTimeStamp(data['dateRide']) : null;
-    _position = data['position'] != null ? PositionRide.fromJson(data['position']) : null;
-    _destination = data['destination'] != null ? DestinationRide.fromJson(data['destination']) : null;
+    _dateRide = data['dateRide'] != null
+        ? DateRide.fromTimeStamp(data['dateRide'])
+        : null;
+    _position = data['position'] != null
+        ? PositionRide.fromJson(data['position'])
+        : null;
+    _destination = data['destination'] != null
+        ? DestinationRide.fromJson(data['destination'])
+        : null;
+    _origin = data['origin'] != null
+        ? DestinationRide.fromJson(data['origin'])
+        : null;
     _route = data['route'];
     _secondsArrive = data['secondsArrive'];
   }
@@ -72,11 +88,39 @@ class RideRequestModel {
     _driverId = data['driverId'];
     _status = data['status'];
     _price = data['price'];
-    _dateRide = data['dateRide'] != null ? (data['dateRide'] is Timestamp ? DateRide.fromTimeStamp(data['dateRide']) : DateRide.fromJson(data['dateRide'])) : null;
-    _position = data['position'] != null ? PositionRide.fromJson(data['position']) : null;
-    _destination = data['destination'] != null ? DestinationRide.fromJson(data['destination']) : null;
+    _dateRide = data['dateRide'] != null
+        ? (data['dateRide'] is Timestamp
+            ? DateRide.fromTimeStamp(data['dateRide'])
+            : DateRide.fromJson(data['dateRide']))
+        : null;
+    _position = data['position'] != null
+        ? PositionRide.fromJson(data['position'])
+        : null;
+    _destination = data['destination'] != null
+        ? DestinationRide.fromJson(data['destination'])
+        : null;
+    _origin = data['origin'] != null
+        ? DestinationRide.fromJson(data['origin'])
+        : null;
     _route = data['route'];
     _secondsArrive = data['secondsArrive'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final data = <String, dynamic>{};
+    data['dateRide'] = _dateRideT;
+    data['destination'] = destination.toJson();
+    data['origin'] = origin.toJson();
+    data['driverId'] = driverId;
+    data['position'] = position.toJson();
+    data['price'] = price;
+    data['route'] = route;
+    data['secondsArrive'] = secondsArrive;
+    data['status'] = status;
+    data['uid'] = uid;
+    data['userId'] = userId;
+    data['username'] = username;
+    return data;
   }
 }
 
@@ -133,7 +177,9 @@ class DestinationRide {
   DestinationRide.fromJson(Map<String, dynamic> json) {
     name = json['name'];
     address = json['address'];
-    position = json['position'] != null ? PositionRide.fromJson(json['position']) : null;
+    position = json['position'] != null
+        ? PositionRide.fromJson(json['position'])
+        : null;
   }
 
   Map<String, dynamic> toJson() {

@@ -45,19 +45,17 @@ class FirestoreUser {
   }
 
   Future<bool> userExists(String uid) async {
-    var documentSnapshot =
-        await databaseReference.collection(collectionUser).doc(uid).get();
+    var documentSnapshot = await databaseReference.collection(collectionUser).doc(uid).get();
     return documentSnapshot.exists;
   }
 
   Future<UserModel> findUserById(String uid) async {
     try {
-      var documentSnapshot =
-          await databaseReference.collection(collectionUser).doc(uid).get();
+      var documentSnapshot = await databaseReference.collection(collectionUser).doc(uid).get();
 
       if (documentSnapshot.exists) {
         var data = documentSnapshot.data();
-        var user = UserModel.fromMap(data);
+        var user = UserModel.fromJson(data);
         user.uid = uid;
         return user;
       }
@@ -71,28 +69,28 @@ class FirestoreUser {
     yield* _fHelper.documentStreamById(
       path: collectionUser,
       id: uid,
-      builder: (data) => UserModel.fromMap(data),
+      builder: (data) => UserModel.fromJson(data),
     );
   }
 
   Stream<List<RideRequestModel>> findRides() async* {
     yield* _fHelper.collectionStream(
-      path: collectionRides,
-      builder: (data) => RideRequestModel.fromJson(data),
-      queryBuilder: (query) => query
-          .where(
-            'status',
-            isEqualTo: '0',
-          )
-          //.orderBy('index'),
-    );
+        path: collectionRides,
+        builder: (data,id) {
+            data['uid'] = id;
+            return RideRequestModel.fromJson(data);
+          },
+        queryBuilder: (query) => query.where(
+              'status',
+              isEqualTo: '0',
+            )
+        //.orderBy('index'),
+        );
   }
 
   Future<AppConfigModel> findAppConfig() async {
     try {
-      var documentSnapshot = await databaseReference
-          .collection(collectionAppConfig)
-          .get();
+      var documentSnapshot = await databaseReference.collection(collectionAppConfig).get();
 
       if (documentSnapshot.docs != null || documentSnapshot.docs.isNotEmpty) {
         return AppConfigModel.fromMap(documentSnapshot.docs.first.data());
@@ -101,5 +99,23 @@ class FirestoreUser {
       print(stacktrace);
     }
     return null;
+  }
+
+  void addDeviceToken({String token, String userId}) {
+    databaseReference.collection(collectionUser).doc(userId).update({'token': token});
+  }
+
+  void createRideRequest({
+    String id,
+    Map data
+  }) {
+    databaseReference.collection(collectionRides).doc(id).set(data);
+  }
+
+  void updateRideRequest({
+    String id,
+    Map data
+  }) {
+    databaseReference.collection(collectionRides).doc(id).update(data);
   }
 }

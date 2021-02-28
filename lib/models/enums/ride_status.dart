@@ -1,3 +1,5 @@
+const String initialState = '0';
+
 enum RideStatus {
   none,
   accepted,
@@ -5,4 +7,5 @@ enum RideStatus {
   inProgress,
   finished,
   canceled,
+  expired,
 }

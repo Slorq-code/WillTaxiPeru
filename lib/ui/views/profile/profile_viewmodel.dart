@@ -21,7 +21,6 @@ import 'package:taxiapp/services/token.dart';
 import 'package:taxiapp/extensions/string_extension.dart';
 
 class ProfileViewModel extends BaseViewModel {
-
   BuildContext context;
 
   ProfileViewModel(BuildContext context) {
@@ -120,7 +119,7 @@ class ProfileViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  void logout() async{
+  void logout() async {
     setBusy(true);
     await _authSocialNetwork.logout();
     _token.deleteToken();
@@ -128,9 +127,9 @@ class ProfileViewModel extends BaseViewModel {
     setBusy(false);
   }
 
-  void loadHistorialData() async{
+  void loadHistorialData() async {
     loadingUserHistorial = true;
-    try{
+    try {
       userHistorial = await _api.getAllUserHistorial(_authSocialNetwork.user.uid);
     } catch (err, stackTrace) {
       print(stackTrace);
@@ -139,9 +138,9 @@ class ProfileViewModel extends BaseViewModel {
     }
   }
 
-  void loadRideSummary() async{
+  void loadRideSummary() async {
     loadingRideSummary = true;
-    try{
+    try {
       var data = await _api.getRideSummary(_authSocialNetwork.user.uid);
       if (data != null && data is Map) {
         if (data.isNotEmpty) {
@@ -155,14 +154,14 @@ class ProfileViewModel extends BaseViewModel {
     }
   }
 
-  void loadAppConfig() async{
+  void loadAppConfig() async {
     _appConfigModel ??= await _firestoreUser.findAppConfig();
   }
 
-  void callCentral() async{
+  void callCentral() async {
     setBusy(true);
     var packageInfo = await Utils.getPackageInfo();
-    try{
+    try {
       await loadAppConfig();
       if (_appConfigModel != null) {
         await FlutterPhoneDirectCaller.callNumber(_appConfigModel.central);
@@ -184,13 +183,13 @@ class ProfileViewModel extends BaseViewModel {
     } else {
       isEditing = true;
     }
-    setBusy(false);   
+    setBusy(false);
   }
 
-  void saveProfileInformation() async{
+  void saveProfileInformation() async {
     setBusy(true);
     var packageInfo = await Utils.getPackageInfo();
-    try{
+    try {
       Alert(context: context).loading(Keys.loading.localize());
 
       var userInformationModified = false;
@@ -221,7 +220,6 @@ class ProfileViewModel extends BaseViewModel {
         ExtendedNavigator.root.pop();
         Alert(context: context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();
       }
-
     } catch (signUpError) {
       print(signUpError);
       ExtendedNavigator.root.pop();
@@ -232,6 +230,6 @@ class ProfileViewModel extends BaseViewModel {
   }
 
   bool get enableBtnContinue =>
-      (!Utils.isNullOrEmpty(phone) && Utils.isValidPhone(phone) && phone.trim().compareTo(user.phone.trim()) != 0)||
+      (!Utils.isNullOrEmpty(phone) && Utils.isValidPhone(phone) && phone.trim().compareTo(user.phone.trim()) != 0) ||
       (!Utils.isNullOrEmpty(password) && Utils.isValidPasswordLength(password));
 }

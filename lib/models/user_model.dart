@@ -11,10 +11,11 @@ class UserModel {
   UserType userType;
   AuthType authType;
   DriverInfoModel driverInfo;
+  String token;
 
-  UserModel({this.name, this.uid, this.phone, this.email, this.image, this.userType, this.authType, this.driverInfo});
+  UserModel({this.name, this.uid, this.phone, this.email, this.image, this.userType, this.authType, this.driverInfo,this.token});
 
-  UserModel.fromMap(Map<String, dynamic> data) {
+  UserModel.fromJson(Map<String, dynamic> data) {
     name = data['name'] ?? '';
     uid = data['uid'] ?? '';
     phone = data['phone'] ?? '';
@@ -26,6 +27,7 @@ class UserModel {
     if (driverInfoModel != null) {
       driverInfo = DriverInfoModel.fromMap(driverInfoModel);
     }
+    token = data['token'] ?? '';
   }
 
   UserModel copyWith({
@@ -36,6 +38,7 @@ class UserModel {
     String image,
     UserType userType,
     AuthType authType,
+    String token
   }) {
     return UserModel(
       name: name ?? this.name,
@@ -45,6 +48,7 @@ class UserModel {
       image: image ?? this.image,
       userType: userType ?? this.userType,
       authType: authType ?? this.authType,
+      token: token ?? this.token,
     );
   }
 }

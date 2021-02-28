@@ -21,7 +21,8 @@ class LocationService with ReactiveServiceMixin {
   StreamSubscription<Position> _positionSubscription;
 
   bool tracking;
-  final RxValue<UserLocation> _userLocation = RxValue<UserLocation>(initial: UserLocation());
+  final RxValue<UserLocation> _userLocation =
+      RxValue<UserLocation>(initial: UserLocation());
 
   UserLocation get location => _userLocation.value;
 
@@ -29,11 +30,20 @@ class LocationService with ReactiveServiceMixin {
     _userLocation.value = userLocation;
   }
 
-  void startTracking() async{
-    final locationOptions = const LocationOptions(accuracy: LocationAccuracy.high, distanceFilter: 10);
-    _positionSubscription = _geolocator.getPositionStream(locationOptions).listen((Position position) async {
+  void startTracking({Function callbackZoomMap}) async {
+    final locationOptions = const LocationOptions(
+        accuracy: LocationAccuracy.high, distanceFilter: 10);
+    _positionSubscription = _geolocator
+        .getPositionStream(locationOptions)
+        .listen((Position position) async {
       await updateLocation(LatLng(position.latitude, position.longitude));
+        callbackZoomMap();
     });
+  }
+
+  Future<Position> getCurrentPosition() async {
+    return _geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
   }
 
   void cancelTracking() {
@@ -44,13 +54,14 @@ class LocationService with ReactiveServiceMixin {
     var userLocationTemp = _userLocation.value.copyWith();
     userLocationTemp.location = newlocation;
     userLocationTemp.descriptionAddress = await getAddress(newlocation);
-    userLocationTemp.existLocation = true;
+    userLocationTemp.existLocation = true;    
     _userLocation.value = userLocationTemp;
   }
 
   Future<String> getAddress(LatLng position) async {
     try {
-      final response = await _api.getAddress({'lat': position.latitude, 'lng': position.longitude});
+      final response = await _api
+          .getAddress({'lat': position.latitude, 'lng': position.longitude});
       if (response['results'] != null && response['results'].isNotEmpty) {
         return response['results'][0]['formatted_address'];
       } else {

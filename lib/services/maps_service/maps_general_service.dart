@@ -5,7 +5,6 @@ import 'package:taxiapp/models/place.dart';
 import 'package:taxiapp/models/route_map.dart';
 import 'package:taxiapp/services/maps_service/google_maps_service.dart';
 import 'package:taxiapp/services/maps_service/map_box_service.dart';
-import 'package:maps_toolkit/maps_toolkit.dart' as mp;
 
 @lazySingleton
 class MapsGeneralService {

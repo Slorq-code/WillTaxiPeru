@@ -31,7 +31,9 @@ class FloatingSearch extends ViewModelWidget<PrincipalViewModel> {
                 flex: 4,
                 child: Padding(
                   padding: const EdgeInsets.all(15.0),
-                  child: model.user.userType == UserType.Client ? const _ClientSearch() : const _SwitchStatusDriver(),
+                  child: model.user.userType == UserType.Client
+                      ? const _ClientSearch()
+                      : const _SwitchStatusDriver(),
                 ),
               ),
               Expanded(
@@ -39,7 +41,8 @@ class FloatingSearch extends ViewModelWidget<PrincipalViewModel> {
                 child: Padding(
                   padding: const EdgeInsets.only(right: 10.0),
                   child: GestureDetector(
-                      onTap: () => ExtendedNavigator.root.push(Routes.profileViewRoute),
+                      onTap: () =>
+                          ExtendedNavigator.root.push(Routes.profileViewRoute),
                       child: AvatarProfile(
                         heroTag: model.user.uid,
                         height: 60,
@@ -78,11 +81,16 @@ class _SwitchStatusDriver extends ViewModelWidget<PrincipalViewModel> {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'Activar', // TODO: translate
-                style: TextStyle(fontWeight: FontWeight.w500, fontSize: 15),
+              Text(
+                Keys.activate.localize(),
+                style:
+                    const TextStyle(fontWeight: FontWeight.w500, fontSize: 15),
               ),
-              Transform.scale(scale: 0.8, child: CupertinoSwitch(value: model.enableServiceDriver, onChanged: model.updateServiceDriver)),
+              Transform.scale(
+                  scale: 0.8,
+                  child: CupertinoSwitch(
+                      value: model.enableServiceDriver,
+                      onChanged: model.updateServiceDriver)),
             ],
           ),
         ),
@@ -104,62 +112,89 @@ class _ClientSearch extends ViewModelWidget<PrincipalViewModel> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10.0),
         color: Colors.white,
-        boxShadow: [const BoxShadow(blurRadius: 2, spreadRadius: 2, offset: Offset(1, 2), color: Colors.black26)],
+        boxShadow: [
+          const BoxShadow(
+              blurRadius: 2,
+              spreadRadius: 2,
+              offset: Offset(1, 2),
+              color: Colors.black26)
+        ],
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                SvgPicture.asset('assets/icons/start_location.svg', height: 18.0),
-                SvgPicture.asset('assets/icons/line_rail.svg', height: 12.0),
-                SvgPicture.asset('assets/icons/destination_marker.svg', height: 18.0),
-              ],
-            ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(4.0),
+      child: GestureDetector(
+        onTap: () =>
+            model.updateCurrentSearchWidget(SearchWidget.searchFieldBar),
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
               child: Column(
                 mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text(model.userLocation.descriptionAddress ?? '', overflow: TextOverflow.ellipsis),
-                        ),
-                        _OriginButton(icon: 'assets/icons/locate_position.svg', onTap: () {}),
-                        _OriginButton(icon: 'assets/icons/move_in_map.svg', onTap: () {}),
-                      ],
-                    ),
-                  ),
-                  const Divider(color: Color(0xffe5e5e5), height: 0, thickness: 2.0),
-                  GestureDetector(
-                    onTap: () => model.updateCurrentSearchWidget(SearchWidget.searchFieldBar),
-                    child: Padding(
+                  SvgPicture.asset('assets/icons/start_location.svg',
+                      height: 18.0),
+                  SvgPicture.asset('assets/icons/line_rail.svg', height: 12.0),
+                  SvgPicture.asset('assets/icons/destination_marker.svg',
+                      height: 18.0),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 5.0),
                       child: Row(
                         children: [
                           Expanded(
-                            child: Text(model.destinationSelected != null ? model.destinationSelected.address : Keys.destination.localize(),
+                            child: Text(
+                                model.originSelected != null
+                                    ? model.originSelected.address
+                                    : Keys.origin.localize(),
+                                overflow: TextOverflow.ellipsis),
+                          ),
+                          _OriginButton(
+                              icon: 'assets/icons/locate_position.svg',
+                              onTap: () {
+                                model.setMyLocation(context);
+                              }),
+                          _OriginButton(
+                              icon: 'assets/icons/move_in_map.svg',
+                              onTap: () {
+                                model.selectOrigin = true;
+                                model.updateCurrentSearchWidget(SearchWidget.manualPickInMap);
+                              }),
+                        ],
+                      ),
+                    ),
+                    const Divider(
+                        color: Color(0xffe5e5e5), height: 0, thickness: 2.0),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                                model.destinationSelected != null
+                                    ? model.destinationSelected.address
+                                    : Keys.destination.localize(),
                                 overflow: TextOverflow.ellipsis),
                           ),
                         ],
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

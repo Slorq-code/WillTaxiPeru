@@ -13,7 +13,7 @@ class ManualPickInMap extends ViewModelWidget<PrincipalViewModel> {
   @override
   Widget build(BuildContext context, PrincipalViewModel model) {
     var size = MediaQuery.of(context).size;
-
+    var isOrigin = model.selectOrigin;
     return SizedBox(
       height: size.height,
       width: size.width,
@@ -28,7 +28,10 @@ class ManualPickInMap extends ViewModelWidget<PrincipalViewModel> {
                 title: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 3.0),
                     decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: const Color(0xfff0f0f0)),
-                    child: Text(Keys.new_destination.localize(), style: const TextStyle(color: Colors.black))),
+                    child: Text( isOrigin ? 
+                                    Keys.new_origin.localize():
+                                    Keys.new_destination.localize(), 
+                          style: const TextStyle(color: Colors.black))),
                 centerTitle: true,
                 leading: PlatformBackButton(onPressed: () => model.onBack(), isDark: true),
                 backgroundColor: Colors.transparent,
@@ -49,7 +52,10 @@ class ManualPickInMap extends ViewModelWidget<PrincipalViewModel> {
                     child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 3.0),
                         decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), color: Colors.black),
-                        child: Text(Keys.locate_your_destination.localize(),
+                        child: Text(
+                            isOrigin
+                                ?Keys.locate_your_origin.localize()
+                                :Keys.locate_your_destination.localize(),
                             textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500)))),
                 SvgPicture.asset('assets/icons/move_in_map.svg', height: 30.0),
               ],
@@ -66,7 +72,9 @@ class ManualPickInMap extends ViewModelWidget<PrincipalViewModel> {
                   padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 40.0),
                   child: ActionButtonCustom(
                     action: () => model.confirmManualPick(model.centralLocation, context),
-                    label: Keys.confirm_destination.localize(),
+                    label: isOrigin
+                            ? (Keys.confirm_origin.localize())
+                            :Keys.confirm_destination.localize(),
                     fontSize: 16,
                   ),
                 ),

@@ -94,6 +94,7 @@ class _HomeMap extends ViewModelWidget<PrincipalViewModel> {
                   onCameraMove: (cameraPosition) {
                     model.updateCurrentLocation(cameraPosition.target);
                   },
+                  
                 ),
                 const Positioned(
                   top: 0,

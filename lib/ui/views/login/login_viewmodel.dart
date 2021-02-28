@@ -39,7 +39,7 @@ class LoginViewModel extends BaseViewModel {
     await validateButtonAppleSignIn();
   }
 
-  void validateButtonAppleSignIn() async{
+  void validateButtonAppleSignIn() async {
     if (Platform.isIOS) {
       var iosInfo = await DeviceInfoPlugin().iosInfo;
       var version = iosInfo.systemVersion;

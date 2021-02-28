@@ -12,7 +12,6 @@ import 'package:taxiapp/utils/utils.dart';
 import 'package:taxiapp/extensions/string_extension.dart';
 
 class ResetPasswordViewModel extends BaseViewModel {
-
   BuildContext context;
 
   ResetPasswordViewModel(BuildContext context) {
@@ -20,25 +19,23 @@ class ResetPasswordViewModel extends BaseViewModel {
   }
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  String _email;
 
   // * Getters
   GlobalKey<FormState> get formKey => _formKey;
-
-  // * Functions
-
-  final AuthSocialNetwork _authSocialNetwork = locator<AuthSocialNetwork>();
-
-  void initial() async{
-    email = (Utils.isNullOrEmpty(_authSocialNetwork.user.email) ? '' : _authSocialNetwork.user.email);
-  }
-
-  String _email;
-
   String get email => _email;
-
   set email(email) {
     _email = email;
     notifyListeners();
+  }
+
+  // * Functions
+  final AuthSocialNetwork _authSocialNetwork = locator<AuthSocialNetwork>();
+
+  void initial() async {
+    email = (Utils.isNullOrEmpty(_authSocialNetwork.user.email)
+        ? ''
+        : _authSocialNetwork.user.email);
   }
 
   bool get enableBtnContinue {
@@ -47,37 +44,38 @@ class ResetPasswordViewModel extends BaseViewModel {
 
   void resetPassword() async {
     setBusy(true);
-
     var packageInfo = await Utils.getPackageInfo();
     try {
-      
       Alert(context: context).loading(Keys.loading.localize());
-
       await _authSocialNetwork.sendPasswordResetEmail(email.toString().trim());
-
       ExtendedNavigator.root.pop();
-
-      Alert(context: context, title: packageInfo.appName, label: Keys.instructions_reset_password.localize()).alertCallBack(() { 
+      Alert(
+              context: context,
+              title: packageInfo.appName,
+              label: Keys.instructions_reset_password.localize())
+          .alertCallBack(() {
         ExtendedNavigator.root.push(Routes.loginViewRoute);
       });
-      
-    } catch(signUpError) {
-
+    } catch (signUpError) {
       ExtendedNavigator.root.pop();
-
-      if(signUpError is FirebaseAuthException) {
+      if (signUpError is FirebaseAuthException) {
         print(signUpError.code);
         if (signUpError.code == 'user-not-found') {
-          Alert(context: context, title: packageInfo.appName, label: Keys.email_not_registered.localize()).alertMessage();
+          Alert(
+                  context: context,
+                  title: packageInfo.appName,
+                  label: Keys.email_not_registered.localize())
+              .alertMessage();
         } else {
-          Alert(context: context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();
+          Alert(
+                  context: context,
+                  title: packageInfo.appName,
+                  label: Keys.request_not_processed_correctly.localize())
+              .alertMessage();
         }
-
       }
-
     } finally {
       setBusy(false);
     }
   }
-
 }

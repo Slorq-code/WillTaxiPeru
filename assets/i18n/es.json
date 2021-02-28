@@ -65,5 +65,6 @@
 	"activate":"Activar",
 	"your_destination":"¡Has llegado a tu destino!",
 	"starting_point":"¡Has llegado al punto de partida!",
-	"arrival_at_the_starting": "Llegada al punto de partida"
+	"arrival_at_the_starting": "Llegada al punto de partida",
+	"driver_has_arrived": "El conductor ha llegado!"
 }

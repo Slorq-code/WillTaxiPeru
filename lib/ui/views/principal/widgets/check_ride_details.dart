@@ -302,7 +302,9 @@ class _FloatingMessage extends ViewModelWidget<PrincipalViewModel> {
                         vertical: 2.0, horizontal: 20.0),
                     child: Text(
                       model.rideStatus == RideStatus.waitingDriver
-                          ? Keys.comming_ride_message.localize()
+                          ? (model.driverArrived
+                              ? Keys.driver_has_arrived.localize()
+                              : Keys.comming_ride_message.localize())
                           : Keys.enjoy_your_trip.localize(),
                       textAlign: TextAlign.center,
                     ),

@@ -98,6 +98,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   DateTime _destinationArrive;
   bool _searchingDriver = false;
   RideStatus _rideStatus = RideStatus.none;
+  bool driverArrived = false;
   DriverRequestFlow _driverRequestFlow = DriverRequestFlow.none;
   bool _enableServiceDriver = false;
   bool hasNewRideRequest = false;
@@ -192,8 +193,9 @@ class PrincipalViewModel extends ReactiveViewModel {
       startRide(_datos);
     } else if (_notificationType == TRIP_FINISH_NOTIFICATION) {
       arriveToDestination(_datos);
+    } else if (_notificationType == DRIVER_AT_LOCATION_NOTIFICATION) {
+      driverToArrived(_datos);
     }
-    //DRIVER_AT_LOCATION_NOTIFICATION
   }
 
   // * PUSH NOTIFICATION METHODS
@@ -644,6 +646,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   // * Mockup implementation
   void driverFound(Map<String, dynamic> data) async {
     _searchingDriver = false;
+    driverArrived = false;
     _rideStatus = RideStatus.waitingDriver;
     _driverForRide = await _firestoreUser.findUserById(data['driverId']);
     _rideRequest = RideRequestModel(
@@ -655,6 +658,12 @@ class PrincipalViewModel extends ReactiveViewModel {
     );
     notifyListeners();
     // startRide();
+  }
+
+  void driverToArrived(Map<String, dynamic> data) async {
+    // _rideStatus = RideStatus.driverArrived;
+    driverArrived = true;
+    notifyListeners();
   }
 
   void startRide(Map<String, dynamic> data) async {
@@ -674,7 +683,6 @@ class PrincipalViewModel extends ReactiveViewModel {
     notifyListeners();
   }
 
-  // * Mockup implementation
   void arriveToDestination(Map<String, dynamic> data) async {
     _rideStatus = RideStatus.finished;
     notifyListeners();
@@ -693,6 +701,7 @@ class PrincipalViewModel extends ReactiveViewModel {
     _destinationSelected = null;
     _originSelected = null;
     _destinationClientSelected=null;
+    driverArrived = false;
     cleanRoute();
     updateCurrentRideWidget(RideWidget.clear);
   }

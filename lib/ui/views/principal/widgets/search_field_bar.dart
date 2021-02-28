@@ -17,6 +17,8 @@ class SearchFieldBar extends ViewModelWidget<PrincipalViewModel> {
   @override
   Widget build(BuildContext context, PrincipalViewModel model) {
     var size = MediaQuery.of(context).size;
+    const sugerationSizeHeightS = .07;
+    const sugerationSizeHeightM = .15;
     return SizedBox(
       width: size.width,
       height: size.height - 25,
@@ -89,39 +91,53 @@ class SearchFieldBar extends ViewModelWidget<PrincipalViewModel> {
                   ),
                 ),
                 if (model.selectOrigin)
-                  Container(
-                    height: MediaQuery.of(context).size.height * .3,
-                    width: double.infinity,
-                    color: Colors.white,
-                    child: ListView(
-                      children: [
-                        ...model.placesOriginFound.map(
-                          (place) => _SugerationPlace(
-                            place: place,
-                            onTap: () => model.makeRoute(place, context,
-                                isOriginSelected: true),
-                          ),
+                  Column(
+                    children: [
+                      Container(
+                        height: MediaQuery.of(context).size.height *
+                            (model.placesOriginFound.length > 1
+                                ? sugerationSizeHeightM
+                                : sugerationSizeHeightS),
+                        width: double.infinity,
+                        color: Colors.white,
+                        child: ListView(
+                          children: [
+                            ...model.placesOriginFound.map(
+                              (place) => _SugerationPlace(
+                                place: place,
+                                onTap: () => model.makeRoute(place, context,
+                                    isOriginSelected: true),
+                              ),
+                            )
+                          ],
                         ),
-                        const _PickInMapOption(),
-                      ],
-                    ),
+                      ),
+                      const _PickInMapOption()
+                    ],
                   ),
                 if (model.selectDestination)
-                  Container(
-                    height: MediaQuery.of(context).size.height * .3,
-                    width: double.infinity,
-                    color: Colors.white,
-                    child: ListView(
-                      children: [
-                        ...model.placesDestinationFound.map(
-                          (place) => _SugerationPlace(
-                            place: place,
-                            onTap: () => model.makeRoute(place, context),
-                          ),
+                  Column(
+                    children: [
+                      Container(
+                        height: MediaQuery.of(context).size.height *
+                            (model.placesDestinationFound.length > 1
+                                ? sugerationSizeHeightM
+                                : sugerationSizeHeightS),
+                        width: double.infinity,
+                        color: Colors.white,
+                        child: ListView(
+                          children: [
+                            ...model.placesDestinationFound.map(
+                              (place) => _SugerationPlace(
+                                place: place,
+                                onTap: () => model.makeRoute(place, context),
+                              ),
+                            ),
+                          ],
                         ),
-                        const _PickInMapOption(),
-                      ],
-                    ),
+                      ),
+                      const _PickInMapOption()
+                    ],
                   ),
               ],
             ),
@@ -237,9 +253,8 @@ class _OriginLocationField extends HookViewModelWidget<PrincipalViewModel> {
   @override
   Widget buildViewModelWidget(BuildContext context, PrincipalViewModel model) {
     useEffect(() {
-      model.searchOriginController.text = model.originSelected != null
-          ? model.originSelected.address
-          : '';
+      model.searchOriginController.text =
+          model.originSelected != null ? model.originSelected.address : '';
       return null;
     }, [model.originSelected]);
     return Padding(

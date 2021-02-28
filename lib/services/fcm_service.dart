@@ -10,7 +10,7 @@ class FCMService {
   Function _handleNotificationData;
 
   Future<void> initializeFCM(Function handleNotificationData) async {
-    _saveDeviceToken();
+    await _saveDeviceToken();
     _handleNotificationData = handleNotificationData;
     _fcm.configure(
       onMessage: handleOnMessage,

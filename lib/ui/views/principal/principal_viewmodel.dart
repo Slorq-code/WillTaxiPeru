@@ -176,7 +176,7 @@ class PrincipalViewModel extends ReactiveViewModel {
     await _fcmService.initializeFCM(_handleNotificationData);
 
     var _tokenFCM = await _fcmService.getTokenFCM();
-    if (_appService.user.token != _tokenFCM) {
+    if ( _tokenFCM.isNotEmpty && _appService.user.token != _tokenFCM ) {
       await _firestoreUser.addDeviceToken(
           token: _tokenFCM, userId: _appService.user.uid);
     }

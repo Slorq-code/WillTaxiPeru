@@ -248,7 +248,7 @@ class _RideInformationSection extends ViewModelWidget<PrincipalViewModel> {
                               child:
                                   model.rideStatus != RideStatus.waitingDriver
                                       ? ActionButtonCustom(
-                                          action: () => model.confirmRide(),
+                                          action: () => model.confirmRide(context),
                                           label: Keys.continue_label.localize())
                                       : ActionButtonCustom(
                                           color: Colors.black,

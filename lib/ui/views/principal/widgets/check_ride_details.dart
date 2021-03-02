@@ -245,15 +245,15 @@ class _RideInformationSection extends ViewModelWidget<PrincipalViewModel> {
                             Padding(
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 70.0, vertical: 10.0),
-                              child:
-                                  model.rideStatus != RideStatus.waitingDriver
-                                      ? ActionButtonCustom(
-                                          action: () => model.confirmRide(context),
-                                          label: Keys.continue_label.localize())
-                                      : ActionButtonCustom(
-                                          color: Colors.black,
-                                          action: () => model.cancelRide(),
-                                          label: Keys.cancel.localize()),
+                              child: model.rideStatus !=
+                                      RideStatus.waitingDriver
+                                  ? ActionButtonCustom(
+                                      action: () => model.confirmRide(context),
+                                      label: Keys.continue_label.localize())
+                                  : ActionButtonCustom(
+                                      color: Colors.black,
+                                      action: () => model.cancelRide(),
+                                      label: Keys.cancel.localize()),
                             ),
                         ],
                       ),
@@ -323,7 +323,9 @@ class _FloatingMessage extends ViewModelWidget<PrincipalViewModel> {
                             child: Padding(
                               padding: const EdgeInsets.only(top: 2.0),
                               child: Text(
-                                '${(model.rideRequest.secondsArrive ~/ 60).toString()}\'',
+                                (model.rideRequest != null
+                                    ? ('${(model.rideRequest.secondsArrive ~/ 60).toString()}\'')
+                                    : ''),
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold),
                               ),

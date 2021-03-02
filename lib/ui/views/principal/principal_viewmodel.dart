@@ -179,7 +179,9 @@ class PrincipalViewModel extends ReactiveViewModel {
     await _fcmService.initializeFCM(_handleNotificationData);
 
     var _tokenFCM = await _fcmService.getTokenFCM();
-    if (_tokenFCM.isNotEmpty && _appService.user.token != _tokenFCM) {
+    if (_tokenFCM != null &&
+        _tokenFCM.isNotEmpty &&
+        _appService.user.token != _tokenFCM) {
       await _firestoreUser.addDeviceToken(
           token: _tokenFCM, userId: _appService.user.uid);
     }
@@ -606,9 +608,10 @@ class PrincipalViewModel extends ReactiveViewModel {
         userId: _appService.user.uid,
         username: _appService.user.name);
 
-    _firestoreUser.createRideRequest(data: _rideRequestModel.toJson());
+    var requestId = await _firestoreUser.createRideRequest(
+        data: _rideRequestModel.toJson());
 
-    startRequestTimer(context: context);
+    startRequestTimer(context: context, requestId: requestId);
   }
 
   void startRequestTimer({String requestId, BuildContext context}) {
@@ -624,11 +627,21 @@ class PrincipalViewModel extends ReactiveViewModel {
           _rideStatus = RideStatus.none;
           _searchingDriver = false;
           _showSelectVehicle();
-          _periodicTimer.cancel();
+          updateRequest(requestId: requestId, status: '6');
           notifyListeners();
         });
       }
+      _periodicTimer.cancel();
     });
+  }
+
+  void updateRequest({String requestId, String status, String driverId}) {
+    final newValue = <String, dynamic>{};
+    newValue['status'] = '6';
+    if (driverId != null) {
+      newValue['driverId'] = driverId;
+    }
+    _firestoreUser.updateRideRequest(id: requestId, data: newValue);
   }
 
   void driverFound(Map<String, dynamic> data) async {
@@ -662,9 +675,9 @@ class PrincipalViewModel extends ReactiveViewModel {
   }
 
   Future<void> cancelRide() async {
+    _destinationArrive = _getDestinationArrive();
     _rideRequest = null;
     _driverForRide = null;
-    _destinationArrive = _getDestinationArrive();
     notifyListeners();
   }
 
@@ -773,10 +786,10 @@ class PrincipalViewModel extends ReactiveViewModel {
     _driverRequestFlow = DriverRequestFlow.accept;
     notifyListeners();
     //update ride
-    final newValue = <String, dynamic>{};
-    newValue['driverId'] = _appService.user.uid;
-    newValue['status'] = '1';
-    _firestoreUser.updateRideRequest(id: _rideRequest.uid, data: newValue);
+    updateRequest(
+        requestId: _rideRequest.uid,
+        status: '1',
+        driverId: _appService.user.uid);
 
     _driverRequestFlow = DriverRequestFlow.preDrivingToStartPoint;
     notifyListeners();
@@ -815,34 +828,26 @@ class PrincipalViewModel extends ReactiveViewModel {
 
   void startRidebyDriver() async {
     _driverRequestFlow = DriverRequestFlow.inProgress;
-    final newValue = <String, dynamic>{};
-    newValue['status'] = '3';
-    _firestoreUser.updateRideRequest(id: _rideRequest.uid, data: newValue);
+    updateRequest(requestId: _rideRequest.uid, status: '3');
     _driverRequestFlow = DriverRequestFlow.finished;
     notifyListeners();
   }
 
   void cancelRideRequestByDriver() {
+    updateRequest(
+        requestId: _rideRequest.uid, status: initialState, driverId: '');
     _driverRequestFlow = DriverRequestFlow.none;
-    final newValue = <String, dynamic>{};
-    newValue['driverId'] = '';
-    newValue['status'] = initialState;
-    _firestoreUser.updateRideRequest(id: _rideRequest.uid, data: newValue);
     notifyListeners();
   }
 
   Future<void> drivingToStartPoint() async {
-    final newValue = <String, dynamic>{};
-    newValue['status'] = '2';
-    _firestoreUser.updateRideRequest(id: _rideRequest.uid, data: newValue);
     _driverRequestFlow = DriverRequestFlow.onStartPoint;
+    updateRequest(requestId: _rideRequest.uid, status: '2');
     notifyListeners();
   }
 
   void finishRideByDriver() {
-    final newValue = <String, dynamic>{};
-    newValue['status'] = '4';
-    _firestoreUser.updateRideRequest(id: _rideRequest.uid, data: newValue);
+    updateRequest(requestId: _rideRequest.uid, status: '4');
     notifyListeners();
     onBack();
   }

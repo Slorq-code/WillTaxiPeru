@@ -60,7 +60,7 @@ class MapsGeneralService {
     } else {
       bounds = LatLngBounds(southwest: source, northeast: destination);
     }
-    final cameraUpdate = CameraUpdate.newLatLngBounds(bounds, 80);
+    final cameraUpdate = CameraUpdate.newLatLngBounds(bounds, 150);
 
     return checkCameraLocation(cameraUpdate, mapController);
   }

@@ -637,7 +637,7 @@ class PrincipalViewModel extends ReactiveViewModel {
 
   void updateRequest({String requestId, String status, String driverId}) {
     final newValue = <String, dynamic>{};
-    newValue['status'] = '6';
+    newValue['status'] = status;
     if (driverId != null) {
       newValue['driverId'] = driverId;
     }
@@ -829,7 +829,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   void startRidebyDriver() async {
     _driverRequestFlow = DriverRequestFlow.inProgress;
     updateRequest(requestId: _rideRequest.uid, status: '3');
-    _driverRequestFlow = DriverRequestFlow.finished;
+    // _driverRequestFlow = DriverRequestFlow.finished;
     notifyListeners();
   }
 
@@ -846,9 +846,11 @@ class PrincipalViewModel extends ReactiveViewModel {
     notifyListeners();
   }
 
-  void finishRideByDriver() {
-    updateRequest(requestId: _rideRequest.uid, status: '4');
+  void finishRideByDriver() async{
+    _driverRequestFlow = DriverRequestFlow.finished;
     notifyListeners();
+    updateRequest(requestId: _rideRequest.uid, status: '4');
+    await Future.delayed(const Duration(seconds: 1));
     onBack();
   }
 }

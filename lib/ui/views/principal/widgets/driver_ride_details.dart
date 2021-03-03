@@ -225,8 +225,9 @@ class _RideInformationSection extends ViewModelWidget<PrincipalViewModel> {
                                                     model.startRidebyDriver(),
                                                 label: Keys.start.localize(),
                                               )
-                                            : model.driverRequestFlow ==
-                                                    DriverRequestFlow.finished
+                                            : 
+                                            model.driverRequestFlow ==
+                                                    DriverRequestFlow.inProgress
                                                 ? ActionButtonCustom(
                                                     action: () => model
                                                         .finishRideByDriver(),

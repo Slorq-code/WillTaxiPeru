@@ -360,9 +360,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   }
 
   void updateZoomMap() async {
-    final position = CameraPosition(target: userLocation.location, zoom: 16.5);
-    await _mapController
-        .animateCamera(CameraUpdate.newCameraPosition(position));
+    updateZoom(userLocation.location);
   }
 
   void updateCurrentLocation(LatLng center) async {
@@ -718,10 +716,7 @@ class PrincipalViewModel extends ReactiveViewModel {
     await _mapController.setMapStyle(await getMapTheme());
     notifyListeners();
     if (userLocation.location != null) {
-      final position =
-          CameraPosition(target: userLocation.location, zoom: 16.5);
-      await _mapController
-          .animateCamera(CameraUpdate.newCameraPosition(position));
+      updateZoom(userLocation.location);
     }
   }
 
@@ -738,10 +733,7 @@ class PrincipalViewModel extends ReactiveViewModel {
     confirmManualPick(
         LatLng(myposition.latitude, myposition.longitude), context);
     if (userLocation.location != null) {
-      final position =
-          CameraPosition(target: userLocation.location, zoom: 16.5);
-      await _mapController
-          .animateCamera(CameraUpdate.newCameraPosition(position));
+      updateZoom(userLocation.location);
       notifyListeners();
     }
   }
@@ -846,12 +838,33 @@ class PrincipalViewModel extends ReactiveViewModel {
     notifyListeners();
   }
 
-  void finishRideByDriver() async{
+  void finishRideByDriver() async {
     _driverRequestFlow = DriverRequestFlow.finished;
     notifyListeners();
     updateRequest(requestId: _rideRequest.uid, status: '4');
     await Future.delayed(const Duration(seconds: 1));
     onBack();
+  }
+
+  void updateZoom(LatLng location) async {
+    final position = CameraPosition(target: location, zoom: 16.5);
+    await _mapController
+        .animateCamera(CameraUpdate.newCameraPosition(position));
+  }
+
+  void changeManualPickInMap() {
+    if (selectOrigin) {
+      if(_placesOriginFound != null && _placesOriginFound.isNotEmpty){
+        updateZoom(_placesOriginFound[0].latLng);
+      }
+    }else{
+      if(_placesDestinationFound != null && _placesDestinationFound.isNotEmpty){
+        updateZoom(_placesDestinationFound[0].latLng);
+      }else if(_placesOriginFound != null && _placesOriginFound.isNotEmpty){
+        updateZoom(_placesOriginFound[0].latLng);
+      }
+    }
+    updateCurrentSearchWidget(SearchWidget.manualPickInMap);
   }
 }
 

@@ -220,8 +220,7 @@ class _PickInMapOption extends ViewModelWidget<PrincipalViewModel> {
   @override
   Widget build(BuildContext context, PrincipalViewModel model) {
     return GestureDetector(
-      onTap: () =>
-          model.updateCurrentSearchWidget(SearchWidget.manualPickInMap),
+      onTap: () => model.changeManualPickInMap(),
       child: Container(
         height: 50,
         decoration: const BoxDecoration(

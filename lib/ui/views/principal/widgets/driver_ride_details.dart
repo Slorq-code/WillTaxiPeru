@@ -198,9 +198,8 @@ class _RideInformationSection extends ViewModelWidget<PrincipalViewModel> {
                             child: model.driverRequestFlow ==
                                     DriverRequestFlow.none
                                 ? ActionButtonCustom(
-                                    action: () => model.acceptRideRequest(
-                                      context
-                                    ),
+                                    action: () =>
+                                        model.acceptRideRequest(context),
                                     label: Keys.continue_label.localize())
                                 : model.driverRequestFlow ==
                                         DriverRequestFlow.accept
@@ -214,8 +213,10 @@ class _RideInformationSection extends ViewModelWidget<PrincipalViewModel> {
                                                 .preDrivingToStartPoint
                                         ? ActionButtonCustom(
                                             action: () =>
-                                                model.preDrivingToStartPoint(context),
-                                            label: Keys.arrival_at_the_starting.localize(),
+                                                model.preDrivingToStartPoint(
+                                                    context),
+                                            label: Keys.arrival_at_the_starting
+                                                .localize(),
                                           )
                                         : model.driverRequestFlow ==
                                                 DriverRequestFlow.onStartPoint
@@ -224,8 +225,9 @@ class _RideInformationSection extends ViewModelWidget<PrincipalViewModel> {
                                                     model.startRidebyDriver(),
                                                 label: Keys.start.localize(),
                                               )
-                                            : model.driverRequestFlow ==
-                                                    DriverRequestFlow.finished
+                                            : 
+                                            model.driverRequestFlow ==
+                                                    DriverRequestFlow.inProgress
                                                 ? ActionButtonCustom(
                                                     action: () => model
                                                         .finishRideByDriver(),
@@ -303,7 +305,9 @@ class _FloatingMessage extends ViewModelWidget<PrincipalViewModel> {
                             child: Padding(
                               padding: const EdgeInsets.only(top: 2.0),
                               child: Text(
-                                '${(model.rideRequest.secondsArrive ~/ 60).toString()}\'',
+                                (model.rideRequest != null
+                                    ? ('${(model.rideRequest.secondsArrive ~/ 60).toString()}\'')
+                                    : ''),
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold),
                               ),

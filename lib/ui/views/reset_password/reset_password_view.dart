@@ -2,13 +2,11 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:stacked/stacked.dart';
-
 import 'package:flutter/material.dart';
+import 'package:stacked/stacked.dart';
 import 'package:stacked_hooks/stacked_hooks.dart';
 import 'package:taxiapp/localization/keys.dart';
 import 'package:taxiapp/theme/pallete_color.dart';
-
 import 'package:taxiapp/extensions/string_extension.dart';
 import 'package:taxiapp/ui/views/reset_password/reset_password_viewmodel.dart';
 import 'package:taxiapp/ui/widgets/buttons/platform_back_button.dart';
@@ -56,7 +54,7 @@ class _BodyRegister extends HookViewModelWidget<ResetPasswordViewModel> {
   @override
   Widget buildViewModelWidget(
       BuildContext context, ResetPasswordViewModel model) {
-    final emailController = useTextEditingController();
+    final emailController = useTextEditingController(text:model.email);
     return Container(
       width: double.infinity,
       height: double.infinity,

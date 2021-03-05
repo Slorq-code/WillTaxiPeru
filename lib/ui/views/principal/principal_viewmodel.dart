@@ -4,12 +4,16 @@ import 'package:auto_route/auto_route.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:taxiapp/extensions/string_extension.dart';
 
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:package_info/package_info.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:stacked/stacked.dart';
+import 'package:taxiapp/localization/keys.dart';
 import 'package:taxiapp/services/api.dart';
+import 'package:taxiapp/utils/alerts.dart';
 import 'package:taxiapp/utils/utils.dart';
 import 'package:taxiapp/app/locator.dart';
 import 'package:taxiapp/app/router.gr.dart';
@@ -60,7 +64,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   Place _originSelected;
   Place _destinationSelected;
   Place _destinationClientSelected;
-  
+
   Map<String, Polyline> _polylines = {};
   Map<String, Marker> _markers = {};
   List<Place> _placesDestinationFound = [];
@@ -106,7 +110,6 @@ class PrincipalViewModel extends ReactiveViewModel {
   StreamSubscription<UserModel> _driverStream;
   StreamSubscription<QuerySnapshot> requestStream;
   Timer _periodicTimer;
-  int _timeCounter = 0;
   List<RideRequestModel> _listRideRequest = [];
   AppConfigModel _appConfigModel;
   bool _selectOrigin = false;
@@ -114,7 +117,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   final TextEditingController _searchOriginController = TextEditingController();
   final TextEditingController _searchDestinationController =
       TextEditingController();
-
+  PackageInfo packageInfo;
   UserLocation currentLocation;
 
   // * Getters
@@ -130,7 +133,7 @@ class PrincipalViewModel extends ReactiveViewModel {
       _searchDestinationController;
 
   bool get selectOrigin => _selectOrigin;
-  set selectOrigin(value) =>_selectOrigin  = value;
+  set selectOrigin(value) => _selectOrigin = value;
   Place get originSelected => _originSelected;
   List<Place> get placesOriginFound => _placesOriginFound;
   TextEditingController get searchOriginController => _searchOriginController;
@@ -140,7 +143,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   Widget get currentSearchWidget => _currentSearchWidget;
   Widget get currentRideWidget => _currentRideWidget;
   Widget get currentDriverRideWidget => _currentDriverRideWidget;
-  
+
   RideRequestModel get rideRequest => _rideRequest;
 
   Map<String, Polyline> get polylines => _polylines;
@@ -151,12 +154,12 @@ class PrincipalViewModel extends ReactiveViewModel {
   bool get isSearchingDriver => _searchingDriver;
   UserModel get driverForRide => _driverForRide;
   UserModel get clientForRide => _clientForRide;
-  
+
   RideStatus get rideStatus => _rideStatus;
   DriverRequestFlow get driverRequestFlow => _driverRequestFlow;
   bool get enableServiceDriver => _enableServiceDriver;
   List<RideRequestModel> get listRideRequest => _listRideRequest;
-  
+
   @override
   List<ReactiveServiceMixin> get reactiveServices =>
       [_locationService, _appService];
@@ -166,7 +169,7 @@ class PrincipalViewModel extends ReactiveViewModel {
     _currentDriverRideWidget = _switchDriverRideWidgets[0];
     if (await Geolocator().isLocationServiceEnabled()) {
       _state = PrincipalState.accessGPSEnable;
-      await _locationService.startTracking(callbackZoomMap:updateZoomMap);
+      await _locationService.startTracking(callbackZoomMap: updateZoomMap);
       _searchOriginController.text = userLocation.descriptionAddress;
     } else {
       _state = PrincipalState.accessGPSDisable;
@@ -176,10 +179,13 @@ class PrincipalViewModel extends ReactiveViewModel {
     await _fcmService.initializeFCM(_handleNotificationData);
 
     var _tokenFCM = await _fcmService.getTokenFCM();
-    if (_appService.user.token != _tokenFCM) {
+    if (_tokenFCM != null &&
+        _tokenFCM.isNotEmpty &&
+        _appService.user.token != _tokenFCM) {
       await _firestoreUser.addDeviceToken(
           token: _tokenFCM, userId: _appService.user.uid);
     }
+    packageInfo = await Utils.getPackageInfo();
     notifyListeners();
   }
 
@@ -278,21 +284,6 @@ class PrincipalViewModel extends ReactiveViewModel {
     });
   }
 
-  void percentageCounter({String requestId, BuildContext context}) {
-    _periodicTimer = Timer.periodic(const Duration(seconds: 1), (time) {
-      _timeCounter = _timeCounter + 1;
-      print('====== Timer: $_timeCounter');
-      if (_timeCounter == 100) {
-        _timeCounter = 0;
-        _rideStatus = RideStatus.expired;
-        // TODO: implemente update ride request expired
-        time.cancel();
-        requestStream.cancel();
-      }
-      notifyListeners();
-    });
-  }
-
   void _stopListeningToDriverStream() => _driverStream.cancel();
 
   @override
@@ -343,7 +334,7 @@ class PrincipalViewModel extends ReactiveViewModel {
     switch (status) {
       case PermissionStatus.granted:
         _state = PrincipalState.accessGPSEnable;
-        await _locationService.startTracking(callbackZoomMap:updateZoomMap);
+        await _locationService.startTracking(callbackZoomMap: updateZoomMap);
         _searchOriginController.text = userLocation.descriptionAddress;
         notifyListeners();
         break;
@@ -367,15 +358,12 @@ class PrincipalViewModel extends ReactiveViewModel {
     _mapController = controller;
     await _mapController.setMapStyle(await getMapTheme());
   }
-  void updateZoomMap()async{
-    final position =
-            CameraPosition(target:userLocation.location, zoom: 16.5);
-        await _mapController
-            .animateCamera(CameraUpdate.newCameraPosition(position));
-        // notifyListeners();
+
+  void updateZoomMap() async {
+    updateZoom(userLocation.location);
   }
 
-  void updateCurrentLocation(LatLng center)async {
+  void updateCurrentLocation(LatLng center) async {
     _centralLocation = center;
   }
 
@@ -425,9 +413,6 @@ class PrincipalViewModel extends ReactiveViewModel {
 
   void confirmManualPick(LatLng position, BuildContext context) async {
     final positionPlace = await _locationService.getAddress(position);
-    // if (selectOrigin){
-    //   updateCurrentSearchWidget(SearchWidget.searchFieldBar);
-    // }
     makeRoute(Place(latLng: position, address: positionPlace), context,
         isOriginSelected: selectOrigin);
   }
@@ -466,15 +451,11 @@ class PrincipalViewModel extends ReactiveViewModel {
     final currentPolylines = _polylines;
     currentPolylines['my_destination_route'] = myDestinationRoute;
 
-    // final iconInicio = await getMarkerInicioIcon(route.timeNeeded.value.toInt());
-
-    // final iconDestino = await getMarkerDestinoIcon(place.name, route.distance.value.toDouble());
-
-    var iconStart = 'assets/icons/start_location.svg'; 
+    var iconStart = 'assets/icons/start_location.svg';
     var iconDestination = 'assets/icons/destination_marker.svg';
     var iconVehicle = 'assets/icons/profile_avatar.svg';
-    
-    if( destinationClienteSelected !=null ){
+
+    if (destinationClienteSelected != null) {
       iconDestination = iconStart;
       iconStart = iconVehicle;
     }
@@ -483,34 +464,18 @@ class PrincipalViewModel extends ReactiveViewModel {
       anchor: const Offset(0.5, 0.5),
       markerId: MarkerId('start'),
       position: routePoints[0],
-      icon: await bitmapDescriptorFromSvgAsset(
-          context,   iconStart, 25),
-      // infoWindow: InfoWindow(
-      //   title: Keys.my_location.localize(),
-      //   snippet: Keys.route_time_with_minutes.localize(['${(route.timeNeeded.value / 60).floor()}']),
-      // ),
+      icon: await bitmapDescriptorFromSvgAsset(context, iconStart, 25),
     );
 
     final markerDestination = Marker(
       markerId: MarkerId('destination'),
       position: routePoints.last,
-      icon: await bitmapDescriptorFromSvgAsset(
-          context, iconDestination, 25),
-      // anchor: const Offset(0.1, 0.90),
-      // infoWindow: InfoWindow(
-      //   title: place.name,
-      //   snippet: 'Distance: ${route.distance.text}',
-      // ),
+      icon: await bitmapDescriptorFromSvgAsset(context, iconDestination, 25),
     );
 
     final newMarkers = {..._markers};
     newMarkers['start'] = markerStart;
     newMarkers['destination'] = markerDestination;
-
-    // await Future.delayed(const Duration(milliseconds: 300)).then((value) {
-    //   _mapController.showMarkerInfoWindow(MarkerId('start'));
-    //   _mapController.showMarkerInfoWindow(MarkerId('destination'));
-    // });
 
     _polylines = currentPolylines;
     _markers = newMarkers;
@@ -605,7 +570,7 @@ class PrincipalViewModel extends ReactiveViewModel {
     _searchingDriver = false; //optional
   }
 
-  Future<void> confirmRide() async {
+  Future<void> confirmRide(BuildContext context) async {
     _searchingDriver = true;
     notifyListeners();
     //Save Ride
@@ -640,10 +605,43 @@ class PrincipalViewModel extends ReactiveViewModel {
         id: '0',
         userId: _appService.user.uid,
         username: _appService.user.name);
-    _firestoreUser.createRideRequest(data: _rideRequestModel.toJson());
+
+    var requestId = await _firestoreUser.createRideRequest(
+        data: _rideRequestModel.toJson());
+
+    startRequestTimer(context: context, requestId: requestId);
   }
 
-  // * Mockup implementation
+  void startRequestTimer({String requestId, BuildContext context}) {
+    var timeConfigured =
+        _appConfigModel != null ? _appConfigModel.timeWaitingDriver : 60;
+    _periodicTimer = Timer.periodic(Duration(seconds: timeConfigured), (time) {
+      if (_searchingDriver == true) {
+        Alert(
+                context: context,
+                title: packageInfo.appName,
+                label: Keys.no_nearby_driver_found.localize())
+            .alertCallBack(() {
+          _rideStatus = RideStatus.none;
+          _searchingDriver = false;
+          _showSelectVehicle();
+          updateRequest(requestId: requestId, status: '6');
+          notifyListeners();
+        });
+      }
+      _periodicTimer.cancel();
+    });
+  }
+
+  void updateRequest({String requestId, String status, String driverId}) {
+    final newValue = <String, dynamic>{};
+    newValue['status'] = status;
+    if (driverId != null) {
+      newValue['driverId'] = driverId;
+    }
+    _firestoreUser.updateRideRequest(id: requestId, data: newValue);
+  }
+
   void driverFound(Map<String, dynamic> data) async {
     _searchingDriver = false;
     driverArrived = false;
@@ -661,7 +659,6 @@ class PrincipalViewModel extends ReactiveViewModel {
   }
 
   void driverToArrived(Map<String, dynamic> data) async {
-    // _rideStatus = RideStatus.driverArrived;
     driverArrived = true;
     notifyListeners();
   }
@@ -675,11 +672,10 @@ class PrincipalViewModel extends ReactiveViewModel {
     }
   }
 
-  // * Mockup implementation
   Future<void> cancelRide() async {
+    _destinationArrive = _getDestinationArrive();
     _rideRequest = null;
     _driverForRide = null;
-    _destinationArrive = _getDestinationArrive();
     notifyListeners();
   }
 
@@ -700,7 +696,7 @@ class PrincipalViewModel extends ReactiveViewModel {
     _driverForRide = null;
     _destinationSelected = null;
     _originSelected = null;
-    _destinationClientSelected=null;
+    _destinationClientSelected = null;
     driverArrived = false;
     cleanRoute();
     updateCurrentRideWidget(RideWidget.clear);
@@ -720,10 +716,7 @@ class PrincipalViewModel extends ReactiveViewModel {
     await _mapController.setMapStyle(await getMapTheme());
     notifyListeners();
     if (userLocation.location != null) {
-      final position =
-          CameraPosition(target: userLocation.location, zoom: 16.5);
-      await _mapController
-          .animateCamera(CameraUpdate.newCameraPosition(position));
+      updateZoom(userLocation.location);
     }
   }
 
@@ -740,10 +733,7 @@ class PrincipalViewModel extends ReactiveViewModel {
     confirmManualPick(
         LatLng(myposition.latitude, myposition.longitude), context);
     if (userLocation.location != null) {
-      final position =
-          CameraPosition(target: userLocation.location, zoom: 16.5);
-      await _mapController
-          .animateCamera(CameraUpdate.newCameraPosition(position));
+      updateZoom(userLocation.location);
       notifyListeners();
     }
   }
@@ -788,79 +778,93 @@ class PrincipalViewModel extends ReactiveViewModel {
     _driverRequestFlow = DriverRequestFlow.accept;
     notifyListeners();
     //update ride
-    final newValue = <String, dynamic>{};
-    newValue['driverId'] = _appService.user.uid;
-    newValue['status'] = '1';
-    _firestoreUser.updateRideRequest(id: _rideRequest.uid, data: newValue);
+    updateRequest(
+        requestId: _rideRequest.uid,
+        status: '1',
+        driverId: _appService.user.uid);
 
     _driverRequestFlow = DriverRequestFlow.preDrivingToStartPoint;
     notifyListeners();
 
     _destinationClientSelected = _destinationSelected;
-    
+
     _destinationSelected = _originSelected;
     _originSelected = Place(
-        latLng: LatLng(userLocation.location.latitude,
-            userLocation.location.longitude),
+        latLng: LatLng(
+            userLocation.location.latitude, userLocation.location.longitude),
         address: userLocation.descriptionAddress,
         name: userLocation.descriptionAddress);
-    await makeRoute(_originSelected, context, 
-                    isOriginSelected: true, isDriver: true);
-    
+    await makeRoute(_originSelected, context,
+        isOriginSelected: true, isDriver: true);
+
     await makeRoute(_destinationSelected, context, isDriver: true);
 
     updateCurrentDriverRideWidget(DriverRideWidget.driverRideDetails);
     notifyListeners();
   }
 
-  void preDrivingToStartPoint(BuildContext context) async{
+  void preDrivingToStartPoint(BuildContext context) async {
     _driverRequestFlow = DriverRequestFlow.preDrivingToStartPoint;
     notifyListeners();
 
-    _originSelected =_destinationSelected;
-    _destinationSelected =_destinationClientSelected;
+    _originSelected = _destinationSelected;
+    _destinationSelected = _destinationClientSelected;
     _destinationClientSelected = null;
-    
-    await makeRoute(_originSelected, context, 
-                    isOriginSelected: true, isDriver: true);
-    
+
+    await makeRoute(_originSelected, context,
+        isOriginSelected: true, isDriver: true);
+
     await makeRoute(_destinationSelected, context, isDriver: true);
     await drivingToStartPoint();
   }
 
   void startRidebyDriver() async {
     _driverRequestFlow = DriverRequestFlow.inProgress;
-    final newValue = <String, dynamic>{};
-    newValue['status'] = '3';
-    _firestoreUser.updateRideRequest(id: _rideRequest.uid, data: newValue);
-    _driverRequestFlow = DriverRequestFlow.finished;
+    updateRequest(requestId: _rideRequest.uid, status: '3');
+    // _driverRequestFlow = DriverRequestFlow.finished;
     notifyListeners();
   }
 
   void cancelRideRequestByDriver() {
+    updateRequest(
+        requestId: _rideRequest.uid, status: initialState, driverId: '');
     _driverRequestFlow = DriverRequestFlow.none;
-    final newValue = <String, dynamic>{};
-    newValue['driverId'] = '';
-    newValue['status'] = initialState;
-    _firestoreUser.updateRideRequest(id: _rideRequest.uid, data: newValue);
     notifyListeners();
   }
 
-  // * Mockup implementation
   Future<void> drivingToStartPoint() async {
-    final newValue = <String, dynamic>{};
-    newValue['status'] = '2';
-    _firestoreUser.updateRideRequest(id: _rideRequest.uid, data: newValue);
     _driverRequestFlow = DriverRequestFlow.onStartPoint;
+    updateRequest(requestId: _rideRequest.uid, status: '2');
     notifyListeners();
   }
 
-  void finishRideByDriver() {
-    final newValue = <String, dynamic>{};
-    newValue['status'] = '4';
-    _firestoreUser.updateRideRequest(id: _rideRequest.uid, data: newValue);
+  void finishRideByDriver() async {
+    _driverRequestFlow = DriverRequestFlow.finished;
     notifyListeners();
+    updateRequest(requestId: _rideRequest.uid, status: '4');
+    await Future.delayed(const Duration(seconds: 1));
     onBack();
+  }
+
+  void updateZoom(LatLng location) async {
+    final position = CameraPosition(target: location, zoom: 16.5);
+    await _mapController
+        .animateCamera(CameraUpdate.newCameraPosition(position));
+  }
+
+  void changeManualPickInMap() {
+    if (selectOrigin) {
+      if(_placesOriginFound != null && _placesOriginFound.isNotEmpty){
+        updateZoom(_placesOriginFound[0].latLng);
+      }
+    }else{
+      if(_placesDestinationFound != null && _placesDestinationFound.isNotEmpty){
+        updateZoom(_placesDestinationFound[0].latLng);
+      }else if(_placesOriginFound != null && _placesOriginFound.isNotEmpty){
+        updateZoom(_placesOriginFound[0].latLng);
+      }
+    }
+    updateCurrentSearchWidget(SearchWidget.manualPickInMap);
   }
 }
 

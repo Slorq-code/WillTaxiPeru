@@ -15,7 +15,7 @@ class PrincipalView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<PrincipalViewModel>.reactive(
-      viewModelBuilder: () => PrincipalViewModel(),
+      viewModelBuilder: () => PrincipalViewModel(context),
       onModelReady: (model) => model.initialize(),
       builder: (context, model, child) => SafeArea(
         child: Scaffold(

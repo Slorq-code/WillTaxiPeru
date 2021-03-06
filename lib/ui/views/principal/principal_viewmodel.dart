@@ -43,6 +43,11 @@ import 'package:taxiapp/ui/views/principal/widgets/selection_vehicle.dart';
 import 'package:taxiapp/ui/widgets/helpers.dart';
 
 class PrincipalViewModel extends ReactiveViewModel {
+  BuildContext context;
+  PrincipalViewModel(BuildContext context) {
+    this.context = context;
+  }
+
   final AppService _appService = locator<AppService>();
   final LocationService _locationService = locator<LocationService>();
   final MapsGeneralService _mapsService = locator<MapsGeneralService>();
@@ -89,6 +94,9 @@ class PrincipalViewModel extends ReactiveViewModel {
   static const REQUEST_ACCEPTED_NOTIFICATION = 'REQUEST_ACCEPTED';
   static const TRIP_STARTED_NOTIFICATION = 'TRIP_STARTED';
   static const TRIP_FINISH_NOTIFICATION = 'TRIP_FINISH';
+  static const TRIP_CANCEL_NOTIFICATION = 'TRIP_CANCEL';
+  static const TRIP_CANCEL_DRIVER_NOTIFICATION = 'TRIP_CANCEL_DRIVER';
+
   GoogleMapController _mapController;
   Widget _currentSearchWidget = const SizedBox();
   Widget _currentRideWidget = const SizedBox();
@@ -194,13 +202,17 @@ class PrincipalViewModel extends ReactiveViewModel {
     var _datos = Map<String, dynamic>.from(data['data']);
     var _notificationType = _datos['type'];
     if (_notificationType == REQUEST_ACCEPTED_NOTIFICATION) {
-      driverFound(_datos);
+      push_driverFound(_datos);
     } else if (_notificationType == TRIP_STARTED_NOTIFICATION) {
-      startRide(_datos);
+      push_startRide(_datos);
     } else if (_notificationType == TRIP_FINISH_NOTIFICATION) {
-      arriveToDestination(_datos);
+      push_arriveToDestination(_datos);
     } else if (_notificationType == DRIVER_AT_LOCATION_NOTIFICATION) {
-      driverToArrived(_datos);
+      push_driverToArrived(_datos);
+    } else if (_notificationType == TRIP_CANCEL_NOTIFICATION) {
+      push_tripCanceledByCustomer(_datos);
+    }else if (_notificationType == TRIP_CANCEL_DRIVER_NOTIFICATION) {
+      push_tripCanceledByDriver(_datos);
     }
   }
 
@@ -210,11 +222,15 @@ class PrincipalViewModel extends ReactiveViewModel {
     var _datos = Map<String, dynamic>.from(data['data']);
     var _notificationType = _datos['type'];
     if (_notificationType == REQUEST_ACCEPTED_NOTIFICATION) {
-      driverFound(_datos);
+      push_driverFound(_datos);
     } else if (_notificationType == TRIP_STARTED_NOTIFICATION) {
-      startRide(_datos);
+      push_startRide(_datos);
     } else if (_notificationType == TRIP_FINISH_NOTIFICATION) {
-      arriveToDestination(_datos);
+      push_arriveToDestination(_datos);
+    } else if (_notificationType == DRIVER_AT_LOCATION_NOTIFICATION) {
+      push_driverToArrived(_datos);
+    } else if (_notificationType == TRIP_CANCEL_NOTIFICATION) {
+      push_tripCanceledByCustomer(_datos);
     }
   }
 
@@ -552,66 +568,6 @@ class PrincipalViewModel extends ReactiveViewModel {
   DateTime _getDestinationArrive() =>
       DateTime.now().add(Duration(seconds: _routeMap.timeNeeded.value.toInt()));
 
-  Future<void> getPriceRide() async {
-    setBusyForObject(ridePrice, true);
-
-    var serviceDistance = _routeMap.distance.value;
-    var serviceType = Utils.serviceType(_vehicleSelected);
-    var serviceTime = _routeMap.timeNeeded.value;
-    var _params = <String, dynamic>{};
-    _params['distance'] = serviceDistance;
-    _params['typeService'] = serviceType;
-    _params['time'] = serviceTime;
-
-    await _api
-        .getPricing(_params)
-        .then((value) => (ridePrice = value['price'] ?? 0));
-    setBusyForObject(ridePrice, false);
-    _searchingDriver = false; //optional
-  }
-
-  Future<void> confirmRide(BuildContext context) async {
-    _searchingDriver = true;
-    notifyListeners();
-    //Save Ride
-    var _destination = DestinationRide(
-        address: _destinationSelected.address,
-        name: _destinationSelected.name,
-        position: PositionRide(
-            latitude: _destinationSelected.latLng.latitude,
-            longitude: _destinationSelected.latLng.longitude));
-
-    var _origin = DestinationRide(
-        address: originSelected.address,
-        name: originSelected.name,
-        position: PositionRide(
-            latitude: originSelected.latLng.latitude,
-            longitude: originSelected.latLng.longitude));
-
-    var _position = PositionRide(
-        latitude: userLocation.location.latitude,
-        longitude: userLocation.location.longitude);
-
-    var _rideRequestModel = RideRequestModel(
-        dateRideT: DateTime.now(),
-        destination: _destination,
-        origin: _origin,
-        driverId: '',
-        position: _position,
-        price: ridePrice,
-        route: 'route',
-        secondsArrive: _routeMap.timeNeeded.value,
-        status: initialState,
-        id: '0',
-        userId: _appService.user.uid,
-        username: _appService.user.name);
-
-    var requestId = await _firestoreUser.createRideRequest(
-        data: _rideRequestModel.toJson());
-
-    startRequestTimer(context: context, requestId: requestId);
-  }
-
   void startRequestTimer({String requestId, BuildContext context}) {
     var timeConfigured =
         _appConfigModel != null ? _appConfigModel.timeWaitingDriver : 60;
@@ -631,75 +587,6 @@ class PrincipalViewModel extends ReactiveViewModel {
       }
       _periodicTimer.cancel();
     });
-  }
-
-  void updateRequest({String requestId, String status, String driverId}) {
-    final newValue = <String, dynamic>{};
-    newValue['status'] = status;
-    if (driverId != null) {
-      newValue['driverId'] = driverId;
-    }
-    _firestoreUser.updateRideRequest(id: requestId, data: newValue);
-  }
-
-  void driverFound(Map<String, dynamic> data) async {
-    _searchingDriver = false;
-    driverArrived = false;
-    _rideStatus = RideStatus.waitingDriver;
-    _driverForRide = await _firestoreUser.findUserById(data['driverId']);
-    _rideRequest = RideRequestModel(
-      driverId: data['driverId'],
-      secondsArrive: int.parse(data['secondsArrive']),
-      id: data['uid'],
-      userId: data['userId'],
-      price: double.parse(data['price']),
-    );
-    notifyListeners();
-    // startRide();
-  }
-
-  void driverToArrived(Map<String, dynamic> data) async {
-    driverArrived = true;
-    notifyListeners();
-  }
-
-  void startRide(Map<String, dynamic> data) async {
-    if (_rideRequest != null) {
-      _rideStatus = RideStatus.inProgress;
-      // updateCurrentSearchWidget(SearchWidget.floatingSearch);
-      // arriveToDestination();
-      notifyListeners();
-    }
-  }
-
-  Future<void> cancelRide() async {
-    _destinationArrive = _getDestinationArrive();
-    _rideRequest = null;
-    _driverForRide = null;
-    notifyListeners();
-  }
-
-  void arriveToDestination(Map<String, dynamic> data) async {
-    _rideStatus = RideStatus.finished;
-    notifyListeners();
-  }
-
-  void cleanRoute() {
-    _polylines.clear();
-    _markers.clear();
-    notifyListeners();
-  }
-
-  void finishRide() {
-    _rideStatus = RideStatus.none;
-    _rideRequest = null;
-    _driverForRide = null;
-    _destinationSelected = null;
-    _originSelected = null;
-    _destinationClientSelected = null;
-    driverArrived = false;
-    cleanRoute();
-    updateCurrentRideWidget(RideWidget.clear);
   }
 
   void logout() async {
@@ -748,6 +635,163 @@ class PrincipalViewModel extends ReactiveViewModel {
     notifyListeners();
   }
 
+  void updateZoom(LatLng location) async {
+    final position = CameraPosition(target: location, zoom: 16.5);
+    await _mapController
+        .animateCamera(CameraUpdate.newCameraPosition(position));
+  }
+
+  void changeManualPickInMap() {
+    if (selectOrigin) {
+      if (_placesOriginFound != null && _placesOriginFound.isNotEmpty) {
+        updateZoom(_placesOriginFound[0].latLng);
+      }
+    } else {
+      if (_placesDestinationFound != null &&
+          _placesDestinationFound.isNotEmpty) {
+        updateZoom(_placesDestinationFound[0].latLng);
+      } else if (_placesOriginFound != null && _placesOriginFound.isNotEmpty) {
+        updateZoom(_placesOriginFound[0].latLng);
+      }
+    }
+    updateCurrentSearchWidget(SearchWidget.manualPickInMap);
+  }
+
+  Future<void> getPriceRide() async {
+    setBusyForObject(ridePrice, true);
+    var serviceDistance = _routeMap.distance.value;
+    var serviceType = Utils.serviceType(_vehicleSelected);
+    var serviceTime = _routeMap.timeNeeded.value;
+    var _params = <String, dynamic>{};
+    _params['distance'] = serviceDistance;
+    _params['typeService'] = serviceType;
+    _params['time'] = serviceTime;
+
+    await _api
+        .getPricing(_params)
+        .then((value) => (ridePrice = value['price'] ?? 0));
+    setBusyForObject(ridePrice, false);
+  }
+
+  Future<void> confirmRide(BuildContext context) async {
+    _searchingDriver = true;
+    notifyListeners();
+    //Save Ride
+    var _destination = DestinationRide(
+        address: _destinationSelected.address,
+        name: _destinationSelected.name,
+        position: PositionRide(
+            latitude: _destinationSelected.latLng.latitude,
+            longitude: _destinationSelected.latLng.longitude));
+
+    var _origin = DestinationRide(
+        address: originSelected.address,
+        name: originSelected.name,
+        position: PositionRide(
+            latitude: originSelected.latLng.latitude,
+            longitude: originSelected.latLng.longitude));
+
+    var _position = PositionRide(
+        latitude: userLocation.location.latitude,
+        longitude: userLocation.location.longitude);
+
+    var _rideRequestModel = RideRequestModel(
+        dateRideT: DateTime.now(),
+        destination: _destination,
+        origin: _origin,
+        driverId: '',
+        position: _position,
+        price: ridePrice,
+        route: 'route',
+        secondsArrive: _routeMap.timeNeeded.value,
+        status: initialState,
+        id: '0',
+        userId: _appService.user.uid,
+        username: _appService.user.name);
+
+    var requestId = await _firestoreUser.createRideRequest(
+        data: _rideRequestModel.toJson());
+
+    startRequestTimer(context: context, requestId: requestId);
+  }
+
+  Future<void> cancelRide() async {
+    if (_rideRequest != null && _rideRequest.uid.isNotEmpty) {
+      updateRequest(requestId: _rideRequest.uid, status: '5');
+    }
+    ridePrice = 0;
+    _rideStatus = RideStatus.none;
+    _rideRequest = null;
+    _driverForRide = null;
+    _searchingDriver = false;
+    driverArrived = false;
+    onBack();
+    notifyListeners();
+  }
+
+  void updateRequest({String requestId, String status, String driverId}) {
+    final newValue = <String, dynamic>{};
+    newValue['status'] = status;
+    if (driverId != null) {
+      newValue['driverId'] = driverId;
+    }
+    _firestoreUser.updateRideRequest(id: requestId, data: newValue);
+  }
+
+  void push_driverFound(Map<String, dynamic> data) async {
+    _searchingDriver = false;
+    driverArrived = false;
+    _rideStatus = RideStatus.waitingDriver;
+    _driverForRide = await _firestoreUser.findUserById(data['driverId']);
+    _rideRequest = RideRequestModel(
+      driverId: data['driverId'],
+      secondsArrive: int.parse(data['secondsArrive']),
+      id: data['uid'],
+      userId: data['userId'],
+      price: double.parse(data['price']),
+    );
+    notifyListeners();
+    // startRide();
+  }
+
+  void push_driverToArrived(Map<String, dynamic> data) async {
+    driverArrived = true;
+    notifyListeners();
+  }
+
+  void push_startRide(Map<String, dynamic> data) async {
+    if (_rideRequest != null) {
+      _rideStatus = RideStatus.inProgress;
+      // updateCurrentSearchWidget(SearchWidget.floatingSearch);
+      // arriveToDestination();
+      notifyListeners();
+    }
+  }
+
+  void push_arriveToDestination(Map<String, dynamic> data) async {
+    _rideStatus = RideStatus.finished;
+    notifyListeners();
+  }
+
+  void cleanRoute() {
+    _polylines.clear();
+    _markers.clear();
+    notifyListeners();
+  }
+
+  void finishRide() {
+    _rideStatus = RideStatus.none;
+    _rideRequest = null;
+    _driverForRide = null;
+    _destinationSelected = null;
+    _originSelected = null;
+    _destinationClientSelected = null;
+    driverArrived = false;
+    cleanRoute();
+    updateCurrentRideWidget(RideWidget.clear);
+  }
+
+  /*Driver*/
   void selectRideRequest(
       RideRequestModel rideRequest, BuildContext context) async {
     _rideRequest = rideRequest;
@@ -782,9 +826,6 @@ class PrincipalViewModel extends ReactiveViewModel {
         requestId: _rideRequest.uid,
         status: '1',
         driverId: _appService.user.uid);
-
-    _driverRequestFlow = DriverRequestFlow.preDrivingToStartPoint;
-    notifyListeners();
 
     _destinationClientSelected = _destinationSelected;
 
@@ -821,14 +862,21 @@ class PrincipalViewModel extends ReactiveViewModel {
   void startRidebyDriver() async {
     _driverRequestFlow = DriverRequestFlow.inProgress;
     updateRequest(requestId: _rideRequest.uid, status: '3');
-    // _driverRequestFlow = DriverRequestFlow.finished;
     notifyListeners();
   }
 
   void cancelRideRequestByDriver() {
     updateRequest(
-        requestId: _rideRequest.uid, status: initialState, driverId: '');
-    _driverRequestFlow = DriverRequestFlow.none;
+        requestId: _rideRequest.uid, status: '7');
+     _rideRequest = null;
+      _clientForRide = null;
+      _destinationSelected = null;
+      _originSelected = null;
+      _destinationArrive = DateTime.now();
+      _destinationClientSelected = null;
+      _driverRequestFlow = DriverRequestFlow.none;
+      onBack();
+      notifyListeners();
     notifyListeners();
   }
 
@@ -846,25 +894,36 @@ class PrincipalViewModel extends ReactiveViewModel {
     onBack();
   }
 
-  void updateZoom(LatLng location) async {
-    final position = CameraPosition(target: location, zoom: 16.5);
-    await _mapController
-        .animateCamera(CameraUpdate.newCameraPosition(position));
+  void push_tripCanceledByCustomer(Map<String, dynamic> data) async {
+    Alert(
+            context: context,
+            title: packageInfo.appName,
+            label: Keys.the_customer_has_canceled.localize())
+        .alertCallBack(() {
+      _rideRequest = null;
+      _clientForRide = null;
+      _destinationSelected = null;
+      _originSelected = null;
+      _destinationArrive = DateTime.now();
+      _destinationClientSelected = null;
+      _driverRequestFlow = DriverRequestFlow.none;
+      onBack();
+      notifyListeners();
+    });
   }
 
-  void changeManualPickInMap() {
-    if (selectOrigin) {
-      if(_placesOriginFound != null && _placesOriginFound.isNotEmpty){
-        updateZoom(_placesOriginFound[0].latLng);
-      }
-    }else{
-      if(_placesDestinationFound != null && _placesDestinationFound.isNotEmpty){
-        updateZoom(_placesDestinationFound[0].latLng);
-      }else if(_placesOriginFound != null && _placesOriginFound.isNotEmpty){
-        updateZoom(_placesOriginFound[0].latLng);
-      }
-    }
-    updateCurrentSearchWidget(SearchWidget.manualPickInMap);
+  void push_tripCanceledByDriver(Map<String, dynamic> data) async {
+    Alert(
+            context: context,
+            title: packageInfo.appName,
+            label: Keys.the_driver_has_canceled.localize())
+        .alertCallBack(() {
+      _rideStatus = RideStatus.none;
+      _searchingDriver = false;
+      _showSelectVehicle();
+      notifyListeners();
+
+    });
   }
 }
 

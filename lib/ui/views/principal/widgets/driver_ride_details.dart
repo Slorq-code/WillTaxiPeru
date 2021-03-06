@@ -203,11 +203,25 @@ class _RideInformationSection extends ViewModelWidget<PrincipalViewModel> {
                                     label: Keys.continue_label.localize())
                                 : model.driverRequestFlow ==
                                         DriverRequestFlow.accept
-                                    ? ActionButtonCustom(
-                                        action: () =>
-                                            model.cancelRideRequestByDriver(),
-                                        label: Keys.cancel.localize(),
-                                        color: Colors.black)
+                                    ? Column(
+                                        children: [
+                                          ActionButtonCustom(
+                                            action: () =>
+                                                model.preDrivingToStartPoint(
+                                                    context),
+                                            label: Keys.arrival_at_the_starting
+                                                .localize(),
+                                          ),
+                                          const SizedBox(
+                                            height: 5,
+                                          ),
+                                          ActionButtonCustom(
+                                              action: () => model
+                                                  .cancelRideRequestByDriver(),
+                                              label: Keys.cancel.localize(),
+                                              color: Colors.black)
+                                        ],
+                                      )
                                     : model.driverRequestFlow ==
                                             DriverRequestFlow
                                                 .preDrivingToStartPoint
@@ -225,8 +239,7 @@ class _RideInformationSection extends ViewModelWidget<PrincipalViewModel> {
                                                     model.startRidebyDriver(),
                                                 label: Keys.start.localize(),
                                               )
-                                            : 
-                                            model.driverRequestFlow ==
+                                            : model.driverRequestFlow ==
                                                     DriverRequestFlow.inProgress
                                                 ? ActionButtonCustom(
                                                     action: () => model

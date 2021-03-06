@@ -67,5 +67,7 @@
 	"starting_point":"¡You have reached the starting point!",
 	"arrival_at_the_starting": "Arrival at the starting point",
 	"driver_has_arrived": "The driver has arrived!",
-	"no_nearby_driver_found":"No nearby driver found"
+	"no_nearby_driver_found":"No nearby driver found",
+	"the_customer_has_canceled": "The customer has canceled!",
+	"the_driver_has_canceled": "The driver has canceled!"
 }

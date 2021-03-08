@@ -60,9 +60,6 @@ class PrincipalViewModel extends ReactiveViewModel {
 
   String notificationType = '';
   StreamSubscription ridesSubscription;
-  // final bool _mapReady = false;
-  // final bool _drawRoute = false;
-  // final bool _followLocation = false;
   bool apiSelected = false;
   LatLng _centralLocation;
   String addressCurrentPosition;
@@ -128,7 +125,6 @@ class PrincipalViewModel extends ReactiveViewModel {
   PackageInfo packageInfo;
   UserLocation currentLocation;
 
-  // * Getters
   UserModel get user => _appService.user;
   PrincipalState get state => _state;
   UserLocation get userLocation => _locationService.location;
@@ -211,12 +207,11 @@ class PrincipalViewModel extends ReactiveViewModel {
       push_driverToArrived(_datos);
     } else if (_notificationType == TRIP_CANCEL_NOTIFICATION) {
       push_tripCanceledByCustomer(_datos);
-    }else if (_notificationType == TRIP_CANCEL_DRIVER_NOTIFICATION) {
+    } else if (_notificationType == TRIP_CANCEL_DRIVER_NOTIFICATION) {
       push_tripCanceledByDriver(_datos);
     }
   }
 
-  // * PUSH NOTIFICATION METHODS
   Future handleOnMessage(Map<String, dynamic> data) async {
     hasNewRideRequest = true;
     var _datos = Map<String, dynamic>.from(data['data']);
@@ -377,6 +372,23 @@ class PrincipalViewModel extends ReactiveViewModel {
 
   void updateZoomMap() async {
     updateZoom(userLocation.location);
+    if (_rideStatus == RideStatus.inProgress) {
+      _originSelected = Place(
+          latLng: LatLng(
+              userLocation.location.latitude, userLocation.location.longitude),
+          address: userLocation.descriptionAddress,
+          name: userLocation.descriptionAddress);
+      await makeRoute(_destinationSelected, context);
+    } else if (_driverRequestFlow == DriverRequestFlow.accept ||
+        _driverRequestFlow == DriverRequestFlow.preDrivingToStartPoint ||
+        _driverRequestFlow == DriverRequestFlow.inProgress) {
+      _originSelected = Place(
+          latLng: LatLng(
+              userLocation.location.latitude, userLocation.location.longitude),
+          address: userLocation.descriptionAddress,
+          name: userLocation.descriptionAddress);
+      await makeRoute(_destinationSelected, context, isDriver: true);
+    }
   }
 
   void updateCurrentLocation(LatLng center) async {
@@ -431,6 +443,19 @@ class PrincipalViewModel extends ReactiveViewModel {
     final positionPlace = await _locationService.getAddress(position);
     makeRoute(Place(latLng: position, address: positionPlace), context,
         isOriginSelected: selectOrigin);
+    _showSelectVehicle();
+  }
+
+  void setOrigin(Place place, BuildContext context) {
+    makeRoute(place, context, isOriginSelected: true);
+    if (_destinationSelected != null) {
+        _showSelectVehicle();
+      }
+  }
+
+  void setDestination(Place place, BuildContext context) {
+    makeRoute(place, context);
+    _showSelectVehicle();
   }
 
   void makeRoute(Place place, BuildContext context,
@@ -439,12 +464,7 @@ class PrincipalViewModel extends ReactiveViewModel {
       _selectOrigin = false;
       _originSelected = place;
       notifyListeners();
-      // _locationService.location = UserLocation(
-      //     existLocation: true,
-      //     descriptionAddress: place.address,
-      //     location: place.latLng);
       if (_destinationSelected == null) {
-        // show camera to current position
         await _mapsService.updateCameraSpecificLocationZoom(
             userLocation.location, 16, _mapController);
         return;
@@ -496,7 +516,6 @@ class PrincipalViewModel extends ReactiveViewModel {
     _polylines = currentPolylines;
     _markers = newMarkers;
     !isDriver ? _showSecondSearchWidget() : _showFourthSearchWidget();
-    _showSelectVehicle();
     await updateRouteCamera();
     notifyListeners();
   }
@@ -608,11 +627,6 @@ class PrincipalViewModel extends ReactiveViewModel {
   }
 
   Future<void> setMyLocation(BuildContext context) async {
-    // clearOriginPosition();
-    // await _mapController.setMapStyle('[]');
-    // notifyListeners();
-    // await _mapController.setMapStyle(await getMapTheme());
-    // notifyListeners();
     _selectOrigin = true;
     _selectDestination = false;
     notifyListeners();
@@ -751,7 +765,6 @@ class PrincipalViewModel extends ReactiveViewModel {
       price: double.parse(data['price']),
     );
     notifyListeners();
-    // startRide();
   }
 
   void push_driverToArrived(Map<String, dynamic> data) async {
@@ -797,7 +810,6 @@ class PrincipalViewModel extends ReactiveViewModel {
     _rideRequest = rideRequest;
 
     _clientForRide = await _firestoreUser.findUserById(_rideRequest.userId);
-    // _driverForRide = await _firestoreUser.findUserById(_appService.user.uid);
 
     _destinationSelected = Place(
         latLng: LatLng(_rideRequest.destination.position.latitude,
@@ -821,7 +833,6 @@ class PrincipalViewModel extends ReactiveViewModel {
   void acceptRideRequest(BuildContext context) async {
     _driverRequestFlow = DriverRequestFlow.accept;
     notifyListeners();
-    //update ride
     updateRequest(
         requestId: _rideRequest.uid,
         status: '1',
@@ -866,17 +877,15 @@ class PrincipalViewModel extends ReactiveViewModel {
   }
 
   void cancelRideRequestByDriver() {
-    updateRequest(
-        requestId: _rideRequest.uid, status: '7');
-     _rideRequest = null;
-      _clientForRide = null;
-      _destinationSelected = null;
-      _originSelected = null;
-      _destinationArrive = DateTime.now();
-      _destinationClientSelected = null;
-      _driverRequestFlow = DriverRequestFlow.none;
-      onBack();
-      notifyListeners();
+    updateRequest(requestId: _rideRequest.uid, status: '7');
+    _rideRequest = null;
+    _clientForRide = null;
+    _destinationSelected = null;
+    _originSelected = null;
+    _destinationArrive = DateTime.now();
+    _destinationClientSelected = null;
+    _driverRequestFlow = DriverRequestFlow.none;
+    onBack();
     notifyListeners();
   }
 
@@ -922,7 +931,6 @@ class PrincipalViewModel extends ReactiveViewModel {
       _searchingDriver = false;
       _showSelectVehicle();
       notifyListeners();
-
     });
   }
 }

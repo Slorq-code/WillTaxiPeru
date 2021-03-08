@@ -108,8 +108,9 @@ class SearchFieldBar extends ViewModelWidget<PrincipalViewModel> {
                             ...model.placesOriginFound.map(
                               (place) => _SugerationPlace(
                                 place: place,
-                                onTap: () => model.makeRoute(place, context,
-                                    isOriginSelected: true),
+                                onTap: () {
+                                  model.setOrigin(place, context);
+                                },
                               ),
                             )
                           ],
@@ -135,7 +136,9 @@ class SearchFieldBar extends ViewModelWidget<PrincipalViewModel> {
                             ...model.placesDestinationFound.map(
                               (place) => _SugerationPlace(
                                 place: place,
-                                onTap: () => model.makeRoute(place, context),
+                                onTap: () {
+                                  model.setDestination(place, context);
+                                } 
                               ),
                             ),
                           ],

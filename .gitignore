@@ -1,6 +1,6 @@
 # Miscellaneous
 *.class
-*.lock
+# *.lock
 *.log
 *.pyc
 *.swp
@@ -24,7 +24,7 @@
 .dart_tool/
 .flutter-plugins
 .flutter-plugins-dependencies
-.packages
+# .packages
 .pub-cache/
 .pub/
 build/

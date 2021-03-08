@@ -41,6 +41,7 @@ import 'package:taxiapp/ui/views/principal/widgets/ride_requests_by_client.dart'
 import 'package:taxiapp/ui/views/principal/widgets/search_field_bar.dart';
 import 'package:taxiapp/ui/views/principal/widgets/selection_vehicle.dart';
 import 'package:taxiapp/ui/widgets/helpers.dart';
+import 'package:wakelock/wakelock.dart';
 
 class PrincipalViewModel extends ReactiveViewModel {
   BuildContext context;
@@ -169,6 +170,7 @@ class PrincipalViewModel extends ReactiveViewModel {
       [_locationService, _appService];
 
   Future<void> initialize() async {
+    await Wakelock.enable();
     _currentSearchWidget = _switchSearchWidgets[0];
     _currentDriverRideWidget = _switchDriverRideWidgets[0];
     if (await Geolocator().isLocationServiceEnabled()) {
@@ -303,6 +305,7 @@ class PrincipalViewModel extends ReactiveViewModel {
     ridesSubscription?.cancel();
     _searchOriginController?.dispose();
     _searchDestinationController?.dispose();
+    Wakelock.disable();
     super.dispose();
   }
 

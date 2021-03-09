@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:auto_route/auto_route.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:taxiapp/extensions/string_extension.dart';
@@ -31,7 +30,6 @@ import 'package:taxiapp/services/fcm_service.dart';
 import 'package:taxiapp/services/firestore_user_service.dart';
 import 'package:taxiapp/services/location_service.dart';
 import 'package:taxiapp/services/maps_service/maps_general_service.dart';
-import 'package:taxiapp/services/ride_request_service.dart';
 import 'package:taxiapp/ui/views/principal/widgets/check_ride_details.dart';
 import 'package:taxiapp/ui/views/principal/widgets/driver_ride_details.dart';
 import 'package:taxiapp/ui/views/principal/widgets/floating_search.dart';
@@ -53,7 +51,6 @@ class PrincipalViewModel extends ReactiveViewModel {
   final LocationService _locationService = locator<LocationService>();
   final MapsGeneralService _mapsService = locator<MapsGeneralService>();
   final AuthSocialNetwork _authSocialNetwork = locator<AuthSocialNetwork>();
-  final RideRequestService _rideRequestServices = locator<RideRequestService>();
   final FCMService _fcmService = locator<FCMService>();
   final FirestoreUser _firestoreUser = locator<FirestoreUser>();
   final Api _api = locator<Api>();
@@ -63,7 +60,6 @@ class PrincipalViewModel extends ReactiveViewModel {
   StreamSubscription ridesSubscription;
   bool apiSelected = false;
   LatLng _centralLocation;
-  String addressCurrentPosition;
   Place _originSelected;
   Place _destinationSelected;
   Place _destinationClientSelected;
@@ -111,10 +107,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   bool driverArrived = false;
   DriverRequestFlow _driverRequestFlow = DriverRequestFlow.none;
   bool _enableServiceDriver = false;
-  bool hasNewRideRequest = false;
   RideRequestModel rideRequestModel;
-  StreamSubscription<UserModel> _driverStream;
-  StreamSubscription<QuerySnapshot> requestStream;
   Timer _periodicTimer;
   List<RideRequestModel> _listRideRequest = [];
   AppConfigModel _appConfigModel;
@@ -124,7 +117,6 @@ class PrincipalViewModel extends ReactiveViewModel {
   final TextEditingController _searchDestinationController =
       TextEditingController();
   PackageInfo packageInfo;
-  UserLocation currentLocation;
 
   UserModel get user => _appService.user;
   PrincipalState get state => _state;
@@ -196,7 +188,6 @@ class PrincipalViewModel extends ReactiveViewModel {
   }
 
   Future<void> _handleNotificationData(Map<String, dynamic> data) async {
-    hasNewRideRequest = true;
     var _datos = Map<String, dynamic>.from(data['data']);
     var _notificationType = _datos['type'];
     if (_notificationType == REQUEST_ACCEPTED_NOTIFICATION) {
@@ -215,7 +206,6 @@ class PrincipalViewModel extends ReactiveViewModel {
   }
 
   Future handleOnMessage(Map<String, dynamic> data) async {
-    hasNewRideRequest = true;
     var _datos = Map<String, dynamic>.from(data['data']);
     var _notificationType = _datos['type'];
     if (_notificationType == REQUEST_ACCEPTED_NOTIFICATION) {
@@ -232,72 +222,36 @@ class PrincipalViewModel extends ReactiveViewModel {
   }
 
   Future handleOnLaunch(Map<String, dynamic> data) async {
-    notificationType = data['data']['type'];
-    if (notificationType == DRIVER_AT_LOCATION_NOTIFICATION) {
-    } else if (notificationType == TRIP_STARTED_NOTIFICATION) {
-    } else if (notificationType == REQUEST_ACCEPTED_NOTIFICATION) {}
-    _driverForRide =
-        await _firestoreUser.findUserById(data['data']['driverId']);
-    _stopListeningToDriverStream();
-
-    _listenToDriver(null);
-    notifyListeners();
+    var _datos = Map<String, dynamic>.from(data['data']);
+    var _notificationType = _datos['type'];
+    if (_notificationType == REQUEST_ACCEPTED_NOTIFICATION) {
+      push_driverFound(_datos);
+    } else if (_notificationType == TRIP_STARTED_NOTIFICATION) {
+      push_startRide(_datos);
+    } else if (_notificationType == TRIP_FINISH_NOTIFICATION) {
+      push_arriveToDestination(_datos);
+    } else if (_notificationType == DRIVER_AT_LOCATION_NOTIFICATION) {
+      push_driverToArrived(_datos);
+    } else if (_notificationType == TRIP_CANCEL_NOTIFICATION) {
+      push_tripCanceledByCustomer(_datos);
+    }
   }
 
   Future handleOnResume(Map<String, dynamic> data) async {
-    notificationType = data['data']['type'];
-
-    _stopListeningToDriverStream();
-    if (notificationType == DRIVER_AT_LOCATION_NOTIFICATION) {
-    } else if (notificationType == TRIP_STARTED_NOTIFICATION) {
-    } else if (notificationType == REQUEST_ACCEPTED_NOTIFICATION) {}
-
-    _driverForRide =
-        await _firestoreUser.findUserById(data['data']['driverId']);
-    _periodicTimer.cancel();
-    notifyListeners();
+    var _datos = Map<String, dynamic>.from(data['data']);
+    var _notificationType = _datos['type'];
+    if (_notificationType == REQUEST_ACCEPTED_NOTIFICATION) {
+      push_driverFound(_datos);
+    } else if (_notificationType == TRIP_STARTED_NOTIFICATION) {
+      push_startRide(_datos);
+    } else if (_notificationType == TRIP_FINISH_NOTIFICATION) {
+      push_arriveToDestination(_datos);
+    } else if (_notificationType == DRIVER_AT_LOCATION_NOTIFICATION) {
+      push_driverToArrived(_datos);
+    } else if (_notificationType == TRIP_CANCEL_NOTIFICATION) {
+      push_tripCanceledByCustomer(_datos);
+    }
   }
-
-  void _listenToDriver(Stream<UserModel> driverStream) {
-    _driverStream = driverStream.listen((event) {
-      _driverForRide = event;
-      notifyListeners();
-    });
-  }
-
-  void listenToRequest({String id, BuildContext context}) async {
-    requestStream = _rideRequestServices
-        .requestStream()
-        .listen((QuerySnapshot querySnapshot) {
-      querySnapshot.docChanges.forEach((document) async {
-        if (document.doc.data()['id'] == id) {
-          rideRequestModel = RideRequestModel.fromJson(document.doc.data());
-          notifyListeners();
-          switch (document.doc.data()['status']) {
-            case RideStatus.canceled:
-              break;
-            case RideStatus.accepted:
-              _rideStatus = RideStatus.accepted;
-              _driverForRide = await _firestoreUser
-                  .findUserById(document.doc.data()['driverId']);
-              _periodicTimer.cancel();
-              cleanRoute();
-              _stopListeningToDriverStream();
-              _listenToDriver(null); // TODO: set stream
-              notifyListeners();
-              break;
-            case RideStatus.expired:
-              // TODO: Show Alert
-              break;
-            default:
-              break;
-          }
-        }
-      });
-    });
-  }
-
-  void _stopListeningToDriverStream() => _driverStream.cancel();
 
   @override
   void dispose() {
@@ -446,14 +400,18 @@ class PrincipalViewModel extends ReactiveViewModel {
     final positionPlace = await _locationService.getAddress(position);
     makeRoute(Place(latLng: position, address: positionPlace), context,
         isOriginSelected: selectOrigin);
-    _showSelectVehicle();
+    if (_destinationSelected != null) {
+      _showSelectVehicle();
+    }else{
+      updateCurrentSearchWidget(SearchWidget.searchFieldBar);
+    }
   }
 
   void setOrigin(Place place, BuildContext context) {
     makeRoute(place, context, isOriginSelected: true);
     if (_destinationSelected != null) {
-        _showSelectVehicle();
-      }
+      _showSelectVehicle();
+    }
   }
 
   void setDestination(Place place, BuildContext context) {

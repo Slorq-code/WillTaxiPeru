@@ -69,5 +69,6 @@
 	"driver_has_arrived": "El conductor ha llegado!",
 	"no_nearby_driver_found":" No se encontró un conductor cercano",
 	"the_customer_has_canceled": "El cliente ha cancelado!",
-	"the_driver_has_canceled": "El conductor ha cancelado!"
+	"the_driver_has_canceled": "El conductor ha cancelado!",
+	"request_with_wrong_status":"No es posible atender esta solicitud!"
 }

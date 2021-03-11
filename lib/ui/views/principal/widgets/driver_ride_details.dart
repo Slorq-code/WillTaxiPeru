@@ -199,7 +199,7 @@ class _RideInformationSection extends ViewModelWidget<PrincipalViewModel> {
                                     DriverRequestFlow.none
                                 ? ActionButtonCustom(
                                     action: () =>
-                                        model.acceptRideRequest(context),
+                                        model.preAcceptRideRequest(context),
                                     label: Keys.continue_label.localize())
                                 : model.driverRequestFlow ==
                                         DriverRequestFlow.accept

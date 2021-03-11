@@ -798,9 +798,25 @@ class PrincipalViewModel extends ReactiveViewModel {
     updateCurrentDriverRideWidget(DriverRideWidget.driverRideDetails);
   }
 
+  void preAcceptRideRequest(BuildContext context) async {
+    var request = await _firestoreUser.findRequest(_rideRequest.uid);
+    if (request.status == initialState) {
+      acceptRideRequest(context);
+    } else {
+      Alert(
+              context: context,
+              title: packageInfo.appName,
+              label: Keys.request_with_wrong_status.localize())
+          .alertCallBack(() {
+        onBack();
+      });
+    }
+  }
+
   void acceptRideRequest(BuildContext context) async {
     _driverRequestFlow = DriverRequestFlow.accept;
     notifyListeners();
+
     updateRequest(
         requestId: _rideRequest.uid,
         status: '1',

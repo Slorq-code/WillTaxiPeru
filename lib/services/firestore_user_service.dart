@@ -90,6 +90,21 @@ class FirestoreUser {
         );
   }
 
+  Future<RideRequestModel> findRequest(String idCollection) async{
+     try {
+      var documentSnapshot = await databaseReference.collection(collectionRides).doc(idCollection).get();
+
+      if (documentSnapshot.exists) {
+        var data = documentSnapshot.data();
+        var request = RideRequestModel.fromJson(data);
+        return request;
+      }
+    } catch (err, stacktrace) {
+      print(stacktrace);
+    }
+    return null;
+  }
+  
   Future<AppConfigModel> findAppConfig() async {
     try {
       var documentSnapshot =

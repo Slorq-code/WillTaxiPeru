@@ -282,9 +282,8 @@ class _FloatingMessage extends ViewModelWidget<PrincipalViewModel> {
       height: size.height - 25,
       child: Column(
         children: [
-          SizedBox(
-              height:
-                  model.rideStatus == RideStatus.waitingDriver ? 150.0 : 80.0),
+          const SizedBox(
+              height: 150.0),
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(8.0),
@@ -305,7 +304,7 @@ class _FloatingMessage extends ViewModelWidget<PrincipalViewModel> {
                           ? (model.driverArrived
                               ? Keys.driver_has_arrived.localize()
                               : Keys.comming_ride_message.localize())
-                          : Keys.enjoy_your_trip.localize(),
+                          : (Keys.enjoy_your_trip.localize()),
                       textAlign: TextAlign.center,
                     ),
                   ),

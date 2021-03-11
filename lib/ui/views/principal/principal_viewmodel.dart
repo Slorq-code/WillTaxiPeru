@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:auto_route/auto_route.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:taxiapp/extensions/string_extension.dart';
@@ -31,7 +30,6 @@ import 'package:taxiapp/services/fcm_service.dart';
 import 'package:taxiapp/services/firestore_user_service.dart';
 import 'package:taxiapp/services/location_service.dart';
 import 'package:taxiapp/services/maps_service/maps_general_service.dart';
-import 'package:taxiapp/services/ride_request_service.dart';
 import 'package:taxiapp/ui/views/principal/widgets/check_ride_details.dart';
 import 'package:taxiapp/ui/views/principal/widgets/driver_ride_details.dart';
 import 'package:taxiapp/ui/views/principal/widgets/floating_search.dart';
@@ -41,13 +39,18 @@ import 'package:taxiapp/ui/views/principal/widgets/ride_requests_by_client.dart'
 import 'package:taxiapp/ui/views/principal/widgets/search_field_bar.dart';
 import 'package:taxiapp/ui/views/principal/widgets/selection_vehicle.dart';
 import 'package:taxiapp/ui/widgets/helpers.dart';
+import 'package:wakelock/wakelock.dart';
 
 class PrincipalViewModel extends ReactiveViewModel {
+  BuildContext context;
+  PrincipalViewModel(BuildContext context) {
+    this.context = context;
+  }
+
   final AppService _appService = locator<AppService>();
   final LocationService _locationService = locator<LocationService>();
   final MapsGeneralService _mapsService = locator<MapsGeneralService>();
   final AuthSocialNetwork _authSocialNetwork = locator<AuthSocialNetwork>();
-  final RideRequestService _rideRequestServices = locator<RideRequestService>();
   final FCMService _fcmService = locator<FCMService>();
   final FirestoreUser _firestoreUser = locator<FirestoreUser>();
   final Api _api = locator<Api>();
@@ -55,12 +58,8 @@ class PrincipalViewModel extends ReactiveViewModel {
 
   String notificationType = '';
   StreamSubscription ridesSubscription;
-  // final bool _mapReady = false;
-  // final bool _drawRoute = false;
-  // final bool _followLocation = false;
   bool apiSelected = false;
   LatLng _centralLocation;
-  String addressCurrentPosition;
   Place _originSelected;
   Place _destinationSelected;
   Place _destinationClientSelected;
@@ -89,6 +88,9 @@ class PrincipalViewModel extends ReactiveViewModel {
   static const REQUEST_ACCEPTED_NOTIFICATION = 'REQUEST_ACCEPTED';
   static const TRIP_STARTED_NOTIFICATION = 'TRIP_STARTED';
   static const TRIP_FINISH_NOTIFICATION = 'TRIP_FINISH';
+  static const TRIP_CANCEL_NOTIFICATION = 'TRIP_CANCEL';
+  static const TRIP_CANCEL_DRIVER_NOTIFICATION = 'TRIP_CANCEL_DRIVER';
+
   GoogleMapController _mapController;
   Widget _currentSearchWidget = const SizedBox();
   Widget _currentRideWidget = const SizedBox();
@@ -105,10 +107,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   bool driverArrived = false;
   DriverRequestFlow _driverRequestFlow = DriverRequestFlow.none;
   bool _enableServiceDriver = false;
-  bool hasNewRideRequest = false;
   RideRequestModel rideRequestModel;
-  StreamSubscription<UserModel> _driverStream;
-  StreamSubscription<QuerySnapshot> requestStream;
   Timer _periodicTimer;
   List<RideRequestModel> _listRideRequest = [];
   AppConfigModel _appConfigModel;
@@ -118,9 +117,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   final TextEditingController _searchDestinationController =
       TextEditingController();
   PackageInfo packageInfo;
-  UserLocation currentLocation;
 
-  // * Getters
   UserModel get user => _appService.user;
   PrincipalState get state => _state;
   UserLocation get userLocation => _locationService.location;
@@ -165,16 +162,25 @@ class PrincipalViewModel extends ReactiveViewModel {
       [_locationService, _appService];
 
   Future<void> initialize() async {
+    await Wakelock.enable();
     _currentSearchWidget = _switchSearchWidgets[0];
     _currentDriverRideWidget = _switchDriverRideWidgets[0];
+    _appService.updateUser(_authSocialNetwork.user);
     if (await Geolocator().isLocationServiceEnabled()) {
       _state = PrincipalState.accessGPSEnable;
       await _locationService.startTracking(callbackZoomMap: updateZoomMap);
-      _searchOriginController.text = userLocation.descriptionAddress;
+      await Future.delayed(const Duration(seconds: 2), () {
+        if (userLocation != null) {
+          _originSelected = Place(
+              latLng: LatLng(userLocation.location.latitude,
+                  userLocation.location.longitude),
+              address: userLocation.descriptionAddress,
+              name: userLocation.descriptionAddress);
+        }
+      });
     } else {
       _state = PrincipalState.accessGPSDisable;
     }
-    _appService.updateUser(_authSocialNetwork.user);
     await loadAppConfig();
     await _fcmService.initializeFCM(_handleNotificationData);
 
@@ -190,101 +196,70 @@ class PrincipalViewModel extends ReactiveViewModel {
   }
 
   Future<void> _handleNotificationData(Map<String, dynamic> data) async {
-    hasNewRideRequest = true;
     var _datos = Map<String, dynamic>.from(data['data']);
     var _notificationType = _datos['type'];
     if (_notificationType == REQUEST_ACCEPTED_NOTIFICATION) {
-      driverFound(_datos);
+      push_driverFound(_datos);
     } else if (_notificationType == TRIP_STARTED_NOTIFICATION) {
-      startRide(_datos);
+      push_startRide(_datos);
     } else if (_notificationType == TRIP_FINISH_NOTIFICATION) {
-      arriveToDestination(_datos);
+      push_arriveToDestination(_datos);
     } else if (_notificationType == DRIVER_AT_LOCATION_NOTIFICATION) {
-      driverToArrived(_datos);
+      push_driverToArrived(_datos);
+    } else if (_notificationType == TRIP_CANCEL_NOTIFICATION) {
+      push_tripCanceledByCustomer(_datos);
+    } else if (_notificationType == TRIP_CANCEL_DRIVER_NOTIFICATION) {
+      push_tripCanceledByDriver(_datos);
     }
   }
 
-  // * PUSH NOTIFICATION METHODS
   Future handleOnMessage(Map<String, dynamic> data) async {
-    hasNewRideRequest = true;
     var _datos = Map<String, dynamic>.from(data['data']);
     var _notificationType = _datos['type'];
     if (_notificationType == REQUEST_ACCEPTED_NOTIFICATION) {
-      driverFound(_datos);
+      push_driverFound(_datos);
     } else if (_notificationType == TRIP_STARTED_NOTIFICATION) {
-      startRide(_datos);
+      push_startRide(_datos);
     } else if (_notificationType == TRIP_FINISH_NOTIFICATION) {
-      arriveToDestination(_datos);
+      push_arriveToDestination(_datos);
+    } else if (_notificationType == DRIVER_AT_LOCATION_NOTIFICATION) {
+      push_driverToArrived(_datos);
+    } else if (_notificationType == TRIP_CANCEL_NOTIFICATION) {
+      push_tripCanceledByCustomer(_datos);
     }
   }
 
   Future handleOnLaunch(Map<String, dynamic> data) async {
-    notificationType = data['data']['type'];
-    if (notificationType == DRIVER_AT_LOCATION_NOTIFICATION) {
-    } else if (notificationType == TRIP_STARTED_NOTIFICATION) {
-    } else if (notificationType == REQUEST_ACCEPTED_NOTIFICATION) {}
-    _driverForRide =
-        await _firestoreUser.findUserById(data['data']['driverId']);
-    _stopListeningToDriverStream();
-
-    _listenToDriver(null);
-    notifyListeners();
+    var _datos = Map<String, dynamic>.from(data['data']);
+    var _notificationType = _datos['type'];
+    if (_notificationType == REQUEST_ACCEPTED_NOTIFICATION) {
+      push_driverFound(_datos);
+    } else if (_notificationType == TRIP_STARTED_NOTIFICATION) {
+      push_startRide(_datos);
+    } else if (_notificationType == TRIP_FINISH_NOTIFICATION) {
+      push_arriveToDestination(_datos);
+    } else if (_notificationType == DRIVER_AT_LOCATION_NOTIFICATION) {
+      push_driverToArrived(_datos);
+    } else if (_notificationType == TRIP_CANCEL_NOTIFICATION) {
+      push_tripCanceledByCustomer(_datos);
+    }
   }
 
   Future handleOnResume(Map<String, dynamic> data) async {
-    notificationType = data['data']['type'];
-
-    _stopListeningToDriverStream();
-    if (notificationType == DRIVER_AT_LOCATION_NOTIFICATION) {
-    } else if (notificationType == TRIP_STARTED_NOTIFICATION) {
-    } else if (notificationType == REQUEST_ACCEPTED_NOTIFICATION) {}
-
-    _driverForRide =
-        await _firestoreUser.findUserById(data['data']['driverId']);
-    _periodicTimer.cancel();
-    notifyListeners();
+    var _datos = Map<String, dynamic>.from(data['data']);
+    var _notificationType = _datos['type'];
+    if (_notificationType == REQUEST_ACCEPTED_NOTIFICATION) {
+      push_driverFound(_datos);
+    } else if (_notificationType == TRIP_STARTED_NOTIFICATION) {
+      push_startRide(_datos);
+    } else if (_notificationType == TRIP_FINISH_NOTIFICATION) {
+      push_arriveToDestination(_datos);
+    } else if (_notificationType == DRIVER_AT_LOCATION_NOTIFICATION) {
+      push_driverToArrived(_datos);
+    } else if (_notificationType == TRIP_CANCEL_NOTIFICATION) {
+      push_tripCanceledByCustomer(_datos);
+    }
   }
-
-  void _listenToDriver(Stream<UserModel> driverStream) {
-    _driverStream = driverStream.listen((event) {
-      _driverForRide = event;
-      notifyListeners();
-    });
-  }
-
-  void listenToRequest({String id, BuildContext context}) async {
-    requestStream = _rideRequestServices
-        .requestStream()
-        .listen((QuerySnapshot querySnapshot) {
-      querySnapshot.docChanges.forEach((document) async {
-        if (document.doc.data()['id'] == id) {
-          rideRequestModel = RideRequestModel.fromJson(document.doc.data());
-          notifyListeners();
-          switch (document.doc.data()['status']) {
-            case RideStatus.canceled:
-              break;
-            case RideStatus.accepted:
-              _rideStatus = RideStatus.accepted;
-              _driverForRide = await _firestoreUser
-                  .findUserById(document.doc.data()['driverId']);
-              _periodicTimer.cancel();
-              cleanRoute();
-              _stopListeningToDriverStream();
-              _listenToDriver(null); // TODO: set stream
-              notifyListeners();
-              break;
-            case RideStatus.expired:
-              // TODO: Show Alert
-              break;
-            default:
-              break;
-          }
-        }
-      });
-    });
-  }
-
-  void _stopListeningToDriverStream() => _driverStream.cancel();
 
   @override
   void dispose() {
@@ -292,6 +267,7 @@ class PrincipalViewModel extends ReactiveViewModel {
     ridesSubscription?.cancel();
     _searchOriginController?.dispose();
     _searchDestinationController?.dispose();
+    Wakelock.disable();
     super.dispose();
   }
 
@@ -299,34 +275,29 @@ class PrincipalViewModel extends ReactiveViewModel {
     _appConfigModel ??= await _firestoreUser.findAppConfig();
   }
 
-  void getRides() {
-    runZoned(() async {
-      await loadAppConfig();
-      ridesSubscription = _firestoreUser.findRides().listen((event) async {
-        var listRideFilter = <RideRequestModel>[];
-        for (var model in event) {
-          var distance = await Geolocator().distanceBetween(
-              userLocation.location.latitude,
-              userLocation.location.longitude,
-              model.position.latitude,
-              model.position.longitude);
-          if (_appConfigModel != null) {
-            // if (distance <= _appConfigModel.distancePickUpCustomer) {
+  Future<void> getRides() async {
+    await loadAppConfig();
+    ridesSubscription = await _firestoreUser.findRides().listen((event) async {
+      var listRideFilter = <RideRequestModel>[];
+      for (var model in event) {
+        var distance = await Geolocator().distanceBetween(
+            userLocation.location.latitude,
+            userLocation.location.longitude,
+            model.position.latitude,
+            model.position.longitude);
+        if (_appConfigModel != null) {
+          if (distance <= _appConfigModel.distancePickUpCustomer) {
             listRideFilter.add(model);
-            // }
-          } else {
-            // IF NOT RESPONSE CONFIGMODEL, VALIDATE DISTANCE WITH HARDCODE
-            if (distance <= 1000) {
-              listRideFilter.add(model);
-            }
+          }
+        } else {
+          // IF NOT RESPONSE CONFIGMODEL, VALIDATE DISTANCE WITH HARDCODE
+          if (distance <= 1000) {
+            listRideFilter.add(model);
           }
         }
-        _listRideRequest = listRideFilter;
-        notifyListeners();
-      });
-    }, onError: (e, stackTrace) {
-      print(e);
-      print(stackTrace);
+      }
+      _listRideRequest = listRideFilter;
+      notifyListeners();
     });
   }
 
@@ -361,6 +332,23 @@ class PrincipalViewModel extends ReactiveViewModel {
 
   void updateZoomMap() async {
     updateZoom(userLocation.location);
+    if (_rideStatus == RideStatus.inProgress) {
+      _originSelected = Place(
+          latLng: LatLng(
+              userLocation.location.latitude, userLocation.location.longitude),
+          address: userLocation.descriptionAddress,
+          name: userLocation.descriptionAddress);
+      await makeRoute(_destinationSelected, context);
+    } else if (_driverRequestFlow == DriverRequestFlow.accept ||
+        _driverRequestFlow == DriverRequestFlow.preDrivingToStartPoint ||
+        _driverRequestFlow == DriverRequestFlow.inProgress) {
+      _originSelected = Place(
+          latLng: LatLng(
+              userLocation.location.latitude, userLocation.location.longitude),
+          address: userLocation.descriptionAddress,
+          name: userLocation.descriptionAddress);
+      await makeRoute(_destinationSelected, context, isDriver: true);
+    }
   }
 
   void updateCurrentLocation(LatLng center) async {
@@ -415,6 +403,23 @@ class PrincipalViewModel extends ReactiveViewModel {
     final positionPlace = await _locationService.getAddress(position);
     makeRoute(Place(latLng: position, address: positionPlace), context,
         isOriginSelected: selectOrigin);
+    if (_destinationSelected != null) {
+      _showSelectVehicle();
+    } else {
+      updateCurrentSearchWidget(SearchWidget.searchFieldBar);
+    }
+  }
+
+  void setOrigin(Place place, BuildContext context) {
+    makeRoute(place, context, isOriginSelected: true);
+    if (_destinationSelected != null) {
+      _showSelectVehicle();
+    }
+  }
+
+  void setDestination(Place place, BuildContext context) {
+    makeRoute(place, context);
+    _showSelectVehicle();
   }
 
   void makeRoute(Place place, BuildContext context,
@@ -423,12 +428,7 @@ class PrincipalViewModel extends ReactiveViewModel {
       _selectOrigin = false;
       _originSelected = place;
       notifyListeners();
-      // _locationService.location = UserLocation(
-      //     existLocation: true,
-      //     descriptionAddress: place.address,
-      //     location: place.latLng);
       if (_destinationSelected == null) {
-        // show camera to current position
         await _mapsService.updateCameraSpecificLocationZoom(
             userLocation.location, 16, _mapController);
         return;
@@ -480,7 +480,6 @@ class PrincipalViewModel extends ReactiveViewModel {
     _polylines = currentPolylines;
     _markers = newMarkers;
     !isDriver ? _showSecondSearchWidget() : _showFourthSearchWidget();
-    _showSelectVehicle();
     await updateRouteCamera();
     notifyListeners();
   }
@@ -552,9 +551,96 @@ class PrincipalViewModel extends ReactiveViewModel {
   DateTime _getDestinationArrive() =>
       DateTime.now().add(Duration(seconds: _routeMap.timeNeeded.value.toInt()));
 
+  void startRequestTimer({String requestId, BuildContext context}) {
+    var timeConfigured =
+        _appConfigModel != null ? _appConfigModel.timeWaitingDriver : 60;
+    _periodicTimer = Timer.periodic(Duration(seconds: timeConfigured), (time) {
+      if (_searchingDriver == true) {
+        Alert(
+                context: context,
+                title: packageInfo.appName,
+                label: Keys.no_nearby_driver_found.localize())
+            .alertCallBack(() {
+          _rideStatus = RideStatus.none;
+          _searchingDriver = false;
+          _showSelectVehicle();
+          updateRequest(requestId: requestId, status: '6');
+          notifyListeners();
+        });
+      }
+      _periodicTimer.cancel();
+    });
+  }
+
+  void logout() async {
+    setBusy(true);
+    await _authSocialNetwork.logout();
+    await ExtendedNavigator.root
+        .pushAndRemoveUntil(Routes.loginViewRoute, (route) => false);
+    setBusy(false);
+  }
+
+  Future<void> restoreMap() async {
+    await _mapController.setMapStyle('[]');
+    notifyListeners();
+    await _mapController.setMapStyle(await getMapTheme());
+    notifyListeners();
+    if (userLocation.location != null) {
+      updateZoom(userLocation.location);
+    }
+  }
+
+  Future<void> setMyLocation(BuildContext context) async {
+    _selectOrigin = true;
+    _selectDestination = false;
+    notifyListeners();
+    var myposition = await _locationService.getCurrentPosition();
+    confirmManualPick(
+        LatLng(myposition.latitude, myposition.longitude), context);
+    if (userLocation.location != null) {
+      updateZoom(userLocation.location);
+      notifyListeners();
+    }
+  }
+
+  Future<void> updateServiceDriver(bool status) async {
+    _enableServiceDriver = status;
+    if (_enableServiceDriver) {
+      _listRideRequest = [];
+      await getRides();
+    } else {
+      await ridesSubscription.cancel();
+      _listRideRequest = [];
+    }
+    notifyListeners();
+  }
+
+  void updateZoom(LatLng location) async {
+    final position = CameraPosition(target: location, zoom: 16.5);
+    if (_mapController != null) {
+      await _mapController
+          .animateCamera(CameraUpdate.newCameraPosition(position));
+    }
+  }
+
+  void changeManualPickInMap() {
+    if (selectOrigin) {
+      if (_placesOriginFound != null && _placesOriginFound.isNotEmpty) {
+        updateZoom(_placesOriginFound[0].latLng);
+      }
+    } else {
+      if (_placesDestinationFound != null &&
+          _placesDestinationFound.isNotEmpty) {
+        updateZoom(_placesDestinationFound[0].latLng);
+      } else if (_placesOriginFound != null && _placesOriginFound.isNotEmpty) {
+        updateZoom(_placesOriginFound[0].latLng);
+      }
+    }
+    updateCurrentSearchWidget(SearchWidget.manualPickInMap);
+  }
+
   Future<void> getPriceRide() async {
     setBusyForObject(ridePrice, true);
-
     var serviceDistance = _routeMap.distance.value;
     var serviceType = Utils.serviceType(_vehicleSelected);
     var serviceTime = _routeMap.timeNeeded.value;
@@ -567,7 +653,6 @@ class PrincipalViewModel extends ReactiveViewModel {
         .getPricing(_params)
         .then((value) => (ridePrice = value['price'] ?? 0));
     setBusyForObject(ridePrice, false);
-    _searchingDriver = false; //optional
   }
 
   Future<void> confirmRide(BuildContext context) async {
@@ -612,25 +697,18 @@ class PrincipalViewModel extends ReactiveViewModel {
     startRequestTimer(context: context, requestId: requestId);
   }
 
-  void startRequestTimer({String requestId, BuildContext context}) {
-    var timeConfigured =
-        _appConfigModel != null ? _appConfigModel.timeWaitingDriver : 60;
-    _periodicTimer = Timer.periodic(Duration(seconds: timeConfigured), (time) {
-      if (_searchingDriver == true) {
-        Alert(
-                context: context,
-                title: packageInfo.appName,
-                label: Keys.no_nearby_driver_found.localize())
-            .alertCallBack(() {
-          _rideStatus = RideStatus.none;
-          _searchingDriver = false;
-          _showSelectVehicle();
-          updateRequest(requestId: requestId, status: '6');
-          notifyListeners();
-        });
-      }
-      _periodicTimer.cancel();
-    });
+  Future<void> cancelRide() async {
+    if (_rideRequest != null && _rideRequest.uid.isNotEmpty) {
+      updateRequest(requestId: _rideRequest.uid, status: '5');
+    }
+    ridePrice = 0;
+    _rideStatus = RideStatus.none;
+    _rideRequest = null;
+    _driverForRide = null;
+    _searchingDriver = false;
+    driverArrived = false;
+    onBack();
+    notifyListeners();
   }
 
   void updateRequest({String requestId, String status, String driverId}) {
@@ -642,7 +720,7 @@ class PrincipalViewModel extends ReactiveViewModel {
     _firestoreUser.updateRideRequest(id: requestId, data: newValue);
   }
 
-  void driverFound(Map<String, dynamic> data) async {
+  void push_driverFound(Map<String, dynamic> data) async {
     _searchingDriver = false;
     driverArrived = false;
     _rideStatus = RideStatus.waitingDriver;
@@ -655,15 +733,14 @@ class PrincipalViewModel extends ReactiveViewModel {
       price: double.parse(data['price']),
     );
     notifyListeners();
-    // startRide();
   }
 
-  void driverToArrived(Map<String, dynamic> data) async {
+  void push_driverToArrived(Map<String, dynamic> data) async {
     driverArrived = true;
     notifyListeners();
   }
 
-  void startRide(Map<String, dynamic> data) async {
+  void push_startRide(Map<String, dynamic> data) async {
     if (_rideRequest != null) {
       _rideStatus = RideStatus.inProgress;
       // updateCurrentSearchWidget(SearchWidget.floatingSearch);
@@ -672,14 +749,7 @@ class PrincipalViewModel extends ReactiveViewModel {
     }
   }
 
-  Future<void> cancelRide() async {
-    _destinationArrive = _getDestinationArrive();
-    _rideRequest = null;
-    _driverForRide = null;
-    notifyListeners();
-  }
-
-  void arriveToDestination(Map<String, dynamic> data) async {
+  void push_arriveToDestination(Map<String, dynamic> data) async {
     _rideStatus = RideStatus.finished;
     notifyListeners();
   }
@@ -702,58 +772,12 @@ class PrincipalViewModel extends ReactiveViewModel {
     updateCurrentRideWidget(RideWidget.clear);
   }
 
-  void logout() async {
-    setBusy(true);
-    await _authSocialNetwork.logout();
-    await ExtendedNavigator.root
-        .pushAndRemoveUntil(Routes.loginViewRoute, (route) => false);
-    setBusy(false);
-  }
-
-  Future<void> restoreMap() async {
-    await _mapController.setMapStyle('[]');
-    notifyListeners();
-    await _mapController.setMapStyle(await getMapTheme());
-    notifyListeners();
-    if (userLocation.location != null) {
-      updateZoom(userLocation.location);
-    }
-  }
-
-  Future<void> setMyLocation(BuildContext context) async {
-    // clearOriginPosition();
-    // await _mapController.setMapStyle('[]');
-    // notifyListeners();
-    // await _mapController.setMapStyle(await getMapTheme());
-    // notifyListeners();
-    _selectOrigin = true;
-    _selectDestination = false;
-    notifyListeners();
-    var myposition = await _locationService.getCurrentPosition();
-    confirmManualPick(
-        LatLng(myposition.latitude, myposition.longitude), context);
-    if (userLocation.location != null) {
-      updateZoom(userLocation.location);
-      notifyListeners();
-    }
-  }
-
-  void updateServiceDriver(bool status) {
-    _enableServiceDriver = status;
-    if (_enableServiceDriver) {
-      getRides();
-    } else {
-      _listRideRequest = [];
-    }
-    notifyListeners();
-  }
-
+  /*Driver*/
   void selectRideRequest(
       RideRequestModel rideRequest, BuildContext context) async {
     _rideRequest = rideRequest;
 
     _clientForRide = await _firestoreUser.findUserById(_rideRequest.userId);
-    // _driverForRide = await _firestoreUser.findUserById(_appService.user.uid);
 
     _destinationSelected = Place(
         latLng: LatLng(_rideRequest.destination.position.latitude,
@@ -774,17 +798,29 @@ class PrincipalViewModel extends ReactiveViewModel {
     updateCurrentDriverRideWidget(DriverRideWidget.driverRideDetails);
   }
 
+  void preAcceptRideRequest(BuildContext context) async {
+    var request = await _firestoreUser.findRequest(_rideRequest.uid);
+    if (request.status == initialState) {
+      acceptRideRequest(context);
+    } else {
+      Alert(
+              context: context,
+              title: packageInfo.appName,
+              label: Keys.request_with_wrong_status.localize())
+          .alertCallBack(() {
+        onBack();
+      });
+    }
+  }
+
   void acceptRideRequest(BuildContext context) async {
     _driverRequestFlow = DriverRequestFlow.accept;
     notifyListeners();
-    //update ride
+
     updateRequest(
         requestId: _rideRequest.uid,
         status: '1',
         driverId: _appService.user.uid);
-
-    _driverRequestFlow = DriverRequestFlow.preDrivingToStartPoint;
-    notifyListeners();
 
     _destinationClientSelected = _destinationSelected;
 
@@ -821,14 +857,19 @@ class PrincipalViewModel extends ReactiveViewModel {
   void startRidebyDriver() async {
     _driverRequestFlow = DriverRequestFlow.inProgress;
     updateRequest(requestId: _rideRequest.uid, status: '3');
-    // _driverRequestFlow = DriverRequestFlow.finished;
     notifyListeners();
   }
 
   void cancelRideRequestByDriver() {
-    updateRequest(
-        requestId: _rideRequest.uid, status: initialState, driverId: '');
+    updateRequest(requestId: _rideRequest.uid, status: '7');
+    _rideRequest = null;
+    _clientForRide = null;
+    _destinationSelected = null;
+    _originSelected = null;
+    _destinationArrive = DateTime.now();
+    _destinationClientSelected = null;
     _driverRequestFlow = DriverRequestFlow.none;
+    onBack();
     notifyListeners();
   }
 
@@ -846,25 +887,35 @@ class PrincipalViewModel extends ReactiveViewModel {
     onBack();
   }
 
-  void updateZoom(LatLng location) async {
-    final position = CameraPosition(target: location, zoom: 16.5);
-    await _mapController
-        .animateCamera(CameraUpdate.newCameraPosition(position));
+  void push_tripCanceledByCustomer(Map<String, dynamic> data) async {
+    Alert(
+            context: context,
+            title: packageInfo.appName,
+            label: Keys.the_customer_has_canceled.localize())
+        .alertCallBack(() {
+      _rideRequest = null;
+      _clientForRide = null;
+      _destinationSelected = null;
+      _originSelected = null;
+      _destinationArrive = DateTime.now();
+      _destinationClientSelected = null;
+      _driverRequestFlow = DriverRequestFlow.none;
+      onBack();
+      notifyListeners();
+    });
   }
 
-  void changeManualPickInMap() {
-    if (selectOrigin) {
-      if(_placesOriginFound != null && _placesOriginFound.isNotEmpty){
-        updateZoom(_placesOriginFound[0].latLng);
-      }
-    }else{
-      if(_placesDestinationFound != null && _placesDestinationFound.isNotEmpty){
-        updateZoom(_placesDestinationFound[0].latLng);
-      }else if(_placesOriginFound != null && _placesOriginFound.isNotEmpty){
-        updateZoom(_placesOriginFound[0].latLng);
-      }
-    }
-    updateCurrentSearchWidget(SearchWidget.manualPickInMap);
+  void push_tripCanceledByDriver(Map<String, dynamic> data) async {
+    Alert(
+            context: context,
+            title: packageInfo.appName,
+            label: Keys.the_driver_has_canceled.localize())
+        .alertCallBack(() {
+      _rideStatus = RideStatus.none;
+      _searchingDriver = false;
+      _showSelectVehicle();
+      notifyListeners();
+    });
   }
 }
 

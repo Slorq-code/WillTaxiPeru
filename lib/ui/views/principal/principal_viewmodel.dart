@@ -165,14 +165,22 @@ class PrincipalViewModel extends ReactiveViewModel {
     await Wakelock.enable();
     _currentSearchWidget = _switchSearchWidgets[0];
     _currentDriverRideWidget = _switchDriverRideWidgets[0];
+    _appService.updateUser(_authSocialNetwork.user);
     if (await Geolocator().isLocationServiceEnabled()) {
       _state = PrincipalState.accessGPSEnable;
       await _locationService.startTracking(callbackZoomMap: updateZoomMap);
-      _searchOriginController.text = userLocation.descriptionAddress;
+      await Future.delayed(const Duration(seconds: 2), () {
+        if (userLocation != null) {
+          _originSelected = Place(
+              latLng: LatLng(userLocation.location.latitude,
+                  userLocation.location.longitude),
+              address: userLocation.descriptionAddress,
+              name: userLocation.descriptionAddress);
+        }
+      });
     } else {
       _state = PrincipalState.accessGPSDisable;
     }
-    _appService.updateUser(_authSocialNetwork.user);
     await loadAppConfig();
     await _fcmService.initializeFCM(_handleNotificationData);
 
@@ -267,34 +275,29 @@ class PrincipalViewModel extends ReactiveViewModel {
     _appConfigModel ??= await _firestoreUser.findAppConfig();
   }
 
-  void getRides() {
-    runZoned(() async {
-      await loadAppConfig();
-      ridesSubscription = _firestoreUser.findRides().listen((event) async {
-        var listRideFilter = <RideRequestModel>[];
-        for (var model in event) {
-          var distance = await Geolocator().distanceBetween(
-              userLocation.location.latitude,
-              userLocation.location.longitude,
-              model.position.latitude,
-              model.position.longitude);
-          if (_appConfigModel != null) {
-            // if (distance <= _appConfigModel.distancePickUpCustomer) {
+  Future<void> getRides() async {
+    await loadAppConfig();
+    ridesSubscription = await _firestoreUser.findRides().listen((event) async {
+      var listRideFilter = <RideRequestModel>[];
+      for (var model in event) {
+        var distance = await Geolocator().distanceBetween(
+            userLocation.location.latitude,
+            userLocation.location.longitude,
+            model.position.latitude,
+            model.position.longitude);
+        if (_appConfigModel != null) {
+          if (distance <= _appConfigModel.distancePickUpCustomer) {
             listRideFilter.add(model);
-            // }
-          } else {
-            // IF NOT RESPONSE CONFIGMODEL, VALIDATE DISTANCE WITH HARDCODE
-            if (distance <= 1000) {
-              listRideFilter.add(model);
-            }
+          }
+        } else {
+          // IF NOT RESPONSE CONFIGMODEL, VALIDATE DISTANCE WITH HARDCODE
+          if (distance <= 1000) {
+            listRideFilter.add(model);
           }
         }
-        _listRideRequest = listRideFilter;
-        notifyListeners();
-      });
-    }, onError: (e, stackTrace) {
-      print(e);
-      print(stackTrace);
+      }
+      _listRideRequest = listRideFilter;
+      notifyListeners();
     });
   }
 
@@ -402,7 +405,7 @@ class PrincipalViewModel extends ReactiveViewModel {
         isOriginSelected: selectOrigin);
     if (_destinationSelected != null) {
       _showSelectVehicle();
-    }else{
+    } else {
       updateCurrentSearchWidget(SearchWidget.searchFieldBar);
     }
   }
@@ -600,11 +603,13 @@ class PrincipalViewModel extends ReactiveViewModel {
     }
   }
 
-  void updateServiceDriver(bool status) {
+  Future<void> updateServiceDriver(bool status) async {
     _enableServiceDriver = status;
     if (_enableServiceDriver) {
-      getRides();
+      _listRideRequest = [];
+      await getRides();
     } else {
+      await ridesSubscription.cancel();
       _listRideRequest = [];
     }
     notifyListeners();
@@ -612,8 +617,10 @@ class PrincipalViewModel extends ReactiveViewModel {
 
   void updateZoom(LatLng location) async {
     final position = CameraPosition(target: location, zoom: 16.5);
-    await _mapController
-        .animateCamera(CameraUpdate.newCameraPosition(position));
+    if (_mapController != null) {
+      await _mapController
+          .animateCamera(CameraUpdate.newCameraPosition(position));
+    }
   }
 
   void changeManualPickInMap() {

@@ -309,7 +309,7 @@ class _OriginLocationField extends HookViewModelWidget<PrincipalViewModel> {
             GestureDetector(
                 onTap: () => model.clearOriginPosition(),
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 10.0),
+                  padding: const EdgeInsets.only(left: 3.0),
                   child:
                       SvgPicture.asset('assets/icons/icon_x.svg', height: 20.0),
                 )),

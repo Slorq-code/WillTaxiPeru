@@ -933,6 +933,10 @@ class PrincipalViewModel extends ReactiveViewModel {
             label: Keys.the_driver_has_canceled.localize())
         .alertCallBack(() {
       _rideStatus = RideStatus.none;
+      ridePrice = 0;
+      _rideRequest = null;
+      _driverForRide = null;
+      _clientForRide = null;
       _searchingDriver = false;
       _showSelectVehicle();
       notifyListeners();

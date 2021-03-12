@@ -82,19 +82,23 @@ class _HomeMap extends ViewModelWidget<PrincipalViewModel> {
             onWillPop: () => Future.value(model.onBack()),
             child: Stack(
               children: [
-                GoogleMap(
-                  initialCameraPosition: CameraPosition(target: model.userLocation.location, zoom: 15),
-                  myLocationEnabled: true,
-                  myLocationButtonEnabled: false,
-                  zoomControlsEnabled: false,
-                  onMapCreated: model.initMapa,
-                  polylines: model.polylines.values.toSet(),
-                  compassEnabled: false,
-                  markers: model.markers.values.toSet(),
-                  onCameraMove: (cameraPosition) {
-                    model.updateCurrentLocation(cameraPosition.target);
-                  },
-                  
+                Padding(
+                  padding: EdgeInsets.only(
+                      bottom: model.user.userType == UserType.Driver ? 200 : 0),
+                  child: GoogleMap(
+                    initialCameraPosition: CameraPosition(
+                        target: model.userLocation.location, zoom: 15),
+                    myLocationEnabled: true,
+                    myLocationButtonEnabled: false,
+                    zoomControlsEnabled: false,
+                    onMapCreated: model.initMapa,
+                    polylines: model.polylines.values.toSet(),
+                    compassEnabled: false,
+                    markers: model.markers.values.toSet(),
+                    onCameraMove: (cameraPosition) {
+                      model.updateCurrentLocation(cameraPosition.target);
+                    },
+                  ),
                 ),
                 const Positioned(
                   top: 0,
@@ -110,7 +114,8 @@ class _HomeMap extends ViewModelWidget<PrincipalViewModel> {
                     bottom: 0,
                     child: _DriverRide(),
                   ),
-                if (model.rideStatus == RideStatus.finished) const Positioned(top: 0, child: FinishRideWidget())
+                if (model.rideStatus == RideStatus.finished)
+                  const Positioned(top: 0, child: FinishRideWidget())
               ],
             ),
           )
@@ -173,7 +178,8 @@ class _ForceEnableGPS extends ViewModelWidget<PrincipalViewModel> {
         children: [
           Text(Keys.you_need_to_authorize_the_gps_to_use_the_app.localize()),
           MaterialButton(
-            child: Text(Keys.request_access.localize(), style: const TextStyle(color: Colors.white)),
+            child: Text(Keys.request_access.localize(),
+                style: const TextStyle(color: Colors.white)),
             color: Colors.black,
             shape: const StadiumBorder(),
             elevation: 0,

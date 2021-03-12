@@ -135,11 +135,10 @@ class SearchFieldBar extends ViewModelWidget<PrincipalViewModel> {
                           children: [
                             ...model.placesDestinationFound.map(
                               (place) => _SugerationPlace(
-                                place: place,
-                                onTap: () {
-                                  model.setDestination(place, context);
-                                } 
-                              ),
+                                  place: place,
+                                  onTap: () {
+                                    model.setDestination(place, context);
+                                  }),
                             ),
                           ],
                         ),
@@ -176,7 +175,8 @@ class _SugerationPlace extends StatelessWidget {
         child: Container(
           width: double.infinity,
           height: 50,
-          padding: const EdgeInsets.only(left: 8.0,top: 5.0,bottom: 3.0,right: 8.0),
+          padding: const EdgeInsets.only(
+              left: 8.0, top: 5.0, bottom: 3.0, right: 8.0),
           decoration: const BoxDecoration(
             border: Border(
               top: BorderSide(color: Colors.transparent, width: 0),
@@ -307,7 +307,39 @@ class _OriginLocationField extends HookViewModelWidget<PrincipalViewModel> {
                   child:
                       SvgPicture.asset('assets/icons/icon_x.svg', height: 20.0),
                 )),
+            _OriginButton(
+                icon: 'assets/icons/locate_position.svg',
+                onTap: () => model.selectMyPosition(context)),
+            _OriginButton(
+                icon: 'assets/icons/move_in_map.svg',
+                onTap: () => model.manualSelectionInMap())
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _OriginButton extends StatelessWidget {
+  const _OriginButton({
+    Key key,
+    @required this.icon,
+    @required this.onTap,
+  })  : assert(icon != null),
+        assert(onTap != null),
+        super(key: key);
+
+  final VoidCallback onTap;
+  final String icon;
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      type: MaterialType.transparency,
+      child: InkWell(
+        customBorder: const CircleBorder(),
+        onTap: onTap,
+        child: Container(
+          child: SvgPicture.asset(icon, height: 25),
         ),
       ),
     );

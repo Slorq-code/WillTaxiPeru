@@ -169,15 +169,6 @@ class PrincipalViewModel extends ReactiveViewModel {
     if (await Geolocator().isLocationServiceEnabled()) {
       _state = PrincipalState.accessGPSEnable;
       await _locationService.startTracking(callbackZoomMap: updateZoomMap);
-      await Future.delayed(const Duration(seconds: 2), () {
-        if (userLocation != null) {
-          _originSelected = Place(
-              latLng: LatLng(userLocation.location.latitude,
-                  userLocation.location.longitude),
-              address: userLocation.descriptionAddress,
-              name: userLocation.descriptionAddress);
-        }
-      });
     } else {
       _state = PrincipalState.accessGPSDisable;
     }
@@ -192,6 +183,16 @@ class PrincipalViewModel extends ReactiveViewModel {
           token: _tokenFCM, userId: _appService.user.uid);
     }
     packageInfo = await Utils.getPackageInfo();
+
+    await Future.delayed(const Duration(seconds: 2), () {
+      if (userLocation != null && userLocation.location != null) {
+        _originSelected = Place(
+            latLng: LatLng(userLocation.location.latitude,
+                userLocation.location.longitude),
+            address: userLocation.descriptionAddress,
+            name: userLocation.descriptionAddress);
+      }
+    });
     notifyListeners();
   }
 
@@ -331,7 +332,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   }
 
   void updateZoomMap() async {
-    updateZoom(userLocation.location);
+    updateZoom(userLocation.location,zoomValue:19);
     if (_rideStatus == RideStatus.inProgress) {
       _originSelected = Place(
           latLng: LatLng(
@@ -382,7 +383,7 @@ class PrincipalViewModel extends ReactiveViewModel {
       return true;
     }
   }
-
+  
   void searchDestination(String destinationAddress) async {
     _selectDestination = true;
     _selectOrigin = false;
@@ -404,22 +405,37 @@ class PrincipalViewModel extends ReactiveViewModel {
     makeRoute(Place(latLng: position, address: positionPlace), context,
         isOriginSelected: selectOrigin);
     if (_destinationSelected != null) {
+      _showSecondSearchWidget();
       _showSelectVehicle();
+      await updateRouteCamera();
     } else {
       updateCurrentSearchWidget(SearchWidget.searchFieldBar);
     }
   }
 
-  void setOrigin(Place place, BuildContext context) {
+  void setOrigin(Place place, BuildContext context) async{
     makeRoute(place, context, isOriginSelected: true);
     if (_destinationSelected != null) {
+      _showSecondSearchWidget();
       _showSelectVehicle();
+      await updateRouteCamera();
     }
   }
 
-  void setDestination(Place place, BuildContext context) {
+  void setDestination(Place place, BuildContext context) async{
     makeRoute(place, context);
+    _showSecondSearchWidget();
     _showSelectVehicle();
+    await updateRouteCamera();
+  }
+
+  void selectMyPosition(BuildContext context){
+    setMyLocation(context);
+  }
+
+  void manualSelectionInMap(){
+    selectOrigin = true;
+    updateCurrentSearchWidget(SearchWidget.manualPickInMap);
   }
 
   void makeRoute(Place place, BuildContext context,
@@ -479,10 +495,10 @@ class PrincipalViewModel extends ReactiveViewModel {
 
     _polylines = currentPolylines;
     _markers = newMarkers;
-    !isDriver ? _showSecondSearchWidget() : _showFourthSearchWidget();
-    await updateRouteCamera();
+
     notifyListeners();
   }
+  
 
   Future<void> updateRouteCamera() async {
     final source = originSelected.latLng;
@@ -615,8 +631,8 @@ class PrincipalViewModel extends ReactiveViewModel {
     notifyListeners();
   }
 
-  void updateZoom(LatLng location) async {
-    final position = CameraPosition(target: location, zoom: 16.5);
+  void updateZoom(LatLng location,{double zoomValue}) async {
+    final position = CameraPosition(target: location, zoom:zoomValue??16.5);
     if (_mapController != null) {
       await _mapController
           .animateCamera(CameraUpdate.newCameraPosition(position));
@@ -795,6 +811,8 @@ class PrincipalViewModel extends ReactiveViewModel {
         DateTime.now().add(Duration(seconds: _rideRequest.secondsArrive));
     notifyListeners();
     await makeRoute(_destinationSelected, context, isDriver: true);
+    _showFourthSearchWidget();
+    await updateRouteCamera();
     updateCurrentDriverRideWidget(DriverRideWidget.driverRideDetails);
   }
 
@@ -834,7 +852,8 @@ class PrincipalViewModel extends ReactiveViewModel {
         isOriginSelected: true, isDriver: true);
 
     await makeRoute(_destinationSelected, context, isDriver: true);
-
+    _showFourthSearchWidget();
+    await updateRouteCamera();
     updateCurrentDriverRideWidget(DriverRideWidget.driverRideDetails);
     notifyListeners();
   }
@@ -851,6 +870,8 @@ class PrincipalViewModel extends ReactiveViewModel {
         isOriginSelected: true, isDriver: true);
 
     await makeRoute(_destinationSelected, context, isDriver: true);
+    _showFourthSearchWidget();
+    await updateRouteCamera();
     await drivingToStartPoint();
   }
 

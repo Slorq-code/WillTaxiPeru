@@ -300,6 +300,12 @@ class _OriginLocationField extends HookViewModelWidget<PrincipalViewModel> {
                 ),
               ),
             ),
+            _OriginButton(
+                icon: 'assets/icons/locate_position.svg',
+                onTap: () => model.selectMyPosition(context)),
+            _OriginButton(
+                icon: 'assets/icons/move_in_map.svg',
+                onTap: () => model.manualSelectionInMap()),
             GestureDetector(
                 onTap: () => model.clearOriginPosition(),
                 child: Padding(
@@ -307,12 +313,6 @@ class _OriginLocationField extends HookViewModelWidget<PrincipalViewModel> {
                   child:
                       SvgPicture.asset('assets/icons/icon_x.svg', height: 20.0),
                 )),
-            _OriginButton(
-                icon: 'assets/icons/locate_position.svg',
-                onTap: () => model.selectMyPosition(context)),
-            _OriginButton(
-                icon: 'assets/icons/move_in_map.svg',
-                onTap: () => model.manualSelectionInMap())
           ],
         ),
       ),

@@ -276,7 +276,7 @@ class PrincipalViewModel extends ReactiveViewModel {
 
   void loadAppConfig() async {
     _appConfigModel ??= await _firestoreUser.findAppConfig();
-    _panicModel ??= await _api.getInformationPanic('315');
+    _panicModel ??= await _api.getInformationPanic('6mfzve');
   }
 
   Future<void> getRides() async {

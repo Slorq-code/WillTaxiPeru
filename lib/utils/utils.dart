@@ -7,6 +7,8 @@ import 'package:package_info/package_info.dart';
 import 'package:taxiapp/models/enums/vehicle_type.dart';
 import 'package:toast/toast.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:whatsapp_unilink/whatsapp_unilink.dart';
 
 class Utils {
   static NumberFormat _numberFormatter;
@@ -29,8 +31,10 @@ class Utils {
     return _dateFormatter;
   }
 
-  static void showToast(BuildContext context, String msg, {int duration = 5, Color color = const Color(0xFFe74c3c)}) {
-    Toast.show(msg, context, duration: duration, gravity: Toast.BOTTOM, backgroundColor: color);
+  static void showToast(BuildContext context, String msg,
+      {int duration = 5, Color color = const Color(0xFFe74c3c)}) {
+    Toast.show(msg, context,
+        duration: duration, gravity: Toast.BOTTOM, backgroundColor: color);
   }
 
   static int calculateAge(DateTime birthDate) {
@@ -50,7 +54,8 @@ class Utils {
     return age;
   }
 
-  static SplayTreeMap orderMap({@required Map map, List<String> eliminateFields}) {
+  static SplayTreeMap orderMap(
+      {@required Map map, List<String> eliminateFields}) {
     eliminateFields.forEach((element) {
       map.removeWhere((key, value) => key == element);
     });
@@ -71,7 +76,9 @@ class Utils {
   }
 
   static bool isValidEmail(String email) {
-    return RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(email);
+    return RegExp(
+            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+        .hasMatch(email);
   }
 
   static bool isValidPasswordLength(String password) {
@@ -96,10 +103,12 @@ class Utils {
           break;
         case 2:
         case 3:
-          nameInitials = nameComponents[0].characters.first + nameComponents[1].characters.first;
+          nameInitials = nameComponents[0].characters.first +
+              nameComponents[1].characters.first;
           break;
         case 4:
-          nameInitials = nameComponents[0].characters.first + nameComponents[2].characters.first;
+          nameInitials = nameComponents[0].characters.first +
+              nameComponents[2].characters.first;
           break;
         default:
           nameInitials = nameComponents.first[0];
@@ -111,7 +120,7 @@ class Utils {
   }
 
   static String getLocationTextGMaps(String latitude, String longitude) {
-     var _googleServ = 'https://www.google.com/maps/search/?api=1&query=';
+    var _googleServ = 'https://www.google.com/maps/search/?api=1&query=';
     return '$_googleServ$latitude,$longitude';
   }
 
@@ -119,13 +128,22 @@ class Utils {
     Share.text(title, content, 'text/plain');
   }
 
-  static String timestampToDateFormat(int seconds, int nano, String dateFormat) {
+  static void shareTextInWhatsapp(String phoneNumber, String content) async {
+    final link = WhatsAppUnilink(
+      phoneNumber: phoneNumber, // ejem:'+051991959xxx'
+      text: content,
+    );
+    await launch('$link');
+  }
+
+  static String timestampToDateFormat(
+      int seconds, int nano, String dateFormat) {
     var timestamp = Timestamp(seconds, nano);
     var df = DateFormat(dateFormat);
     return df.format(timestamp.toDate());
   }
 
-  static int serviceType(VehicleType vehicleType){
+  static int serviceType(VehicleType vehicleType) {
     switch (vehicleType) {
       case VehicleType.moto:
         return 0;

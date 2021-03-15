@@ -326,6 +326,9 @@ class PrincipalViewModel extends ReactiveViewModel {
           }
         });
         notifyListeners();
+        break;
+      default:
+        break;
     }
   }
 
@@ -947,18 +950,18 @@ class PrincipalViewModel extends ReactiveViewModel {
 
   void sendTextPanic() {
     Alert(
-        context: context,
-        title: packageInfo.appName,
-        label: Keys.do_you_want_to_confirm_a_panic_alert.localize(),
-        action: sendAlertPanic
-        ).confirmation(Keys.cancel.localize(), Keys.accept.localize());
+            context: context,
+            title: packageInfo.appName,
+            label: Keys.do_you_want_to_confirm_a_panic_alert.localize(),
+            action: sendAlertPanic)
+        .confirmation(Keys.cancel.localize(), Keys.accept.localize());
   }
 
-  void sendAlertPanic(){
+  void sendAlertPanic() {
     var _locationText = Utils.getLocationTextGMaps(
-              userLocation.location.latitude.toString(),
-              userLocation.location.longitude.toString());
-          Utils.shareTextInWhatsapp(_panicModel.phone, _locationText);
+        userLocation.location.latitude.toString(),
+        userLocation.location.longitude.toString());
+    Utils.shareTextInWhatsapp(_panicModel.phone, _locationText);
   }
 }
 

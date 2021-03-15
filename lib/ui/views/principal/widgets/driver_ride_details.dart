@@ -8,7 +8,6 @@ import 'package:taxiapp/ui/views/principal/principal_viewmodel.dart';
 import 'package:taxiapp/ui/widgets/avatar_profile/avatar_profile.dart';
 import 'package:taxiapp/ui/widgets/buttons/action_button_custom.dart';
 import 'package:taxiapp/utils/spin_loading_indicator.dart';
-import 'package:taxiapp/utils/utils.dart';
 
 class DriverRideDetails extends ViewModelWidget<PrincipalViewModel> {
   const DriverRideDetails({Key key}) : super(key: key);
@@ -47,12 +46,7 @@ class _PanicButton extends ViewModelWidget<PrincipalViewModel> {
               hoverElevation: 10,
               highlightElevation: 10,
               isExtended: true,
-              onPressed: () {
-                var _locationText = Utils.getLocationTextGMaps(
-                    model.userLocation.location.latitude.toString(),
-                    model.userLocation.location.longitude.toString());
-                Utils.shareText('Will', _locationText);
-              },
+              onPressed: () => model.sendTextPanic(),
               materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
               child: Image.asset('assets/icons/panic_button.png', height: 65.0),
             ),

@@ -6,6 +6,7 @@ import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:taxiapp/app/globals.dart';
 import 'package:taxiapp/app/locator.dart';
+import 'package:taxiapp/models/panic_model.dart';
 import 'package:taxiapp/models/ride_request_model.dart';
 import 'package:taxiapp/models/token_model.dart';
 import 'package:taxiapp/services/storage_service.dart';
@@ -31,8 +32,10 @@ class Api {
         retryInterval: Duration(seconds: 5),
       ),
     ));
-    (_dioBack.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate = (client) {
-      client.badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+    (_dioBack.httpClientAdapter as DefaultHttpClientAdapter)
+        .onHttpClientCreate = (client) {
+      client.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
       return client;
     };
     _dioMap.options.connectTimeout = 5000;
@@ -45,8 +48,10 @@ class Api {
         retryInterval: Duration(seconds: 5),
       ),
     ));
-    (_dioBack.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate = (client) {
-      client.badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+    (_dioBack.httpClientAdapter as DefaultHttpClientAdapter)
+        .onHttpClientCreate = (client) {
+      client.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
       return client;
     };
   }
@@ -62,7 +67,7 @@ class Api {
   }
 
   Future<dynamic> _post(String method, Map data, {Map query}) async {
-    var response = await  _dioBack.post(method,
+    var response = await _dioBack.post(method,
         queryParameters: query,
         data: jsonEncode(data),
         options: Options(
@@ -72,20 +77,24 @@ class Api {
   }
 
   Future<void> refreshToken() async {
-    Map json = await _post('refresh', {}, query: {'email': await shared.getString('email')});
+    Map json = await _post('refresh', {},
+        query: {'email': await shared.getString('email')});
     await token.saveToken(json['token']);
     return;
   }
 
   Future<TokenModel> inSessionUser() async {
-    var response = await _post('/token/verify', {}).timeout(const Duration(milliseconds: 10000));
+    var response = await _post('/token/verify', {})
+        .timeout(const Duration(milliseconds: 10000));
     var model = TokenModel.fromJson(response);
     return model;
   }
 
   Future<List<RideRequestModel>> getAllUserHistorial(String uid) async {
     var response = await _get('/rides/?idDriver=${uid}');
-    var model = response.map<RideRequestModel>((i) => RideRequestModel.fromJson(i)).toList();
+    var model = response
+        .map<RideRequestModel>((i) => RideRequestModel.fromJson(i))
+        .toList();
     return model;
   }
 
@@ -103,12 +112,14 @@ class Api {
   }
 
   Future<Map> getAddress(Map data) async {
-    var response = await _dioMap.get('https://maps.googleapis.com/maps/api/geocode/json?latlng=${data['lat']},${data['lng']}&key=${Globals.googleMapsApiKey}');
+    var response = await _dioMap.get(
+        'https://maps.googleapis.com/maps/api/geocode/json?latlng=${data['lat']},${data['lng']}&key=${Globals.googleMapsApiKey}');
     return response.data;
   }
 
   Future<Map> getCoords(Map data) async {
-    var response = await _dioMap.get('https://maps.googleapis.com/maps/api/geocode/json?address=${data['address']}region=PE&key=${Globals.googleMapsApiKey}');
+    var response = await _dioMap.get(
+        'https://maps.googleapis.com/maps/api/geocode/json?address=${data['address']}region=PE&key=${Globals.googleMapsApiKey}');
     return response.data;
   }
 
@@ -127,5 +138,11 @@ class Api {
   Future<Map> getPricing(Map data) async {
     var response = await _post('/rides/pricing', data);
     return response;
+  }
+
+  Future<PanicModel> getInformationPanic(String code) async {
+    var response = await _post('/rides/panic/' + code, {});
+    var model = PanicModel.fromJson(response);
+    return model;
   }
 }

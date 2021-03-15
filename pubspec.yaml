@@ -63,7 +63,8 @@ dependencies:
   device_info: ^1.0.0
   flutter_phone_direct_caller: ^1.0.1
   wakelock: ^0.2.1+1
-
+  whatsapp_unilink: ^1.0.0+1
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter

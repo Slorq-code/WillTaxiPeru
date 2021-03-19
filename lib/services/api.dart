@@ -21,7 +21,7 @@ class Api {
   final token = locator<Token>();
 
   Api() {
-    _dioBack.options.baseUrl = 'https://warzsud.herokuapp.com';
+    _dioBack.options.baseUrl = 'http://51.79.50.169:8080/warzsud/';
     _dioBack.options.connectTimeout = 5000;
     _dioBack.options.sendTimeout = 5000;
     _dioBack.options.receiveTimeout = 20000;

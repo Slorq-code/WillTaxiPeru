@@ -15,6 +15,46 @@
       },
       "oauth_client": [
         {
+          "client_id": "246003170047-11j2lq1jk2cp8u3fpi789fsn030gimk7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "pe.rdg.taxiapp",
+            "certificate_hash": "567cc36017aa8d7547167044031688597ff6f623"
+          }
+        },
+        {
+          "client_id": "246003170047-6qeij95k951nu7g19e5r2jepak19m9ce.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "pe.rdg.taxiapp",
+            "certificate_hash": "7c73580d64781834863cdb8e6a0714d32de50c85"
+          }
+        },
+        {
+          "client_id": "246003170047-7fsbqto8elo5h2hhfe5s37bq5tl649dh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "pe.rdg.taxiapp",
+            "certificate_hash": "45736d824ff6a7f2f3d54b38f2fdd3545409a9e6"
+          }
+        },
+        {
+          "client_id": "246003170047-bnr53i435jem229t2him49b3v5ec9086.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "pe.rdg.taxiapp",
+            "certificate_hash": "a236150f2762c1bc83681e273c1fa77e6873918b"
+          }
+        },
+        {
+          "client_id": "246003170047-v1a0sfv6094l8itf7loea7p6aaeteoi6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "pe.rdg.taxiapp",
+            "certificate_hash": "8405032f40d3b1da184def8fd22135e077e16926"
+          }
+        },
+        {
           "client_id": "246003170047-ddnrlbegi9t7pus8e2te57htl90980l6.apps.googleusercontent.com",
           "client_type": 3
         }

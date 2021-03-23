@@ -11,6 +11,7 @@ import 'package:package_info/package_info.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:stacked/stacked.dart';
 import 'package:taxiapp/localization/keys.dart';
+import 'package:taxiapp/models/enums/user_type.dart';
 import 'package:taxiapp/models/panic_model.dart';
 import 'package:taxiapp/services/api.dart';
 import 'package:taxiapp/utils/alerts.dart';
@@ -266,6 +267,9 @@ class PrincipalViewModel extends ReactiveViewModel {
 
   @override
   void dispose() {
+    if(_appService.user.userType == UserType.Driver){
+      _updateServiceDriver(false);  
+    }
     _locationService.cancelTracking();
     ridesSubscription?.cancel();
     _searchOriginController?.dispose();
@@ -624,8 +628,13 @@ class PrincipalViewModel extends ReactiveViewModel {
     }
   }
 
+  Future<void> _updateServiceDriver(bool statusService )async{
+    await _firestoreUser.updateUserStatusService(userId: _appService.user.uid,
+                                                statusService: statusService);
+  }
   Future<void> updateServiceDriver(bool status) async {
     _enableServiceDriver = status;
+    await _updateServiceDriver(_enableServiceDriver);
     if (_enableServiceDriver) {
       _listRideRequest = [];
       await getRides();

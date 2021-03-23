@@ -90,9 +90,12 @@ class FirestoreUser {
         );
   }
 
-  Future<RideRequestModel> findRequest(String idCollection) async{
-     try {
-      var documentSnapshot = await databaseReference.collection(collectionRides).doc(idCollection).get();
+  Future<RideRequestModel> findRequest(String idCollection) async {
+    try {
+      var documentSnapshot = await databaseReference
+          .collection(collectionRides)
+          .doc(idCollection)
+          .get();
 
       if (documentSnapshot.exists) {
         var data = documentSnapshot.data();
@@ -104,7 +107,7 @@ class FirestoreUser {
     }
     return null;
   }
-  
+
   Future<AppConfigModel> findAppConfig() async {
     try {
       var documentSnapshot =
@@ -135,5 +138,13 @@ class FirestoreUser {
 
   void updateRideRequest({String id, Map data}) {
     databaseReference.collection(collectionRides).doc(id).update(data);
+  }
+
+  void updateUserStatusService({String userId, bool statusService}) {
+    databaseReference
+        .collection(collectionUser)
+        .doc(userId)
+        .update({'statusService': statusService});
+        
   }
 }

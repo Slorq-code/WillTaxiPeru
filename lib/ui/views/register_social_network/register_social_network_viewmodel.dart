@@ -78,7 +78,7 @@ class RegisterSocialNetworkViewModel extends BaseViewModel {
         ExtendedNavigator.root.pop();
 
         if (userRegister) {
-          // _authSocialNetwork.sendSignInLinkToEmail(email);
+          // _authSocialNetwork.sendSignInLinkToEmail(email); //not implemented correctly
           await _token.saveToken(_authSocialNetwork.idToken);
           Alert(context: _context, title: packageInfo.appName, label: Keys.user_created_successfully.localize()).alertCallBack(() {
             ExtendedNavigator.root.push(Routes.principalViewRoute);

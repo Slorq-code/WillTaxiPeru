@@ -40,7 +40,6 @@ class ProfileViewModel extends BaseViewModel {
   final Token _token = locator<Token>();
   
   int _currentIndex = 0;
-  bool _driveStatus = false;
   List<RideRequestModel> _userHistorial = [];
   bool _loadingUserHistorial = false;
   bool _loadingRideSummary = false;
@@ -60,7 +59,6 @@ class ProfileViewModel extends BaseViewModel {
 
   // * Getters
   int get currentIndex => _currentIndex;
-  bool get driveStatus => _driveStatus;
   List<Widget> get children => _children;
   GlobalKey<FormState> get formKey => _formKey;
   UserModel get user => _appService.user;
@@ -114,10 +112,6 @@ class ProfileViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  void changeDriveStatus(bool status) {
-    _driveStatus = status;
-    notifyListeners();
-  }
 
   void logout() async {
     setBusy(true);

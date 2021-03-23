@@ -304,24 +304,6 @@ class _ProfileInformationField extends ViewModelWidget<ProfileViewModel> {
     final isDriver = model.user.userType == UserType.Driver;
     return ListView(
       children: [
-        if (isDriver)
-          Container(
-            height: 40.0,
-            padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12.0),
-            decoration: const BoxDecoration(
-              border: Border(bottom: BorderSide(color: Color(0xffF0F0F0), width: 3.0)),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  Keys.drive.localize(),
-                  style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12.0),
-                ),
-                Transform.scale(scale: 0.8, child: CupertinoSwitch(onChanged: model.changeDriveStatus, value: model.driveStatus)),
-              ],
-            ),
-          ),
         _InformationField(title: Keys.names.localize(), label: model.user.name),
         _InformationField(title: Keys.mobile_phone.localize(), label: model.user.phone),
         _InformationField(title: Keys.email.localize(), label: model.user.email),
@@ -345,24 +327,6 @@ class _ProfileInformationFieldEdit extends ViewModelWidget<ProfileViewModel> {
     final isDriver = model.user.userType == UserType.Driver;
     return ListView(
       children: [
-        if (isDriver)
-          Container(
-            height: 40.0,
-            padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12.0),
-            decoration: const BoxDecoration(
-              border: Border(bottom: BorderSide(color: Color(0xffF0F0F0), width: 3.0)),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  Keys.drive.localize(),
-                  style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12.0),
-                ),
-                Transform.scale(scale: 0.8, child: CupertinoSwitch(onChanged: model.changeDriveStatus, value: model.driveStatus)),
-              ],
-            ),
-          ),
         _InformationField(title: Keys.names.localize(), label: model.user.name),
         Container(
           constraints: const BoxConstraints(minHeight: 40.0),

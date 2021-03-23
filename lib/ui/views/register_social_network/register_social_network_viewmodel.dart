@@ -9,6 +9,7 @@ import 'package:taxiapp/services/auth_social_network_service.dart';
 import 'package:taxiapp/services/firestore_user_service.dart';
 import 'package:taxiapp/utils/alerts.dart';
 import 'package:taxiapp/utils/utils.dart';
+import 'package:taxiapp/services/token.dart';
 
 import 'package:taxiapp/extensions/string_extension.dart';
 
@@ -17,6 +18,7 @@ class RegisterSocialNetworkViewModel extends BaseViewModel {
 
   final AuthSocialNetwork _authSocialNetwork = locator<AuthSocialNetwork>();
   final FirestoreUser _firestoreUser = locator<FirestoreUser>();
+  final Token _token = locator<Token>();
   final BuildContext _context;
   String _name;
   String _phone;
@@ -76,7 +78,8 @@ class RegisterSocialNetworkViewModel extends BaseViewModel {
         ExtendedNavigator.root.pop();
 
         if (userRegister) {
-          _authSocialNetwork.sendSignInLinkToEmail(email);
+          // _authSocialNetwork.sendSignInLinkToEmail(email);
+          await _token.saveToken(_authSocialNetwork.idToken);
           Alert(context: _context, title: packageInfo.appName, label: Keys.user_created_successfully.localize()).alertCallBack(() {
             ExtendedNavigator.root.push(Routes.principalViewRoute);
           });

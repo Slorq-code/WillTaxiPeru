@@ -160,6 +160,12 @@ class LoginViewModel extends BaseViewModel {
     setBusy(false);
   }
 
+  void goToRegisterDriver() async {
+    setBusy(true);
+    await ExtendedNavigator.root.push(Routes.registerDriverViewRoute);
+    setBusy(false);
+  }
+
   void goToResetPassword() async {
     setBusy(true);
     _authSocialNetwork.user.email = user;

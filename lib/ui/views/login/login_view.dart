@@ -201,6 +201,18 @@ class _EnrollAdvice extends ViewModelWidget<LoginViewModel> {
                       model.goToRegisterUser();
                     }
                   }),
+                const TextSpan(
+                  text: ' '
+                ),
+                  TextSpan(
+                text: Keys.enroll_driver.localize(),
+                style: const TextStyle(decoration: TextDecoration.underline, fontWeight: FontWeight.w600, color: Colors.black, fontSize: 16),
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () {
+                    if (!model.isBusy) {
+                      model.goToRegisterDriver();
+                    }
+                  })
           ],
         ),
       ),

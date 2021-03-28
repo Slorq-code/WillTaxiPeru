@@ -1,7 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:stacked/stacked.dart';
 
 import 'package:flutter/material.dart';
@@ -13,6 +12,7 @@ import 'package:taxiapp/extensions/string_extension.dart';
 import 'package:taxiapp/ui/views/registerDriver/registerDriver_viewmodel.dart';
 import 'package:taxiapp/ui/widgets/buttons/platform_back_button.dart';
 import 'package:taxiapp/ui/widgets/text_field/text_field_custom.dart';
+import 'package:toggle_switch/toggle_switch.dart';
 
 class RegisterDriverView extends StatelessWidget {
   @override
@@ -24,18 +24,18 @@ class RegisterDriverView extends StatelessWidget {
         color: PalleteColor.backgroundColor,
         child: Stack(
           children: [
-            if (MediaQuery.of(context).size.height > 600)
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: AspectRatio(
-                  aspectRatio: 1.1,
-                  child: SvgPicture.asset(
-                      'assets/background/background_enroll.svg',
-                      fit: BoxFit.contain),
-                ),
-              ),
+            // if (MediaQuery.of(context).size.height > 600)
+            //   Positioned(
+            //     bottom: 0,
+            //     left: 0,
+            //     right: 0,
+            //     child: AspectRatio(
+            //       aspectRatio: 1.1,
+            //       child: SvgPicture.asset(
+            //           'assets/background/background_enroll.svg',
+            //           fit: BoxFit.contain),
+            //     ),
+            //   ),
             SafeArea(
               child: Scaffold(
                 backgroundColor: Colors.transparent,
@@ -81,7 +81,7 @@ class _BodyRegisterDriver extends HookViewModelWidget<RegisterDriverViewModel> {
     final modelFocus = useFocusNode();
     final yearProductionController = useTextEditingController();
     final yearProductionFocus = useFocusNode();
-    
+
     return Container(
       width: double.infinity,
       height: double.infinity,
@@ -163,79 +163,87 @@ class _BodyRegisterDriver extends HookViewModelWidget<RegisterDriverViewModel> {
                         onChanged: (value) => model.repeatPassword = value,
                         labelText: Keys.repeat_password.localize(),
                         inputFormatters: [LengthLimitingTextInputFormatter(20)],
-                        nextFocus: documentTypeFocus,
+                        nextFocus: documentFocus,
                         isPassword: true,
                         icon: 'assets/icons/lock.svg',
                       ),
                       const SizedBox(height: 10.0),
-
-                      TextFieldCustom(
-                        controller: documentTypeController,
-                        focus: documentTypeFocus,
-                        onChanged: (value) => model.documentType = value,
-                        labelText:'Tipo Documento',//TODO: Translate
-                        nextFocus: documentFocus,
-                        inputFormatters: [LengthLimitingTextInputFormatter(20)],
-                        icon: 'assets/icons/mail.svg',
+                      Row(
+                        children: [
+                          ToggleSwitch(
+                            minWidth: 60,
+                            minHeight: 35,
+                            initialLabelIndex: 0,
+                            labels: ['DNI', 'CE'],
+                            onToggle: (index) {
+                              print('switched to: $index');
+                            },
+                          ),
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          Expanded(
+                            child: TextFieldCustom(
+                                controller: documentController,
+                                focus: documentFocus,
+                                onChanged: (value) => model.document = value,
+                                labelText: 'Documento', //TODO: Translate
+                                nextFocus: plateFocus,
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(20)
+                                ]),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10.0),
+                      ToggleSwitch(
+                        minWidth: 100,
+                        minHeight: 35,
+                        initialLabelIndex: 0,
+                        labels: ['Auto', 'Moto car','Moto lineal'],
+                        onToggle: (index) {
+                          print('switched to: $index');
+                        },
                       ),
                       const SizedBox(height: 10.0),
                       TextFieldCustom(
-                        controller: documentController,
-                        focus: documentFocus,
-                        onChanged: (value) => model.document = value,
-                        labelText:'Documento',//TODO: Translate
-                        nextFocus: plateFocus,
-                        inputFormatters: [LengthLimitingTextInputFormatter(20)],
-                        icon: 'assets/icons/mail.svg',
-                      ),
-                      const SizedBox(height: 10.0),
-                      TextFieldCustom(
-                        controller: plateController,
-                        focus: plateFocus,
-                        onChanged: (value) => model.plate = value,
-                        labelText:'Placa',//TODO: Translate
-                        nextFocus: typeServiceFocus,
-                        inputFormatters: [LengthLimitingTextInputFormatter(20)],
-                        icon: 'assets/icons/mail.svg',
-                      ),
-                      const SizedBox(height: 10.0),
-                      TextFieldCustom(
-                        controller: typeServiceController,
-                        focus: typeServiceFocus,
-                        onChanged: (value) => model.typeService = value,
-                        labelText:'Tipo de Servicio',//TODO: Translate
-                        nextFocus: markFocus,
-                        inputFormatters: [LengthLimitingTextInputFormatter(20)],
-                        icon: 'assets/icons/mail.svg',
-                      ),
+                          controller: plateController,
+                          focus: plateFocus,
+                          onChanged: (value) => model.plate = value,
+                          labelText: 'Placa', //TODO: Translate
+                          nextFocus: markFocus,
+                          inputFormatters: [
+                            LengthLimitingTextInputFormatter(20)
+                          ],
+                          iconData: Icons.description_rounded),
                       const SizedBox(height: 10.0),
                       TextFieldCustom(
                         controller: markController,
                         focus: markFocus,
                         onChanged: (value) => model.mark = value,
-                        labelText:'Marca',//TODO: Translate
+                        labelText: 'Marca', //TODO: Translate
                         nextFocus: modelFocus,
                         inputFormatters: [LengthLimitingTextInputFormatter(20)],
-                        icon: 'assets/icons/mail.svg',
+                        iconData: Icons.wysiwyg_sharp,
                       ),
                       const SizedBox(height: 10.0),
                       TextFieldCustom(
                         controller: modelController,
                         focus: modelFocus,
                         onChanged: (value) => model.model = value,
-                        labelText:'Modelo',//TODO: Translate
+                        labelText: 'Modelo', //TODO: Translate
                         nextFocus: yearProductionFocus,
                         inputFormatters: [LengthLimitingTextInputFormatter(20)],
-                        icon: 'assets/icons/mail.svg',
+                        iconData: Icons.local_car_wash_rounded,
                       ),
                       const SizedBox(height: 10.0),
                       TextFieldCustom(
                         controller: yearProductionController,
                         focus: yearProductionFocus,
                         onChanged: (value) => model.yearProduction = value,
-                        labelText:'Year of production',//TODO: Translate
-                        inputFormatters: [LengthLimitingTextInputFormatter(20)],
-                        icon: 'assets/icons/mail.svg',
+                        labelText: 'Año de fabricación', //TODO: Translate
+                        inputFormatters: [LengthLimitingTextInputFormatter(4)],
+                        iconData: Icons.query_builder,
                         isFinal: true,
                       ),
                       const SizedBox(height: 20.0),

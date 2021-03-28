@@ -115,6 +115,10 @@ class RegisterDriverViewModel extends BaseViewModel {
       !Utils.isNullOrEmpty(phone) &&
       !Utils.isNullOrEmpty(password) &&
       !Utils.isNullOrEmpty(repeatPassword) &&
+      !Utils.isNullOrEmpty(plate) &&
+      !Utils.isNullOrEmpty(mark) &&
+      !Utils.isNullOrEmpty(model) &&
+      !Utils.isNullOrEmpty(yearProduction) &&
       Utils.isValidEmail(email) &&
       Utils.isValidPhone(phone) &&
       Utils.isValidPasswordLength(password);

@@ -21,8 +21,10 @@ class TextFieldCustom extends StatefulWidget {
     this.keyboardType = TextInputType.text,
     this.inputFormatters = const [],
     this.enabled,
+    this.iconData
   }) : super(key: key);
   final String icon;
+  final IconData iconData;
   final TextEditingController controller;
   final String validateText;
   final FocusNode focus;
@@ -56,6 +58,15 @@ class _TextFieldCustomState extends State<TextFieldCustom> {
               width: 25,
               alignment: Alignment.centerLeft,
               child: SvgPicture.asset(widget.icon, height: 22.0),
+            ),
+          ),
+        if(widget.iconData != null)
+            Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: Container(
+              width: 25,
+              alignment: Alignment.centerLeft,
+              child: Icon(widget.iconData ,color: Colors.grey,),
             ),
           ),
         const SizedBox(height: 5.0),

@@ -13,7 +13,17 @@ class UserModel {
   DriverInfoModel driverInfo;
   String token;
 
-  UserModel({this.name, this.uid, this.phone, this.email, this.image, this.userType, this.authType, this.driverInfo,this.token});
+  UserModel({
+    this.name,
+    this.uid,
+    this.phone,
+    this.email,
+    this.image,
+    this.userType,
+    this.authType,
+    this.driverInfo,
+    this.token,
+  });
 
   UserModel.fromJson(Map<String, dynamic> data) {
     name = data['name'] ?? '';
@@ -30,16 +40,15 @@ class UserModel {
     token = data['token'] ?? '';
   }
 
-  UserModel copyWith({
-    String name,
-    String uid,
-    String phone,
-    String email,
-    String image,
-    UserType userType,
-    AuthType authType,
-    String token
-  }) {
+  UserModel copyWith(
+      {String name,
+      String uid,
+      String phone,
+      String email,
+      String image,
+      UserType userType,
+      AuthType authType,
+      String token}) {
     return UserModel(
       name: name ?? this.name,
       uid: uid ?? this.uid,
@@ -66,6 +75,15 @@ class DriverInfoModel {
   int typeService;
   int votes;
 
+  DriverInfoModel(
+      {this.documentType,
+      this.document,
+      this.typeService,
+      this.plate,
+      this.marc,
+      this.model,
+      this.fabrishYear});
+
   DriverInfoModel.fromMap(Map<String, dynamic> data) {
     document = data['document'] ?? '';
     documentType = data['documentType'] ?? '';
@@ -78,5 +96,17 @@ class DriverInfoModel {
     trips = data['trips'] ?? 0;
     typeService = data['typeService'] ?? 0;
     votes = data['votes'] ?? 0;
+  }
+
+  Map<String, dynamic> toJson() {
+    final data = <String, dynamic>{};
+    data['documentType'] = documentType;
+    data['document'] = document;
+    data['typeService'] = typeService;
+    data['plate'] = plate;
+    data['marc'] = marc;
+    data['model'] = model;
+    data['fabrishYear'] = fabrishYear;
+    return data;
   }
 }

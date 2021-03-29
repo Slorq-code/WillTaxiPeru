@@ -173,10 +173,15 @@ class _BodyRegisterDriver extends HookViewModelWidget<RegisterDriverViewModel> {
                           ToggleSwitch(
                             minWidth: 60,
                             minHeight: 35,
-                            initialLabelIndex: 0,
+                            initialLabelIndex:
+                                model.documentType == '03' ? 1 : 0,
                             labels: ['DNI', 'CE'],
                             onToggle: (index) {
-                              print('switched to: $index');
+                              if (index == 0) {
+                                model.documentType = '01';
+                              } else if (index == 1) {
+                                model.documentType = '03';
+                              }
                             },
                           ),
                           const SizedBox(
@@ -199,10 +204,10 @@ class _BodyRegisterDriver extends HookViewModelWidget<RegisterDriverViewModel> {
                       ToggleSwitch(
                         minWidth: 100,
                         minHeight: 35,
-                        initialLabelIndex: 0,
-                        labels: ['Auto', 'Moto car','Moto lineal'],
+                        initialLabelIndex: model.typeService ?? 0,
+                        labels: ['Moto lineal', 'Moto car', 'Auto'],
                         onToggle: (index) {
-                          print('switched to: $index');
+                          model.typeService = index;
                         },
                       ),
                       const SizedBox(height: 10.0),
@@ -242,7 +247,11 @@ class _BodyRegisterDriver extends HookViewModelWidget<RegisterDriverViewModel> {
                         focus: yearProductionFocus,
                         onChanged: (value) => model.yearProduction = value,
                         labelText: 'Año de fabricación', //TODO: Translate
-                        inputFormatters: [LengthLimitingTextInputFormatter(4)],
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(4),
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
+                        keyboardType: TextInputType.number,
                         iconData: Icons.query_builder,
                         isFinal: true,
                       ),

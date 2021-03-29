@@ -44,6 +44,27 @@ class FirestoreUser {
     }
   }
 
+  Future<bool> driverRegister(UserModel user) async {
+    try {
+      await databaseReference.collection(collectionUser).doc(user.uid).set({
+        'name': user.name,
+        'email': user.email.toLowerCase(),
+        'phone': user.phone,
+        'authType': user.authType.index,
+        'userType': user.userType.index,
+        'image': user.image,
+        'registerDate' : DateTime.now().toString(),
+        'driverInfo':user.driverInfo.toJson(),
+        'status': 0,
+        'statusService':false
+      });
+      return true;
+    } catch (err, stacktrace) {
+      print(stacktrace);
+      return false;
+    }
+  }
+
   Future<bool> userExists(String uid) async {
     var documentSnapshot =
         await databaseReference.collection(collectionUser).doc(uid).get();

@@ -10,6 +10,7 @@ import 'package:taxiapp/models/enums/user_type.dart';
 import 'package:taxiapp/models/user_model.dart';
 import 'package:taxiapp/services/auth_social_network_service.dart';
 import 'package:taxiapp/services/firestore_user_service.dart';
+import 'package:taxiapp/services/token.dart';
 import 'package:taxiapp/utils/alerts.dart';
 
 import 'package:taxiapp/extensions/string_extension.dart';
@@ -31,6 +32,7 @@ class RegisterViewModel extends BaseViewModel {
 
   final AuthSocialNetwork _authSocialNetwork = locator<AuthSocialNetwork>();
   final FirestoreUser _firestoreUser = locator<FirestoreUser>();
+  final Token _token = locator<Token>();
 
   void goToEnrollPage() async {}
 
@@ -125,6 +127,7 @@ class RegisterViewModel extends BaseViewModel {
       }
 
       final userCredential = await _authSocialNetwork.createUser(email, password);
+       await _token.saveToken(await userCredential.user.getIdToken()); ;
 
       if (userCredential != null) {
         // USER CREATED ON FIREBASE AUTHENTICATION
@@ -152,8 +155,9 @@ class RegisterViewModel extends BaseViewModel {
           ExtendedNavigator.root.pop();
 
           if (userRegister) {
-            // USER CREATED ON CLOUD FIRESTORE
+            //TODO: guardar token
 
+            // USER CREATED ON CLOUD FIRESTORE
             Alert(context: context, title: packageInfo.appName, label: Keys.user_created_successfully.localize()).alertCallBack(() {
               ExtendedNavigator.root.push(Routes.principalViewRoute);
             });

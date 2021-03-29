@@ -10,6 +10,7 @@ import 'package:taxiapp/models/enums/user_type.dart';
 import 'package:taxiapp/models/user_model.dart';
 import 'package:taxiapp/services/auth_social_network_service.dart';
 import 'package:taxiapp/services/firestore_user_service.dart';
+import 'package:taxiapp/services/token.dart';
 import 'package:taxiapp/utils/alerts.dart';
 
 import 'package:taxiapp/extensions/string_extension.dart';
@@ -31,6 +32,7 @@ class RegisterDriverViewModel extends BaseViewModel {
 
   final AuthSocialNetwork _authSocialNetwork = locator<AuthSocialNetwork>();
   final FirestoreUser _firestoreUser = locator<FirestoreUser>();
+  final Token _token = locator<Token>();
 
   void goToEnrollPage() async {}
 
@@ -42,6 +44,8 @@ class RegisterDriverViewModel extends BaseViewModel {
     name = '';
     passwordOfuscado = true;
     repitePasswordOfuscado = true;
+    documentType = '01';
+    typeService = 2;
   }
 
   String _email;
@@ -51,13 +55,26 @@ class RegisterDriverViewModel extends BaseViewModel {
   String _name;
   bool _passwordOfuscado;
   bool _repitePasswordOfuscado;
-  String documentType;
+
+  String _documentType;
+  String get documentType => _documentType;
+  set documentType(newValue){
+    _documentType = newValue;
+     notifyListeners();
+  }
+
   String document;
   String plate;
-  String typeService;
+
+  int _typeService;
+  int get typeService => _typeService;
+  set typeService(newValue){
+    _typeService = newValue;
+     notifyListeners();
+  }
+
   String mark;
   String model;
-  String fabrishYear;
   String yearProduction;
 
   String get repeatPassword => _repeatPassword;
@@ -137,6 +154,7 @@ class RegisterDriverViewModel extends BaseViewModel {
       }
 
       final userCredential = await _authSocialNetwork.createUser(email, password);
+      var token = await userCredential.user.getIdToken();
 
       if (userCredential != null) {
         // USER CREATED ON FIREBASE AUTHENTICATION
@@ -150,28 +168,37 @@ class RegisterDriverViewModel extends BaseViewModel {
           Alert(context: context, title: packageInfo.appName, label: Keys.email_already_registered.localize()).alertMessage();
         } else {
           // USER DONT EXISTS ON CLOUD FIRESTORE
+            
+          var driver = UserModel(
+            uid:userCredential.user.uid,
+            authType : AuthType.User,
+            userType : UserType.Driver,
+            email: email.toString().toLowerCase().trim(),
+            name: name.toString().trim(),
+            phone:phone.toString().trim(),
+            driverInfo : DriverInfoModel(
+              documentType: documentType,
+              document: document,
+              typeService: typeService,
+              plate: plate,
+              marc: mark,
+              model: model,
+              fabrishYear: yearProduction
+            )
+          );
 
-          _authSocialNetwork.user = UserModel();
-          _authSocialNetwork.user.email = email.toString().toLowerCase().trim();
-          _authSocialNetwork.user.name = name.toString().trim();
-          _authSocialNetwork.user.phone = phone.toString().trim();
-          _authSocialNetwork.user.uid = userCredential.user.uid;
-          _authSocialNetwork.user.authType = AuthType.User;
-          _authSocialNetwork.user.userType = UserType.Client;
-
-          final userRegister = await _firestoreUser.userRegister(_authSocialNetwork.user);
+          final userRegister = await _firestoreUser.driverRegister(driver);
 
           ExtendedNavigator.root.pop();
 
           if (userRegister) {
+            await _token.saveToken(token);
             // USER CREATED ON CLOUD FIRESTORE
-
             Alert(context: context, title: packageInfo.appName, label: Keys.user_created_successfully.localize()).alertCallBack(() {
               ExtendedNavigator.root.push(Routes.principalViewRoute);
             });
           } else {
             // ERROR CREATING USER ON CLOUD FIRESTORE
-
             Alert(context: context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();
           }
         }

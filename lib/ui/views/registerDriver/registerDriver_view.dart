@@ -67,14 +67,10 @@ class _BodyRegisterDriver extends HookViewModelWidget<RegisterDriverViewModel> {
     final retypePasswordController = useTextEditingController();
     final retypePasswordFocus = useFocusNode();
 
-    final documentTypeController = useTextEditingController();
-    final documentTypeFocus = useFocusNode();
     final documentController = useTextEditingController();
     final documentFocus = useFocusNode();
     final plateController = useTextEditingController();
     final plateFocus = useFocusNode();
-    final typeServiceController = useTextEditingController();
-    final typeServiceFocus = useFocusNode();
     final markController = useTextEditingController();
     final markFocus = useFocusNode();
     final modelController = useTextEditingController();

@@ -58,24 +58,52 @@ class RegisterDriverViewModel extends BaseViewModel {
 
   String _documentType;
   String get documentType => _documentType;
-  set documentType(newValue){
+  set documentType(newValue) {
     _documentType = newValue;
-     notifyListeners();
+    notifyListeners();
   }
 
-  String document;
-  String plate;
+  String _document;
+  String get document => _document;
+  set document(value) {
+    _document = value;
+    notifyListeners();
+  }
+
+  String _plate;
+  String get plate => _plate;
+  set plate(value) {
+    _plate = value;
+    notifyListeners();
+  }
 
   int _typeService;
   int get typeService => _typeService;
-  set typeService(newValue){
+  set typeService(newValue) {
     _typeService = newValue;
-     notifyListeners();
+    notifyListeners();
   }
 
-  String mark;
-  String model;
-  String yearProduction;
+  String _mark;
+  String get mark => _mark;
+  set mark(value) {
+    _mark = value;
+    notifyListeners();
+  }
+
+  String _model;
+  String get model => _model;
+  set model(value) {
+    _model = value;
+    notifyListeners();
+  }
+
+  String _yearProduction;
+  String get yearProduction => _yearProduction;
+  set yearProduction(value) {
+    _yearProduction = value;
+    notifyListeners();
+  }
 
   String get repeatPassword => _repeatPassword;
 
@@ -149,72 +177,99 @@ class RegisterDriverViewModel extends BaseViewModel {
 
       if (password.toString().trim() != repeatPassword.toString().trim()) {
         ExtendedNavigator.root.pop();
-        Alert(context: context, title: packageInfo.appName, label: Keys.password_dont_match.localize()).alertMessage();
+        Alert(
+                context: context,
+                title: packageInfo.appName,
+                label: Keys.password_dont_match.localize())
+            .alertMessage();
         return;
       }
 
-      final userCredential = await _authSocialNetwork.createUser(email, password);
-      var token = await userCredential.user.getIdToken();
+      final userCredential =
+          await _authSocialNetwork.createUser(email, password);
 
       if (userCredential != null) {
         // USER CREATED ON FIREBASE AUTHENTICATION
 
-        final userFounded = await _firestoreUser.findUserById(_authSocialNetwork.user.uid);
+        final userFounded =
+            await _firestoreUser.findUserById(userCredential.user.uid);
 
         if (userFounded != null) {
           // USER ALREADY EXISTS ON CLOUD FIRESTORE
 
           ExtendedNavigator.root.pop();
-          Alert(context: context, title: packageInfo.appName, label: Keys.email_already_registered.localize()).alertMessage();
+          Alert(
+                  context: context,
+                  title: packageInfo.appName,
+                  label: Keys.email_already_registered.localize())
+              .alertMessage();
         } else {
           // USER DONT EXISTS ON CLOUD FIRESTORE
-            
-          var driver = UserModel(
-            uid:userCredential.user.uid,
-            authType : AuthType.User,
-            userType : UserType.Driver,
-            email: email.toString().toLowerCase().trim(),
-            name: name.toString().trim(),
-            phone:phone.toString().trim(),
-            driverInfo : DriverInfoModel(
-              documentType: documentType,
-              document: document,
-              typeService: typeService,
-              plate: plate,
-              marc: mark,
-              model: model,
-              fabrishYear: yearProduction
-            )
-          );
+        var token = await userCredential.user.getIdToken();
+        _authSocialNetwork.user = UserModel(
+              uid: userCredential.user.uid,
+              authType: AuthType.User,
+              userType: UserType.Driver,
+              email: email.toString().toLowerCase().trim(),
+              name: name.toString().trim(),
+              phone: phone.toString().trim(),
+              driverInfo: DriverInfoModel(
+                  documentType: documentType,
+                  document: document,
+                  typeService: typeService,
+                  plate: plate,
+                  marc: mark,
+                  model: model,
+                  fabrishYear: yearProduction));
 
-          final userRegister = await _firestoreUser.driverRegister(driver);
+          final userRegister = await _firestoreUser.driverRegister(_authSocialNetwork.user);
 
           ExtendedNavigator.root.pop();
 
           if (userRegister) {
             await _token.saveToken(token);
             // USER CREATED ON CLOUD FIRESTORE
-            Alert(context: context, title: packageInfo.appName, label: Keys.user_created_successfully.localize()).alertCallBack(() {
+            Alert(
+                    context: context,
+                    title: packageInfo.appName,
+                    label: Keys.user_created_successfully.localize())
+                .alertCallBack(() {
               ExtendedNavigator.root.push(Routes.principalViewRoute);
             });
           } else {
             // ERROR CREATING USER ON CLOUD FIRESTORE
-            Alert(context: context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();
+            Alert(
+                    context: context,
+                    title: packageInfo.appName,
+                    label: Keys.request_not_processed_correctly.localize())
+                .alertMessage();
           }
         }
       } else {
         ExtendedNavigator.root.pop();
-        Alert(context: context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();
+        Alert(
+                context: context,
+                title: packageInfo.appName,
+                label: Keys.request_not_processed_correctly.localize())
+            .alertMessage();
       }
     } catch (signUpError) {
       if (signUpError is FirebaseAuthException) {
         print(signUpError.code);
         if (signUpError.code == 'email-already-in-use') {
           ExtendedNavigator.root.pop();
-          Alert(context: context, title: packageInfo.appName, label: Keys.email_already_registered.localize()).alertMessage();
+          Alert(
+                  context: context,
+                  title: packageInfo.appName,
+                  label: Keys.email_already_registered.localize())
+              .alertMessage();
         } else {
           ExtendedNavigator.root.pop();
-          Alert(context: context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();
+          Alert(
+                  context: context,
+                  title: packageInfo.appName,
+                  label: Keys.request_not_processed_correctly.localize())
+              .alertMessage();
         }
       }
     } finally {

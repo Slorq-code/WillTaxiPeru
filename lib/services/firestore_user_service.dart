@@ -52,8 +52,8 @@ class FirestoreUser {
         'phone': user.phone,
         'authType': user.authType.index,
         'userType': user.userType.index,
-        'image': user.image,
-        'registerDate' : DateTime.now().toString(),
+        // 'image': user.image,
+        'registerDate' : DateTime.now(),
         'driverInfo':user.driverInfo.toJson(),
         'status': 0,
         'statusService':false

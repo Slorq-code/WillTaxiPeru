@@ -127,7 +127,6 @@ class RegisterViewModel extends BaseViewModel {
       }
 
       final userCredential = await _authSocialNetwork.createUser(email, password);
-       await _token.saveToken(await userCredential.user.getIdToken()); ;
 
       if (userCredential != null) {
         // USER CREATED ON FIREBASE AUTHENTICATION
@@ -155,15 +154,14 @@ class RegisterViewModel extends BaseViewModel {
           ExtendedNavigator.root.pop();
 
           if (userRegister) {
-            //TODO: guardar token
-
+            var token = await userCredential.user.getIdToken();
+            await _token.saveToken(token);
             // USER CREATED ON CLOUD FIRESTORE
             Alert(context: context, title: packageInfo.appName, label: Keys.user_created_successfully.localize()).alertCallBack(() {
               ExtendedNavigator.root.push(Routes.principalViewRoute);
             });
           } else {
             // ERROR CREATING USER ON CLOUD FIRESTORE
-
             Alert(context: context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();
           }
         }

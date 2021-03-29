@@ -136,12 +136,12 @@ class Api {
   }
 
   Future<Map> getPricing(Map data) async {
-    var response = await _post('/rides/pricing', data);
+    var response = await _post('/rides/pricing', data).timeout(const Duration(milliseconds: 10000));
     return response;
   }
 
   Future<PanicModel> getInformationPanic(String code) async {
-    var response = await _post('/rides/panic/' + code, {});
+    var response = await _post('/rides/panic/' + code, {}).timeout(const Duration(milliseconds: 10000));
     var model = PanicModel.fromJson(response);
     return model;
   }

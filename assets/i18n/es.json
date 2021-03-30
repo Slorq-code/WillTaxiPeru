@@ -72,5 +72,15 @@
 	"the_driver_has_canceled": "El conductor ha cancelado!",
 	"request_with_wrong_status": "No es posible atender esta solicitud!",
 	"do_you_want_to_confirm_a_panic_alert": "¿Desea confirmar el envío de una alerta de pánico?",
-	"enroll_driver":"Regístrate conductor"
+	"enroll_driver": "Regístrate conductor",
+	"user_created_and_error_in_image": "Usuario creado satisfactoriamente, error al guardar imagen de perfil",
+	"document": "Documento",
+	"plate": "Placa",
+	"mark": "Marca",
+	"model": "modelo",
+	"year_of_production": "Año de produccion",
+	"profile_picture":"Foto de perfil",
+	"upload_picture":"Subir foto",
+	"gallery":"Galería",
+	"camera":"Cámara"
 }

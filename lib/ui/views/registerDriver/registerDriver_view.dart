@@ -190,7 +190,7 @@ class _BodyRegisterDriver extends HookViewModelWidget<RegisterDriverViewModel> {
                                 controller: documentController,
                                 focus: documentFocus,
                                 onChanged: (value) => model.document = value,
-                                labelText: 'Documento', //TODO: Translate
+                                labelText: Keys.document.localize(),
                                 nextFocus: plateFocus,
                                 inputFormatters: [
                                   LengthLimitingTextInputFormatter(20)
@@ -213,7 +213,7 @@ class _BodyRegisterDriver extends HookViewModelWidget<RegisterDriverViewModel> {
                           controller: plateController,
                           focus: plateFocus,
                           onChanged: (value) => model.plate = value,
-                          labelText: 'Placa', //TODO: Translate
+                          labelText: Keys.plate.localize(),
                           nextFocus: markFocus,
                           inputFormatters: [
                             LengthLimitingTextInputFormatter(20)
@@ -224,7 +224,7 @@ class _BodyRegisterDriver extends HookViewModelWidget<RegisterDriverViewModel> {
                         controller: markController,
                         focus: markFocus,
                         onChanged: (value) => model.mark = value,
-                        labelText: 'Marca', //TODO: Translate
+                        labelText: Keys.mark.localize(),
                         nextFocus: modelFocus,
                         inputFormatters: [LengthLimitingTextInputFormatter(20)],
                         iconData: Icons.wysiwyg_sharp,
@@ -234,7 +234,7 @@ class _BodyRegisterDriver extends HookViewModelWidget<RegisterDriverViewModel> {
                         controller: modelController,
                         focus: modelFocus,
                         onChanged: (value) => model.model = value,
-                        labelText: 'Modelo', //TODO: Translate
+                        labelText: Keys.model.localize(),
                         nextFocus: yearProductionFocus,
                         inputFormatters: [LengthLimitingTextInputFormatter(20)],
                         iconData: Icons.local_car_wash_rounded,
@@ -244,7 +244,7 @@ class _BodyRegisterDriver extends HookViewModelWidget<RegisterDriverViewModel> {
                         controller: yearProductionController,
                         focus: yearProductionFocus,
                         onChanged: (value) => model.yearProduction = value,
-                        labelText: 'Año de fabricación', //TODO: Translate
+                        labelText: Keys.year_of_production.localize(),
                         inputFormatters: [
                           LengthLimitingTextInputFormatter(4),
                           FilteringTextInputFormatter.digitsOnly
@@ -257,7 +257,7 @@ class _BodyRegisterDriver extends HookViewModelWidget<RegisterDriverViewModel> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text('Profile Picture : '),
+                          Text(Keys.year_of_production.localize() + ' : '),
                           Stack(
                               children: [
                             Container(
@@ -267,7 +267,7 @@ class _BodyRegisterDriver extends HookViewModelWidget<RegisterDriverViewModel> {
                                   child: model.image == null
                                       ? InkWell(
                                           onTap: model.showPicker,
-                                          child: UploadPicture())
+                                          child: _UploadPicture())
                                       : Image.file(
                                           model.image,
                                           fit: BoxFit.cover,
@@ -291,8 +291,8 @@ class _BodyRegisterDriver extends HookViewModelWidget<RegisterDriverViewModel> {
                                                   width: 1.0),
                                             ),
                                             height:
-                                                28.0, // height of the button
-                                            width: 28.0, // width of the button
+                                                28.0,
+                                            width: 28.0,
                                             child: const Icon(Icons.close,
                                                 color: Colors.black,
                                                 size: 17.0),
@@ -320,7 +320,7 @@ class _BodyRegisterDriver extends HookViewModelWidget<RegisterDriverViewModel> {
   }
 }
 
-class UploadPicture extends StatelessWidget {
+class _UploadPicture extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -330,10 +330,10 @@ class UploadPicture extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const Icon(Icons.camera_alt_outlined, color: Colors.white),
-          const Text(
-            'Upload Picture',
+          Text(
+            Keys.year_of_production.localize(),
             textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.white),
+            style: const TextStyle(color: Colors.white),
           ),
         ],
       ),

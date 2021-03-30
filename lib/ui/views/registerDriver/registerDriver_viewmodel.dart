@@ -138,14 +138,14 @@ class RegisterDriverViewModel extends BaseViewModel {
                 children: <Widget>[
                   ListTile(
                       leading: const Icon(Icons.photo_library),
-                      title: const Text('Galería'),
+                      title: Text(Keys.gallery.localize()),
                       onTap: () {
                         selecImage(ImageSource.gallery);
                         Navigator.of(context).pop();
                       }),
                   ListTile(
                     leading: const Icon(Icons.photo_camera),
-                    title: const Text('Cámara'),
+                    title: Text(Keys.camera.localize()),
                     onTap: () {
                       selecImage(ImageSource.camera);
                       Navigator.of(context).pop();
@@ -297,11 +297,10 @@ class RegisterDriverViewModel extends BaseViewModel {
             } on Exception catch (e) {
               print(e.toString());
               ExtendedNavigator.root.pop();
-
               Alert(
                       context: context,
                       title: packageInfo.appName,
-                      label: Keys.user_created_successfully.localize())
+                      label: Keys.user_created_and_error_in_image.localize())
                   .alertCallBack(() {
                 ExtendedNavigator.root.push(Routes.principalViewRoute);
               });

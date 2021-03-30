@@ -78,6 +78,8 @@ class _BodyRegisterDriver extends HookViewModelWidget<RegisterDriverViewModel> {
     final yearProductionController = useTextEditingController();
     final yearProductionFocus = useFocusNode();
 
+    const separator = SizedBox(height: 7.0);
+
     return Container(
       width: double.infinity,
       height: double.infinity,
@@ -116,7 +118,7 @@ class _BodyRegisterDriver extends HookViewModelWidget<RegisterDriverViewModel> {
                         inputFormatters: [LengthLimitingTextInputFormatter(50)],
                         icon: 'assets/icons/profile_avatar.svg',
                       ),
-                      const SizedBox(height: 10.0),
+                      separator,
                       TextFieldCustom(
                         controller: phoneController,
                         focus: phoneFocus,
@@ -130,7 +132,7 @@ class _BodyRegisterDriver extends HookViewModelWidget<RegisterDriverViewModel> {
                         keyboardType: TextInputType.phone,
                         icon: 'assets/icons/phone_enroll.svg',
                       ),
-                      const SizedBox(height: 10.0),
+                      separator,
                       TextFieldCustom(
                         controller: emailController,
                         focus: emailFocus,
@@ -141,7 +143,7 @@ class _BodyRegisterDriver extends HookViewModelWidget<RegisterDriverViewModel> {
                         keyboardType: TextInputType.emailAddress,
                         icon: 'assets/icons/mail.svg',
                       ),
-                      const SizedBox(height: 10.0),
+                      separator,
                       TextFieldCustom(
                         controller: passwordController,
                         focus: passwordFocus,
@@ -152,7 +154,7 @@ class _BodyRegisterDriver extends HookViewModelWidget<RegisterDriverViewModel> {
                         isPassword: true,
                         icon: 'assets/icons/lock.svg',
                       ),
-                      const SizedBox(height: 10.0),
+                      separator,
                       TextFieldCustom(
                         controller: retypePasswordController,
                         focus: retypePasswordFocus,
@@ -163,7 +165,7 @@ class _BodyRegisterDriver extends HookViewModelWidget<RegisterDriverViewModel> {
                         isPassword: true,
                         icon: 'assets/icons/lock.svg',
                       ),
-                      const SizedBox(height: 10.0),
+                      separator,
                       Row(
                         children: [
                           ToggleSwitch(
@@ -196,7 +198,7 @@ class _BodyRegisterDriver extends HookViewModelWidget<RegisterDriverViewModel> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 10.0),
+                      separator,
                       ToggleSwitch(
                         minWidth: 100,
                         minHeight: 35,
@@ -206,7 +208,7 @@ class _BodyRegisterDriver extends HookViewModelWidget<RegisterDriverViewModel> {
                           model.typeService = index;
                         },
                       ),
-                      const SizedBox(height: 10.0),
+                      separator,
                       TextFieldCustom(
                           controller: plateController,
                           focus: plateFocus,
@@ -217,7 +219,7 @@ class _BodyRegisterDriver extends HookViewModelWidget<RegisterDriverViewModel> {
                             LengthLimitingTextInputFormatter(20)
                           ],
                           iconData: Icons.description_rounded),
-                      const SizedBox(height: 10.0),
+                      separator,
                       TextFieldCustom(
                         controller: markController,
                         focus: markFocus,
@@ -227,7 +229,7 @@ class _BodyRegisterDriver extends HookViewModelWidget<RegisterDriverViewModel> {
                         inputFormatters: [LengthLimitingTextInputFormatter(20)],
                         iconData: Icons.wysiwyg_sharp,
                       ),
-                      const SizedBox(height: 10.0),
+                      separator,
                       TextFieldCustom(
                         controller: modelController,
                         focus: modelFocus,
@@ -237,7 +239,7 @@ class _BodyRegisterDriver extends HookViewModelWidget<RegisterDriverViewModel> {
                         inputFormatters: [LengthLimitingTextInputFormatter(20)],
                         iconData: Icons.local_car_wash_rounded,
                       ),
-                      const SizedBox(height: 10.0),
+                      separator,
                       TextFieldCustom(
                         controller: yearProductionController,
                         focus: yearProductionFocus,
@@ -251,7 +253,59 @@ class _BodyRegisterDriver extends HookViewModelWidget<RegisterDriverViewModel> {
                         iconData: Icons.query_builder,
                         isFinal: true,
                       ),
-                      const SizedBox(height: 20.0),
+                      separator,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text('Profile Picture : '),
+                          Stack(
+                              children: [
+                            Container(
+                              width: 80,
+                              height: 80,
+                              child: ClipOval(
+                                  child: model.image == null
+                                      ? InkWell(
+                                          onTap: model.showPicker,
+                                          child: UploadPicture())
+                                      : Image.file(
+                                          model.image,
+                                          fit: BoxFit.cover,
+                                        )),
+                            ),
+                            model.image != null
+                                ? Positioned(
+                                    left: 50,
+                                    child: Row(
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () {
+                                            model.image = null;
+                                          },
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: Colors.white,
+                                              border: Border.all(
+                                                  color: Colors.grey,
+                                                  width: 1.0),
+                                            ),
+                                            height:
+                                                28.0, // height of the button
+                                            width: 28.0, // width of the button
+                                            child: const Icon(Icons.close,
+                                                color: Colors.black,
+                                                size: 17.0),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                : null,
+                          ].where((wd) => wd != null).toList()),
+                        ],
+                      ),
+                      const SizedBox(height: 15.0),
                     ],
                   ),
                 ),
@@ -259,6 +313,27 @@ class _BodyRegisterDriver extends HookViewModelWidget<RegisterDriverViewModel> {
                 const SizedBox(height: 10.0),
               ],
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class UploadPicture extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.grey,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const Icon(Icons.camera_alt_outlined, color: Colors.white),
+          const Text(
+            'Upload Picture',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.white),
           ),
         ],
       ),
@@ -276,7 +351,7 @@ class _ContinueEnrollButton extends ViewModelWidget<RegisterDriverViewModel> {
     return Container(
       padding: EdgeInsets.symmetric(
           horizontal: MediaQuery.of(context).size.width * .18),
-      height: 50,
+      height: 40,
       child: RaisedButton(
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),

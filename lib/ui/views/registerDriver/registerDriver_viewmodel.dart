@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:stacked/stacked.dart';
 import 'package:taxiapp/app/locator.dart';
 import 'package:taxiapp/app/router.gr.dart';
@@ -8,6 +11,7 @@ import 'package:taxiapp/localization/keys.dart';
 import 'package:taxiapp/models/enums/auth_type.dart';
 import 'package:taxiapp/models/enums/user_type.dart';
 import 'package:taxiapp/models/user_model.dart';
+import 'package:taxiapp/services/api.dart';
 import 'package:taxiapp/services/auth_social_network_service.dart';
 import 'package:taxiapp/services/firestore_user_service.dart';
 import 'package:taxiapp/services/token.dart';
@@ -33,6 +37,7 @@ class RegisterDriverViewModel extends BaseViewModel {
   final AuthSocialNetwork _authSocialNetwork = locator<AuthSocialNetwork>();
   final FirestoreUser _firestoreUser = locator<FirestoreUser>();
   final Token _token = locator<Token>();
+  final Api _api = locator<Api>();
 
   void goToEnrollPage() async {}
 
@@ -105,8 +110,55 @@ class RegisterDriverViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  String get repeatPassword => _repeatPassword;
+  File _image;
+  File get image => _image;
+  set image(value) {
+    _image = value;
+    notifyListeners();
+  }
 
+  final picker = ImagePicker();
+
+  void selecImage(ImageSource imageSource) async {
+    final pickedFile = await picker.getImage(source: imageSource);
+    if (pickedFile != null) {
+      image = File(pickedFile.path);
+    } else {
+      print('No image selected.');
+    }
+  }
+
+  void showPicker() {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return SafeArea(
+            child: Container(
+              child: Wrap(
+                children: <Widget>[
+                  ListTile(
+                      leading: const Icon(Icons.photo_library),
+                      title: const Text('Galería'),
+                      onTap: () {
+                        selecImage(ImageSource.gallery);
+                        Navigator.of(context).pop();
+                      }),
+                  ListTile(
+                    leading: const Icon(Icons.photo_camera),
+                    title: const Text('Cámara'),
+                    onTap: () {
+                      selecImage(ImageSource.camera);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
+  String get repeatPassword => _repeatPassword;
   set repeatPassword(repeatPassword) {
     _repeatPassword = repeatPassword;
     notifyListeners();
@@ -166,7 +218,8 @@ class RegisterDriverViewModel extends BaseViewModel {
       !Utils.isNullOrEmpty(yearProduction) &&
       Utils.isValidEmail(email) &&
       Utils.isValidPhone(phone) &&
-      Utils.isValidPasswordLength(password);
+      Utils.isValidPasswordLength(password) &&
+      (image != null);
 
   void signin() async {
     setBusy(true);
@@ -205,8 +258,8 @@ class RegisterDriverViewModel extends BaseViewModel {
               .alertMessage();
         } else {
           // USER DONT EXISTS ON CLOUD FIRESTORE
-        var token = await userCredential.user.getIdToken();
-        _authSocialNetwork.user = UserModel(
+          var token = await userCredential.user.getIdToken();
+          _authSocialNetwork.user = UserModel(
               uid: userCredential.user.uid,
               authType: AuthType.User,
               userType: UserType.Driver,
@@ -222,20 +275,37 @@ class RegisterDriverViewModel extends BaseViewModel {
                   model: model,
                   fabrishYear: yearProduction));
 
-          final userRegister = await _firestoreUser.driverRegister(_authSocialNetwork.user);
-
-          ExtendedNavigator.root.pop();
-
+          final userRegister =
+              await _firestoreUser.driverRegister(_authSocialNetwork.user);
           if (userRegister) {
             await _token.saveToken(token);
-            // USER CREATED ON CLOUD FIRESTORE
-            Alert(
-                    context: context,
-                    title: packageInfo.appName,
-                    label: Keys.user_created_successfully.localize())
-                .alertCallBack(() {
-              ExtendedNavigator.root.push(Routes.principalViewRoute);
-            });
+            try {
+              var urlImage =
+                  await _api.sendImage(image, _authSocialNetwork.user.uid);
+              await _firestoreUser.updateImageUser(
+                  userId: _authSocialNetwork.user.uid, urlImage: urlImage);
+              _authSocialNetwork.user.image = urlImage; 
+              ExtendedNavigator.root.pop();
+              // USER CREATED ON CLOUD FIRESTORE
+              Alert(
+                      context: context,
+                      title: packageInfo.appName,
+                      label: Keys.user_created_successfully.localize())
+                  .alertCallBack(() {
+                ExtendedNavigator.root.push(Routes.principalViewRoute);
+              });
+            } on Exception catch (e) {
+              print(e.toString());
+              ExtendedNavigator.root.pop();
+
+              Alert(
+                      context: context,
+                      title: packageInfo.appName,
+                      label: Keys.user_created_successfully.localize())
+                  .alertCallBack(() {
+                ExtendedNavigator.root.push(Routes.principalViewRoute);
+              });
+            }
           } else {
             // ERROR CREATING USER ON CLOUD FIRESTORE
             Alert(

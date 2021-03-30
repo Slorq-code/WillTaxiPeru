@@ -78,6 +78,8 @@
 	<string>Motion</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Would like access to your photo gallery</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Allow access to camera to capture photos</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Speech</string>
 	<key>UILaunchStoryboardName</key>

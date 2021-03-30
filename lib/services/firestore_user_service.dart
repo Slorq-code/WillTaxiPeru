@@ -47,16 +47,17 @@ class FirestoreUser {
   Future<bool> driverRegister(UserModel user) async {
     try {
       await databaseReference.collection(collectionUser).doc(user.uid).set({
+        'uid': user.uid,
         'name': user.name,
         'email': user.email.toLowerCase(),
         'phone': user.phone,
         'authType': user.authType.index,
         'userType': user.userType.index,
         // 'image': user.image,
-        'registerDate' : DateTime.now(),
-        'driverInfo':user.driverInfo.toJson(),
+        'registerDate': DateTime.now(),
+        'driverInfo': user.driverInfo.toJson(),
         'status': 0,
-        'statusService':false
+        'statusService': false
       });
       return true;
     } catch (err, stacktrace) {
@@ -166,6 +167,12 @@ class FirestoreUser {
         .collection(collectionUser)
         .doc(userId)
         .update({'statusService': statusService});
-        
+  }
+
+  void updateImageUser({String userId, String urlImage}) {
+    databaseReference
+        .collection(collectionUser)
+        .doc(userId)
+        .update({'image': urlImage});
   }
 }

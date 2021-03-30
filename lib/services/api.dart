@@ -15,13 +15,14 @@ import 'package:taxiapp/utils/retry/dio_retry.dart';
 
 @lazySingleton
 class Api {
+  static const _API_URL = 'https://warzsud.herokuapp.com/';
   final Dio _dioBack = Dio();
   final Dio _dioMap = Dio();
   final shared = locator<Storage>();
   final token = locator<Token>();
 
   Api() {
-    _dioBack.options.baseUrl = 'https://warzsud.herokuapp.com/';
+    _dioBack.options.baseUrl = _API_URL;
     _dioBack.options.connectTimeout = 5000;
     _dioBack.options.sendTimeout = 5000;
     _dioBack.options.receiveTimeout = 20000;
@@ -136,13 +137,34 @@ class Api {
   }
 
   Future<Map> getPricing(Map data) async {
-    var response = await _post('/rides/pricing', data).timeout(const Duration(milliseconds: 10000));
+    var response = await _post('/rides/pricing', data)
+        .timeout(const Duration(milliseconds: 10000));
     return response;
   }
 
   Future<PanicModel> getInformationPanic(String code) async {
-    var response = await _post('/rides/panic/' + code, {}).timeout(const Duration(milliseconds: 10000));
+    var response = await _post('/rides/panic/' + code, {})
+        .timeout(const Duration(milliseconds: 10000));
     var model = PanicModel.fromJson(response);
     return model;
+  }
+
+  Future<String> sendImage(File file, String uid) async {
+    var fileName = file.path.split('/').last;
+    var formData = FormData.fromMap(
+        {'file': await MultipartFile.fromFile(file.path, filename: fileName)});
+    var token = await shared.getString('token');
+    var dio = Dio();
+    var urlPost = _API_URL + 'users/image/$uid';
+    await dio
+        .post(urlPost,
+            data: formData,
+            options: Options(
+              headers: {
+                'Authorization': 'Bearer $token',
+              },
+            ))
+        .timeout(const Duration(milliseconds: 20000));
+    return urlPost;
   }
 }

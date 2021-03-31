@@ -84,5 +84,7 @@
 	"gallery":"Gallery",
 	"camera":"Camera",
 	"user_pending_approval":"User pending approval",
-	"user_blocked":"User blocked"
+	"user_blocked":"User blocked",
+	"i_am_a_user":"I am a user",
+	"i_am_a_driver":"I am a driver"
 }

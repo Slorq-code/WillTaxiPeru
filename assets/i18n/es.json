@@ -84,5 +84,7 @@
 	"gallery":"Galería",
 	"camera":"Cámara",
 	"user_pending_approval":"Usuario pendiente de aprobación",
-	"user_blocked":"Usuario bloqueado"
+	"user_blocked":"Usuario bloqueado",
+	"i_am_a_user":"Soy usuario",
+	"i_am_a_driver":"Soy conductor"
 }

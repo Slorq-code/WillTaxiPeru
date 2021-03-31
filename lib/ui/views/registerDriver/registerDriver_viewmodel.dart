@@ -284,7 +284,7 @@ class RegisterDriverViewModel extends BaseViewModel {
                   await _api.sendImage(image, _authSocialNetwork.user.uid);
               await _firestoreUser.updateImageUser(
                   userId: _authSocialNetwork.user.uid, urlImage: urlImage);
-              _authSocialNetwork.user.image = urlImage; 
+              _authSocialNetwork.user.image = urlImage;
               ExtendedNavigator.root.pop();
               // USER CREATED ON CLOUD FIRESTORE
               Alert(
@@ -292,7 +292,8 @@ class RegisterDriverViewModel extends BaseViewModel {
                       title: packageInfo.appName,
                       label: Keys.user_created_successfully.localize())
                   .alertCallBack(() {
-                ExtendedNavigator.root.push(Routes.principalViewRoute);
+                _redirectLogin();
+                // ExtendedNavigator.root.push(Routes.principalViewRoute);
               });
             } on Exception catch (e) {
               print(e.toString());
@@ -302,7 +303,8 @@ class RegisterDriverViewModel extends BaseViewModel {
                       title: packageInfo.appName,
                       label: Keys.user_created_and_error_in_image.localize())
                   .alertCallBack(() {
-                ExtendedNavigator.root.push(Routes.principalViewRoute);
+                _redirectLogin();
+                // ExtendedNavigator.root.push(Routes.principalViewRoute);
               });
             }
           } else {
@@ -344,5 +346,10 @@ class RegisterDriverViewModel extends BaseViewModel {
     } finally {
       setBusy(false);
     }
+  }
+
+  void _redirectLogin() {
+    _token.deleteToken();
+    ExtendedNavigator.root.push(Routes.loginViewRoute);
   }
 }

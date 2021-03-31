@@ -1,21 +1,37 @@
 {
   "project_info": {
-    "project_number": "1073232408069",
-    "firebase_url": "https://webeo-maps.firebaseio.com",
-    "project_id": "webeo-maps",
-    "storage_bucket": "webeo-maps.appspot.com"
+    "project_number": "246003170047",
+    "firebase_url": "https://agencia-de-viajes-warzsud.firebaseio.com",
+    "project_id": "agencia-de-viajes-warzsud",
+    "storage_bucket": "agencia-de-viajes-warzsud.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1073232408069:android:b42cd04fc44682e563b66c",
+        "mobilesdk_app_id": "1:246003170047:android:205a21102ec52c772aaaca",
         "android_client_info": {
           "package_name": "pe.rdg.taxiapp"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1073232408069-ll8qc872ornq32e64qmv3dha5i26lgi9.apps.googleusercontent.com",
+          "client_id": "246003170047-11j2lq1jk2cp8u3fpi789fsn030gimk7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "pe.rdg.taxiapp",
+            "certificate_hash": "567cc36017aa8d7547167044031688597ff6f623"
+          }
+        },
+        {
+          "client_id": "246003170047-6qeij95k951nu7g19e5r2jepak19m9ce.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "pe.rdg.taxiapp",
+            "certificate_hash": "7c73580d64781834863cdb8e6a0714d32de50c85"
+          }
+        },
+        {
+          "client_id": "246003170047-754oj5ed6euveq4o87hq9kvnsjmla58h.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "pe.rdg.taxiapp",
@@ -23,28 +39,37 @@
           }
         },
         {
-          "client_id": "1073232408069-9r5rs1td9f2c5e77ft4u4ul6dor9dg7i.apps.googleusercontent.com",
+          "client_id": "246003170047-bnr53i435jem229t2him49b3v5ec9086.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "pe.rdg.taxiapp",
+            "certificate_hash": "a236150f2762c1bc83681e273c1fa77e6873918b"
+          }
+        },
+        {
+          "client_id": "246003170047-v1a0sfv6094l8itf7loea7p6aaeteoi6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "pe.rdg.taxiapp",
+            "certificate_hash": "8405032f40d3b1da184def8fd22135e077e16926"
+          }
+        },
+        {
+          "client_id": "246003170047-ddnrlbegi9t7pus8e2te57htl90980l6.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyA4CVlVWr777zC7FS9E5AcyCvjuatoyhOo"
+          "current_key": "AIzaSyBX5S4qzKqos_0vkmJ01V29GDMbMb6Vf3I"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "1073232408069-9r5rs1td9f2c5e77ft4u4ul6dor9dg7i.apps.googleusercontent.com",
+              "client_id": "246003170047-ddnrlbegi9t7pus8e2te57htl90980l6.apps.googleusercontent.com",
               "client_type": 3
-            },
-            {
-              "client_id": "1073232408069-s4cdck8oc6nttfrnuffjveduh0ng9via.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "pe.rdg.will"
-              }
             }
           ]
         }

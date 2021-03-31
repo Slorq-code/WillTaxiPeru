@@ -15,7 +15,7 @@ import 'package:taxiapp/utils/retry/dio_retry.dart';
 
 @lazySingleton
 class Api {
-  static const _API_URL = 'https://warzsud.herokuapp.com/';
+  static const _API_URL = 'http://51.79.50.169:8080/warzsud/';
   final Dio _dioBack = Dio();
   final Dio _dioMap = Dio();
   final shared = locator<Storage>();

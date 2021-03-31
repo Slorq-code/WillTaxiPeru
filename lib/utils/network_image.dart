@@ -21,7 +21,7 @@ class PNetworkImage extends StatelessWidget {
         height: 100.0,
         width: 100.0,
         child: Image.asset(
-          'assets/home/default_business.jpg',
+          'assets/icons/logoWill.jpg',
           fit: fit,
           width: width,
           height: height,

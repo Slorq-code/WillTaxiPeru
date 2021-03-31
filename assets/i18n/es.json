@@ -82,5 +82,7 @@
 	"profile_picture":"Foto de perfil",
 	"upload_picture":"Subir foto",
 	"gallery":"Galería",
-	"camera":"Cámara"
+	"camera":"Cámara",
+	"user_pending_approval":"Usuario pendiente de aprobación",
+	"user_blocked":"Usuario bloqueado"
 }

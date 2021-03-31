@@ -257,7 +257,7 @@ class _BodyRegisterDriver extends HookViewModelWidget<RegisterDriverViewModel> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(Keys.year_of_production.localize() + ' : '),
+                          Text(Keys.profile_picture.localize() + ' : '),
                           Stack(
                               children: [
                             Container(
@@ -331,7 +331,7 @@ class _UploadPicture extends StatelessWidget {
         children: [
           const Icon(Icons.camera_alt_outlined, color: Colors.white),
           Text(
-            Keys.year_of_production.localize(),
+            Keys.upload_picture.localize(),
             textAlign: TextAlign.center,
             style: const TextStyle(color: Colors.white),
           ),

@@ -50,7 +50,7 @@ class _PanicButton extends ViewModelWidget<PrincipalViewModel> {
               hoverElevation: 10,
               highlightElevation: 10,
               isExtended: true,
-              onPressed: ()=> model.sendTextPanic(),
+              onPressed: () => model.sendTextPanic(),
               materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
               child: Image.asset('assets/icons/panic_button.png', height: 65.0),
             ),
@@ -77,7 +77,7 @@ class _RideInformationSection extends ViewModelWidget<PrincipalViewModel> {
             borderColor: const Color(0xff1a9ab7),
             isSelected: model.vehicleSelected == VehicleType.moto,
           ),
-          Text(Keys.moto.localize()),
+          // Text(Keys.moto.localize()),
         ];
         break;
       case VehicleType.taxi:
@@ -90,7 +90,7 @@ class _RideInformationSection extends ViewModelWidget<PrincipalViewModel> {
             borderColor: const Color(0xfffea913),
             isSelected: model.vehicleSelected == VehicleType.taxi,
           ),
-          Text(Keys.taxi.localize()),
+          // Text(Keys.taxi.localize()),
         ];
         break;
       case VehicleType.mototaxi:
@@ -102,7 +102,7 @@ class _RideInformationSection extends ViewModelWidget<PrincipalViewModel> {
             borderColor: const Color(0xffd12a19),
             isSelected: model.vehicleSelected == VehicleType.mototaxi,
           ),
-          Text(Keys.mototaxi.localize()),
+          // Text(Keys.mototaxi.localize()),
         ];
         break;
       default:
@@ -156,7 +156,16 @@ class _RideInformationSection extends ViewModelWidget<PrincipalViewModel> {
                                 ),
                               Column(
                                   mainAxisSize: MainAxisSize.min,
-                                  children: vehicle),
+                                  children: vehicle +
+                                      [
+                                        const SizedBox(),
+                                        model.driverForRide != null
+                                            ? Text(model
+                                                .driverForRide.driverInfo.plate)
+                                            : null
+                                      ]
+                                          .where((element) => element != null)
+                                          .toList()),
                             ],
                           ),
                           const SizedBox(height: 8.0),
@@ -276,8 +285,7 @@ class _FloatingMessage extends ViewModelWidget<PrincipalViewModel> {
       height: size.height - 25,
       child: Column(
         children: [
-          const SizedBox(
-              height: 150.0),
+          const SizedBox(height: 150.0),
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(8.0),

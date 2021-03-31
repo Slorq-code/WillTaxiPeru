@@ -12,6 +12,7 @@ class UserModel {
   AuthType authType;
   DriverInfoModel driverInfo;
   String token;
+  String status;
 
   UserModel({
     this.name,
@@ -38,6 +39,7 @@ class UserModel {
       driverInfo = DriverInfoModel.fromMap(driverInfoModel);
     }
     token = data['token'] ?? '';
+    status = data['status'] != null ? data['status'].toString() : '';
   }
 
   UserModel copyWith(

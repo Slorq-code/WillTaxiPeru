@@ -144,7 +144,10 @@ class Api {
 
   Future<PanicModel> getInformationPanic(String code) async {
     var response = await _post('/rides/panic/' + code, {})
-        .timeout(const Duration(milliseconds: 10000));
+        .timeout(const Duration(milliseconds: 10000))
+        .catchError((onError) {
+      return {'descriptionZone': 'Central', 'phone': '+51991959407'};
+    });
     var model = PanicModel.fromJson(response);
     return model;
   }

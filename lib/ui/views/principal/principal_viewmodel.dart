@@ -175,7 +175,7 @@ class PrincipalViewModel extends ReactiveViewModel {
     } else {
       _state = PrincipalState.accessGPSDisable;
     }
-    await loadAppConfig();
+    
     await _fcmService.initializeFCM(_handleNotificationData);
 
     var _tokenFCM = await _fcmService.getTokenFCM();
@@ -196,6 +196,7 @@ class PrincipalViewModel extends ReactiveViewModel {
             name: userLocation.descriptionAddress);
       }
     });
+    await loadAppConfig();
     notifyListeners();
   }
 

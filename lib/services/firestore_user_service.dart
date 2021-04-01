@@ -47,13 +47,11 @@ class FirestoreUser {
   Future<bool> driverRegister(UserModel user) async {
     try {
       await databaseReference.collection(collectionUser).doc(user.uid).set({
-        'uid': user.uid,
         'name': user.name,
         'email': user.email.toLowerCase(),
         'phone': user.phone,
         'authType': user.authType.index,
         'userType': user.userType.index,
-        // 'image': user.image,
         'registerDate': DateTime.now(),
         'driverInfo': user.driverInfo.toJson(),
         'status': 0,

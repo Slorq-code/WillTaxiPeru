@@ -86,5 +86,7 @@
 	"user_pending_approval":"Usuario pendiente de aprobación",
 	"user_blocked":"Usuario bloqueado",
 	"i_am_a_user":"Soy usuario",
-	"i_am_a_driver":"Soy conductor"
+	"i_am_a_driver":"Soy conductor",
+	"driver_registration":"Registro Conductor",
+	"user_registration":"Registro Usuario"
 }

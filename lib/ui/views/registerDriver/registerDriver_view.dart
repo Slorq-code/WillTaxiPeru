@@ -92,12 +92,16 @@ class _BodyRegisterDriver extends HookViewModelWidget<RegisterDriverViewModel> {
               children: [
                 PlatformBackButton(
                     onPressed: () => ExtendedNavigator.root.pop()),
-                Text(
-                  Keys.enroll_driver.localize(),
-                  style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 27,
-                      fontWeight: FontWeight.bold),
+                Expanded(
+                  child: Text(
+                    Keys.driver_registration.localize(),
+                    overflow: TextOverflow.fade,
+                    textAlign: TextAlign.left,
+                    style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 27,
+                        fontWeight: FontWeight.bold),
+                  ),
                 ),
               ],
             ),
@@ -290,8 +294,7 @@ class _BodyRegisterDriver extends HookViewModelWidget<RegisterDriverViewModel> {
                                                   color: Colors.grey,
                                                   width: 1.0),
                                             ),
-                                            height:
-                                                28.0,
+                                            height: 28.0,
                                             width: 28.0,
                                             child: const Icon(Icons.close,
                                                 color: Colors.black,

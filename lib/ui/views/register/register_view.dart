@@ -31,7 +31,9 @@ class RegisterView extends StatelessWidget {
                 right: 0,
                 child: AspectRatio(
                   aspectRatio: 1.1,
-                  child: SvgPicture.asset('assets/background/background_enroll.svg', fit: BoxFit.contain),
+                  child: SvgPicture.asset(
+                      'assets/background/background_enroll.svg',
+                      fit: BoxFit.contain),
                 ),
               ),
             SafeArea(
@@ -73,10 +75,18 @@ class _BodyRegister extends HookViewModelWidget<RegisterViewModel> {
             padding: const EdgeInsets.symmetric(vertical: 10.0),
             child: Row(
               children: [
-                PlatformBackButton(onPressed: () => ExtendedNavigator.root.pop()),
-                Text(
-                  Keys.sign_up.localize(),
-                  style: const TextStyle(color: Colors.black, fontSize: 27, fontWeight: FontWeight.bold),
+                PlatformBackButton(
+                    onPressed: () => ExtendedNavigator.root.pop()),
+                Expanded(
+                  child: Text(
+                    Keys.user_registration.localize(),
+                    overflow: TextOverflow.fade,
+                    textAlign: TextAlign.left,
+                    style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 27,
+                        fontWeight: FontWeight.bold),
+                  ),
                 ),
               ],
             ),
@@ -104,7 +114,10 @@ class _BodyRegister extends HookViewModelWidget<RegisterViewModel> {
                         onChanged: (value) => model.phone = value,
                         labelText: Keys.mobile_phone.localize(),
                         nextFocus: emailFocus,
-                        inputFormatters: [LengthLimitingTextInputFormatter(9), FilteringTextInputFormatter.digitsOnly],
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(9),
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
                         keyboardType: TextInputType.phone,
                         icon: 'assets/icons/phone_enroll.svg',
                       ),
@@ -164,14 +177,19 @@ class _ContinueEnrollButton extends ViewModelWidget<RegisterViewModel> {
   @override
   Widget build(BuildContext context, RegisterViewModel model) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * .18),
+      padding: EdgeInsets.symmetric(
+          horizontal: MediaQuery.of(context).size.width * .18),
       height: 50,
       child: RaisedButton(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
         color: PalleteColor.actionButtonColor,
         disabledColor: PalleteColor.actionButtonColor.withOpacity(0.5),
-        child: Text(Keys.continue_label.localize(), style: const TextStyle(color: Colors.white, fontSize: 16)),
-        onPressed: !model.enableBtnContinue ? null : () => !model.isBusy ? model.signin() : null,
+        child: Text(Keys.continue_label.localize(),
+            style: const TextStyle(color: Colors.white, fontSize: 16)),
+        onPressed: !model.enableBtnContinue
+            ? null
+            : () => !model.isBusy ? model.signin() : null,
       ),
     );
   }

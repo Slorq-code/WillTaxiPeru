@@ -348,8 +348,9 @@ class RegisterDriverViewModel extends BaseViewModel {
     }
   }
 
-  void _redirectLogin() {
+  void _redirectLogin()async {
+    await _authSocialNetwork.logout();
     _token.deleteToken();
-    ExtendedNavigator.root.push(Routes.loginViewRoute);
+    await ExtendedNavigator.root.push(Routes.loginViewRoute);
   }
 }

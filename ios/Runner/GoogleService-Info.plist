@@ -3,23 +3,23 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>1073232408069-s4cdck8oc6nttfrnuffjveduh0ng9via.apps.googleusercontent.com</string>
+	<string>246003170047-vk3tduk0ggffrdp1h84bo8kdmd0inhdb.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.1073232408069-s4cdck8oc6nttfrnuffjveduh0ng9via</string>
+	<string>com.googleusercontent.apps.246003170047-vk3tduk0ggffrdp1h84bo8kdmd0inhdb</string>
 	<key>ANDROID_CLIENT_ID</key>
-	<string>1073232408069-87gjm6qq7u3clv6aim5t59dlfcrjd1ho.apps.googleusercontent.com</string>
+	<string>246003170047-11j2lq1jk2cp8u3fpi789fsn030gimk7.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
-	<string>AIzaSyCAZvaHbdQzHRZ36wrcONsr0aBRV9FB8es</string>
+	<string>AIzaSyBSJBcn-YcHEZlRpWV0kmmwOZL0Y5Z8GIA</string>
 	<key>GCM_SENDER_ID</key>
-	<string>1073232408069</string>
+	<string>246003170047</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>pe.rdg.will</string>
 	<key>PROJECT_ID</key>
-	<string>webeo-maps</string>
+	<string>agencia-de-viajes-warzsud</string>
 	<key>STORAGE_BUCKET</key>
-	<string>webeo-maps.appspot.com</string>
+	<string>agencia-de-viajes-warzsud.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -31,8 +31,8 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:1073232408069:ios:110888f1a2d0f3b463b66c</string>
+	<string>1:246003170047:ios:6be15dda19291d102aaaca</string>
 	<key>DATABASE_URL</key>
-	<string>https://webeo-maps.firebaseio.com</string>
+	<string>https://agencia-de-viajes-warzsud.firebaseio.com</string>
 </dict>
 </plist>

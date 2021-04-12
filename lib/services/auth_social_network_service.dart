@@ -49,14 +49,16 @@ class AuthSocialNetwork {
     idToken = '';
 
     if (authType == AuthType.User) {
-      userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
+      userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
     } else if (authType == AuthType.Google) {
       var googleSignInAccount = await _googleSignIn.signIn();
 
       if (googleSignInAccount != null) {
         final googleAuth = await googleSignInAccount.authentication;
 
-        final GoogleAuthCredential googleCredential = GoogleAuthProvider.credential(
+        final GoogleAuthCredential googleCredential =
+            GoogleAuthProvider.credential(
           accessToken: googleAuth.accessToken,
           idToken: googleAuth.idToken,
         );
@@ -69,7 +71,8 @@ class AuthSocialNetwork {
 
       switch (result.status) {
         case FacebookLoginStatus.loggedIn:
-          final facebookCredential = FacebookAuthProvider.credential(result.accessToken.token);
+          final facebookCredential =
+              FacebookAuthProvider.credential(result.accessToken.token);
           userCredential = await _auth.signInWithCredential(facebookCredential);
 
           break;
@@ -78,7 +81,6 @@ class AuthSocialNetwork {
         case FacebookLoginStatus.error:
           break;
       }
-
     } else if (authType == AuthType.Apple) {
       final result = await AppleSignIn.performRequests([
         const AppleIdRequest(requestedScopes: [Scope.email, Scope.fullName])
@@ -88,8 +90,9 @@ class AuthSocialNetwork {
           final appleAuth = result.credential;
           final oAuthProvider = OAuthProvider('apple.com');
 
-          final appleCredential =
-              oAuthProvider.credential(idToken: String.fromCharCodes(appleAuth.identityToken), accessToken: String.fromCharCodes(appleAuth.authorizationCode));
+          final appleCredential = oAuthProvider.credential(
+              idToken: String.fromCharCodes(appleAuth.identityToken),
+              accessToken: String.fromCharCodes(appleAuth.authorizationCode));
 
           userCredential = await _auth.signInWithCredential(appleCredential);
           break;
@@ -122,7 +125,8 @@ class AuthSocialNetwork {
   }
 
   Future<UserCredential> createUser(String email, String password) async {
-    return await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
+    return await FirebaseAuth.instance
+        .createUserWithEmailAndPassword(email: email, password: password);
   }
 
   void sendPasswordResetEmail(String email) async {
@@ -130,7 +134,8 @@ class AuthSocialNetwork {
   }
 
   void sendSignInLinkToEmail(String email) async {
-    await FirebaseAuth.instance.sendSignInLinkToEmail(email: email, actionCodeSettings: null);
+    await FirebaseAuth.instance
+        .sendSignInLinkToEmail(email: email, actionCodeSettings: null);
   }
 
   void modifyPassword(String newPassword) async {

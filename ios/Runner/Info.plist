@@ -33,15 +33,15 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.1073232408069-s4cdck8oc6nttfrnuffjveduh0ng9via</string>
-				<string>fb669490793725861</string>
+				<string>com.googleusercontent.apps.246003170047-vk3tduk0ggffrdp1h84bo8kdmd0inhdb</string>
+				<string>fb864803507401064</string>
 			</array>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>FacebookAppID</key>
-	<string>669490793725861</string>
+	<string>864803507401064</string>
 	<key>FacebookDisplayName</key>
 	<string>Will</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
@@ -84,6 +84,13 @@
 	<string>Would like access to your photo gallery</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Speech</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>location</string>
+		<string>processing</string>
+		<string>remote-notification</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

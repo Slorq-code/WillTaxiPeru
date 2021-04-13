@@ -112,5 +112,9 @@
 	<true/>
 	<key>kTCCServiceMediaLibrary</key>
 	<string></string>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>pe.rdg.will</string>
+	</array>
 </dict>
 </plist>

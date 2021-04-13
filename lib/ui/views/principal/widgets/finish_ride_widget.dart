@@ -13,14 +13,17 @@ class FinishRideWidget extends ViewModelWidget<PrincipalViewModel> {
   @override
   Widget build(BuildContext context, PrincipalViewModel model) {
     return Container(
-        height: MediaQuery.of(context).size.height - 25,
+        height: MediaQuery.of(context).size.height * .91,
         width: MediaQuery.of(context).size.width,
         color: Colors.white,
         child: Stack(
           fit: StackFit.expand,
           children: [
             Padding(
-              padding: EdgeInsets.only(left: MediaQuery.of(context).size.width * .14, top: 25.0, bottom: 40.0),
+              padding: EdgeInsets.only(
+                  left: MediaQuery.of(context).size.width * .14,
+                  top: 25.0,
+                  bottom: 40.0),
               child: Image.asset(
                 'assets/icons/finish_ride.gif',
                 fit: BoxFit.fitHeight,
@@ -30,8 +33,11 @@ class FinishRideWidget extends ViewModelWidget<PrincipalViewModel> {
               alignment: Alignment.topCenter,
               child: Container(
                 margin: const EdgeInsets.only(top: 20.0),
-                decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: const Color(0xfff0f0f0)),
-                padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 20.0),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10.0),
+                    color: const Color(0xfff0f0f0)),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 2.0, horizontal: 20.0),
                 child: Text(
                   Keys.you_have_reached_your_destination.localize(),
                   textAlign: TextAlign.center,
@@ -43,7 +49,8 @@ class FinishRideWidget extends ViewModelWidget<PrincipalViewModel> {
               alignment: Alignment.bottomCenter,
               child: Container(
                   color: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 20.0),
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 2.0, horizontal: 20.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -51,7 +58,8 @@ class FinishRideWidget extends ViewModelWidget<PrincipalViewModel> {
                         heroTag: null,
                         elevation: 0,
                         backgroundColor: const Color(0xff007dff),
-                        onPressed: () => Utils.shareText('Go', 'https://play.google.com/store'),
+                        onPressed: () => Utils.shareText(
+                            'Go', 'https://play.google.com/store'),
                         child: const Icon(Icons.share),
                       ),
                       FloatingActionButton(

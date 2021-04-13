@@ -175,7 +175,7 @@ class PrincipalViewModel extends ReactiveViewModel {
     } else {
       _state = PrincipalState.accessGPSDisable;
     }
-    
+
     await _fcmService.initializeFCM(_handleNotificationData);
 
     var _tokenFCM = await _fcmService.getTokenFCM();
@@ -201,7 +201,7 @@ class PrincipalViewModel extends ReactiveViewModel {
   }
 
   Future<void> _handleNotificationData(Map<String, dynamic> data) async {
-    var _datos = Map<String, dynamic>.from(data['data']);
+    var _datos = Map<String, dynamic>.from(data['data'] ?? data);
     var _notificationType = _datos['type'];
     if (_notificationType == REQUEST_ACCEPTED_NOTIFICATION) {
       push_driverFound(_datos);
@@ -218,58 +218,10 @@ class PrincipalViewModel extends ReactiveViewModel {
     }
   }
 
-  Future handleOnMessage(Map<String, dynamic> data) async {
-    var _datos = Map<String, dynamic>.from(data['data']);
-    var _notificationType = _datos['type'];
-    if (_notificationType == REQUEST_ACCEPTED_NOTIFICATION) {
-      push_driverFound(_datos);
-    } else if (_notificationType == TRIP_STARTED_NOTIFICATION) {
-      push_startRide(_datos);
-    } else if (_notificationType == TRIP_FINISH_NOTIFICATION) {
-      push_arriveToDestination(_datos);
-    } else if (_notificationType == DRIVER_AT_LOCATION_NOTIFICATION) {
-      push_driverToArrived(_datos);
-    } else if (_notificationType == TRIP_CANCEL_NOTIFICATION) {
-      push_tripCanceledByCustomer(_datos);
-    }
-  }
-
-  Future handleOnLaunch(Map<String, dynamic> data) async {
-    var _datos = Map<String, dynamic>.from(data['data']);
-    var _notificationType = _datos['type'];
-    if (_notificationType == REQUEST_ACCEPTED_NOTIFICATION) {
-      push_driverFound(_datos);
-    } else if (_notificationType == TRIP_STARTED_NOTIFICATION) {
-      push_startRide(_datos);
-    } else if (_notificationType == TRIP_FINISH_NOTIFICATION) {
-      push_arriveToDestination(_datos);
-    } else if (_notificationType == DRIVER_AT_LOCATION_NOTIFICATION) {
-      push_driverToArrived(_datos);
-    } else if (_notificationType == TRIP_CANCEL_NOTIFICATION) {
-      push_tripCanceledByCustomer(_datos);
-    }
-  }
-
-  Future handleOnResume(Map<String, dynamic> data) async {
-    var _datos = Map<String, dynamic>.from(data['data']);
-    var _notificationType = _datos['type'];
-    if (_notificationType == REQUEST_ACCEPTED_NOTIFICATION) {
-      push_driverFound(_datos);
-    } else if (_notificationType == TRIP_STARTED_NOTIFICATION) {
-      push_startRide(_datos);
-    } else if (_notificationType == TRIP_FINISH_NOTIFICATION) {
-      push_arriveToDestination(_datos);
-    } else if (_notificationType == DRIVER_AT_LOCATION_NOTIFICATION) {
-      push_driverToArrived(_datos);
-    } else if (_notificationType == TRIP_CANCEL_NOTIFICATION) {
-      push_tripCanceledByCustomer(_datos);
-    }
-  }
-
   @override
   void dispose() {
-    if(_appService.user.userType == UserType.Driver){
-      _updateServiceDriver(false);  
+    if (_appService.user.userType == UserType.Driver) {
+      _updateServiceDriver(false);
     }
     _locationService.cancelTracking();
     ridesSubscription?.cancel();
@@ -629,10 +581,11 @@ class PrincipalViewModel extends ReactiveViewModel {
     }
   }
 
-  Future<void> _updateServiceDriver(bool statusService )async{
-    await _firestoreUser.updateUserStatusService(userId: _appService.user.uid,
-                                                statusService: statusService);
+  Future<void> _updateServiceDriver(bool statusService) async {
+    await _firestoreUser.updateUserStatusService(
+        userId: _appService.user.uid, statusService: statusService);
   }
+
   Future<void> updateServiceDriver(bool status) async {
     _enableServiceDriver = status;
     await _updateServiceDriver(_enableServiceDriver);

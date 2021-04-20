@@ -1,5 +1,5 @@
+import 'package:apple_sign_in/apple_sign_in.dart';
 import 'package:auto_route/auto_route.dart';
-import 'package:device_info/device_info.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
@@ -13,7 +13,6 @@ import 'package:taxiapp/services/firestore_user_service.dart';
 import 'package:taxiapp/services/token.dart';
 import 'package:taxiapp/utils/alerts.dart';
 import 'package:taxiapp/utils/utils.dart';
-import 'dart:io' show Platform;
 
 import 'package:taxiapp/extensions/string_extension.dart';
 
@@ -40,13 +39,15 @@ class LoginViewModel extends BaseViewModel {
   }
 
   void validateButtonAppleSignIn() async {
-    if (Platform.isIOS) {
+    visibleBtnApple = await AppleSignIn.isAvailable();
+    /*if (Platform.isIOS) {
       var iosInfo = await DeviceInfoPlugin().iosInfo;
       var version = iosInfo.systemVersion;
       if (double.parse(version) >= 13) {
         visibleBtnApple = true;
       }
     }
+    */
   }
 
   String _user = '';
@@ -114,9 +115,7 @@ class LoginViewModel extends BaseViewModel {
             var message = userFounded.status == '0'
                 ? Keys.user_pending_approval.localize()
                 : Keys.user_blocked.localize();
-            Alert(context: context, 
-            title: packageInfo.appName, 
-                      label: message)
+            Alert(context: context, title: packageInfo.appName, label: message)
                 .alertMessage();
           } else {
             // LOGIN SUCESSFULL, NAVIGATE TO PRINCIPAL PAGE

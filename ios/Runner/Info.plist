@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>pe.rdg.will</string>
+	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -76,14 +80,14 @@
 	<string>Allow access to camera to capture photos</string>
 	<key>NSContactsUsageDescription</key>
 	<string>Contacts</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>For a correct tracking of the trip this application needs to access your location</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-    <string>For a correct tracking of the trip this application needs to access your location</string>
-    <key>NSLocationUsageDescription</key>
-    <string>For a correct tracking of the trip this application needs to access your location</string>
-    <key>NSLocationWhenInUseUsageDescription</key>
-    <string>For a correct tracking of the trip this application needs to access your location</string>
-    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>For a correct tracking of the trip this application needs to access your location</string>
+	<string>For a correct tracking of the trip this application needs to access your location</string>
+	<key>NSLocationUsageDescription</key>
+	<string>For a correct tracking of the trip this application needs to access your location</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>For a correct tracking of the trip this application needs to access your location</string>
 	<key>NSMotionUsageDescription</key>
 	<string>Motion</string>
 	<key>NSPhotoLibraryUsageDescription</key>
@@ -118,9 +122,5 @@
 	<true/>
 	<key>kTCCServiceMediaLibrary</key>
 	<string></string>
-	<key>BGTaskSchedulerPermittedIdentifiers</key>
-	<array>
-		<string>pe.rdg.will</string>
-	</array>
 </dict>
 </plist>

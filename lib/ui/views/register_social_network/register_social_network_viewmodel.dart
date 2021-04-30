@@ -23,6 +23,8 @@ class RegisterSocialNetworkViewModel extends BaseViewModel {
   String _name;
   String _phone;
   String _email;
+  bool _nameIsValid;
+  bool get nameIsValid => _nameIsValid;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -57,6 +59,7 @@ class RegisterSocialNetworkViewModel extends BaseViewModel {
 
   void initial() async {
     name = Utils.isNullOrEmpty(_authSocialNetwork.user.name) ? '' : _authSocialNetwork.user.name;
+    _nameIsValid = name.isNotEmpty?true:false;
     phone = Utils.isNullOrEmpty(_authSocialNetwork.user.phone) ? '' : _authSocialNetwork.user.phone;
     email = Utils.isNullOrEmpty(_authSocialNetwork.user.email) ? '' : _authSocialNetwork.user.email;
   }

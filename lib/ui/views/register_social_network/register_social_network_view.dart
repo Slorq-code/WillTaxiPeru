@@ -96,7 +96,7 @@ class _BodyRegister extends HookViewModelWidget<RegisterSocialNetworkViewModel> 
                         nextFocus: emailFocus,
                         inputFormatters: [LengthLimitingTextInputFormatter(50)],
                         icon: 'assets/icons/profile_avatar.svg',
-                        enabled: Utils.isNullOrEmpty(model.name),
+                        enabled: model.nameIsValid,
                       ),
                       const SizedBox(height: 10.0),
                       TextFieldCustom(

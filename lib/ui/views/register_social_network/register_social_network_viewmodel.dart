@@ -23,8 +23,12 @@ class RegisterSocialNetworkViewModel extends BaseViewModel {
   String _name;
   String _phone;
   String _email;
-  bool _nameIsValid;
+  bool _nameIsValid = false;
   bool get nameIsValid => _nameIsValid;
+  set nameIsValid(name) {
+    _nameIsValid = name;
+    notifyListeners();
+  }
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -53,15 +57,25 @@ class RegisterSocialNetworkViewModel extends BaseViewModel {
   }
 
   bool get enableBtnContinue =>
-      !Utils.isNullOrEmpty(name) && !Utils.isNullOrEmpty(email) && Utils.isValidEmail(email) && !Utils.isNullOrEmpty(phone) && Utils.isValidPhone(phone);
+      !Utils.isNullOrEmpty(name) &&
+      !Utils.isNullOrEmpty(email) &&
+      Utils.isValidEmail(email) &&
+      !Utils.isNullOrEmpty(phone) &&
+      Utils.isValidPhone(phone);
 
   // * Functions
 
   void initial() async {
-    name = Utils.isNullOrEmpty(_authSocialNetwork.user.name) ? '' : _authSocialNetwork.user.name;
-    _nameIsValid = name.isNotEmpty?true:false;
-    phone = Utils.isNullOrEmpty(_authSocialNetwork.user.phone) ? '' : _authSocialNetwork.user.phone;
-    email = Utils.isNullOrEmpty(_authSocialNetwork.user.email) ? '' : _authSocialNetwork.user.email;
+    name = Utils.isNullOrEmpty(_authSocialNetwork.user.name)
+        ? ''
+        : _authSocialNetwork.user.name;
+    nameIsValid = name.isNotEmpty ? true : false;
+    phone = Utils.isNullOrEmpty(_authSocialNetwork.user.phone)
+        ? ''
+        : _authSocialNetwork.user.phone;
+    email = Utils.isNullOrEmpty(_authSocialNetwork.user.email)
+        ? ''
+        : _authSocialNetwork.user.email;
   }
 
   void signin() async {
@@ -76,22 +90,35 @@ class RegisterSocialNetworkViewModel extends BaseViewModel {
         _authSocialNetwork.user.phone = phone.toString().trim();
         _authSocialNetwork.user.email = email.toString().toLowerCase().trim();
 
-        final userRegister = await _firestoreUser.userRegister(_authSocialNetwork.user);
+        final userRegister =
+            await _firestoreUser.userRegister(_authSocialNetwork.user);
 
         ExtendedNavigator.root.pop();
 
         if (userRegister) {
           // _authSocialNetwork.sendSignInLinkToEmail(email); //not implemented correctly
           await _token.saveToken(_authSocialNetwork.idToken);
-          Alert(context: _context, title: packageInfo.appName, label: Keys.user_created_successfully.localize()).alertCallBack(() {
+          Alert(
+                  context: _context,
+                  title: packageInfo.appName,
+                  label: Keys.user_created_successfully.localize())
+              .alertCallBack(() {
             ExtendedNavigator.root.push(Routes.principalViewRoute);
           });
         } else {
-          Alert(context: _context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();
+          Alert(
+                  context: _context,
+                  title: packageInfo.appName,
+                  label: Keys.request_not_processed_correctly.localize())
+              .alertMessage();
         }
       } else {
         ExtendedNavigator.root.pop();
-        Alert(context: _context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();
+        Alert(
+                context: _context,
+                title: packageInfo.appName,
+                label: Keys.request_not_processed_correctly.localize())
+            .alertMessage();
       }
     } catch (signUpError) {
       ExtendedNavigator.root.pop();
@@ -99,9 +126,17 @@ class RegisterSocialNetworkViewModel extends BaseViewModel {
       if (signUpError is FirebaseAuthException) {
         print(signUpError.code);
         if (signUpError.code == 'email-already-in-use') {
-          Alert(context: _context, title: packageInfo.appName, label: Keys.email_already_registered.localize()).alertMessage();
+          Alert(
+                  context: _context,
+                  title: packageInfo.appName,
+                  label: Keys.email_already_registered.localize())
+              .alertMessage();
         } else {
-          Alert(context: _context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();
+          Alert(
+                  context: _context,
+                  title: packageInfo.appName,
+                  label: Keys.request_not_processed_correctly.localize())
+              .alertMessage();
         }
       }
     } finally {

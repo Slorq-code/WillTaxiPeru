@@ -10,6 +10,10 @@ class FCMService {
   Function _handleNotificationData;
 
   Future<void> initializeFCM(Function handleNotificationData) async {
+    var settings = await _fcm.requestNotificationPermissions(
+        const IosNotificationSettings(
+            alert: true, sound: true, badge: true, provisional: false));
+
     await _saveDeviceToken();
     _handleNotificationData = handleNotificationData;
     _fcm.configure(
@@ -22,7 +26,6 @@ class FCMService {
   Future<String> getTokenFCM() async {
     return await _secureStorage.getString('tokenFCM');
   }
-
 
   void _saveDeviceToken() async {
     var token = await _secureStorage.getString('tokenFCM');

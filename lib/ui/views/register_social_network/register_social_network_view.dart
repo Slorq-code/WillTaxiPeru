@@ -13,7 +13,6 @@ import 'package:taxiapp/ui/views/register_social_network/register_social_network
 import 'package:taxiapp/extensions/string_extension.dart';
 import 'package:taxiapp/ui/widgets/buttons/platform_back_button.dart';
 import 'package:taxiapp/ui/widgets/text_field/text_field_custom.dart';
-import 'package:taxiapp/utils/utils.dart';
 
 class RegisterSocialNetworkView extends StatelessWidget {
   @override
@@ -116,7 +115,7 @@ class _BodyRegister
                         inputFormatters: [LengthLimitingTextInputFormatter(50)],
                         keyboardType: TextInputType.emailAddress,
                         icon: 'assets/icons/mail.svg',
-                        enabled: Utils.isNullOrEmpty(model.email),
+                        enabled: !model.emailIsValid,
                       ),
                       const SizedBox(height: 10.0),
                       TextFieldCustom(

@@ -21,14 +21,23 @@ class RegisterSocialNetworkViewModel extends BaseViewModel {
   final Token _token = locator<Token>();
   final BuildContext _context;
   String _name;
-  String _phone;
-  String _email;
   bool _nameIsValid = false;
   bool get nameIsValid => _nameIsValid;
   set nameIsValid(name) {
     _nameIsValid = name;
     notifyListeners();
   }
+
+  
+  String _email;
+  bool _emailIsValid = false;
+  bool get emailIsValid => _emailIsValid;
+  set emailIsValid(email) {
+    _emailIsValid = email;
+    notifyListeners();
+  }
+
+  String _phone;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -76,6 +85,7 @@ class RegisterSocialNetworkViewModel extends BaseViewModel {
     email = Utils.isNullOrEmpty(_authSocialNetwork.user.email)
         ? ''
         : _authSocialNetwork.user.email;
+    emailIsValid = email.isNotEmpty ? true : false;
   }
 
   void signin() async {

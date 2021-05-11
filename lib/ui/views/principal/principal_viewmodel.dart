@@ -14,6 +14,8 @@ import 'package:taxiapp/localization/keys.dart';
 import 'package:taxiapp/models/enums/user_type.dart';
 import 'package:taxiapp/models/panic_model.dart';
 import 'package:taxiapp/services/api.dart';
+import 'package:taxiapp/services/secure_storage_service.dart';
+import 'package:taxiapp/services/token.dart';
 import 'package:taxiapp/utils/alerts.dart';
 import 'package:taxiapp/utils/utils.dart';
 import 'package:taxiapp/app/locator.dart';
@@ -53,6 +55,8 @@ class PrincipalViewModel extends ReactiveViewModel {
   final LocationService _locationService = locator<LocationService>();
   final MapsGeneralService _mapsService = locator<MapsGeneralService>();
   final AuthSocialNetwork _authSocialNetwork = locator<AuthSocialNetwork>();
+  final Token _token = locator<Token>();
+  final SecureStorage _secureStorage = locator<SecureStorage>();
   final FCMService _fcmService = locator<FCMService>();
   final FirestoreUser _firestoreUser = locator<FirestoreUser>();
   final Api _api = locator<Api>();
@@ -553,6 +557,8 @@ class PrincipalViewModel extends ReactiveViewModel {
   void logout() async {
     setBusy(true);
     await _authSocialNetwork.logout();
+    _token.deleteToken();
+    await _secureStorage.deleteAll();
     await ExtendedNavigator.root
         .pushAndRemoveUntil(Routes.loginViewRoute, (route) => false);
     setBusy(false);

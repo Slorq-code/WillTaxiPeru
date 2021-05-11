@@ -14,6 +14,7 @@ import 'package:taxiapp/models/user_model.dart';
 import 'package:taxiapp/services/api.dart';
 import 'package:taxiapp/services/auth_social_network_service.dart';
 import 'package:taxiapp/services/firestore_user_service.dart';
+import 'package:taxiapp/services/secure_storage_service.dart';
 import 'package:taxiapp/services/token.dart';
 import 'package:taxiapp/utils/alerts.dart';
 
@@ -31,12 +32,12 @@ class RegisterDriverViewModel extends BaseViewModel {
 
   // * Getters
   GlobalKey<FormState> get formKey => _formKey;
-
   // * Functions
 
   final AuthSocialNetwork _authSocialNetwork = locator<AuthSocialNetwork>();
   final FirestoreUser _firestoreUser = locator<FirestoreUser>();
   final Token _token = locator<Token>();
+  final SecureStorage _secureStorage = locator<SecureStorage>();
   final Api _api = locator<Api>();
 
   void goToEnrollPage() async {}
@@ -348,9 +349,10 @@ class RegisterDriverViewModel extends BaseViewModel {
     }
   }
 
-  void _redirectLogin()async {
+  void _redirectLogin() async {
     await _authSocialNetwork.logout();
     _token.deleteToken();
+    await _secureStorage.deleteAll();
     await ExtendedNavigator.root.push(Routes.loginViewRoute);
   }
 }

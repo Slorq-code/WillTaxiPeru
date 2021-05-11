@@ -10,6 +10,7 @@ import 'package:taxiapp/models/enums/auth_type.dart';
 import 'package:taxiapp/models/enums/user_type.dart';
 import 'package:taxiapp/services/auth_social_network_service.dart';
 import 'package:taxiapp/services/firestore_user_service.dart';
+import 'package:taxiapp/services/secure_storage_service.dart';
 import 'package:taxiapp/services/token.dart';
 import 'package:taxiapp/utils/alerts.dart';
 import 'package:taxiapp/utils/utils.dart';
@@ -33,6 +34,7 @@ class LoginViewModel extends BaseViewModel {
   final AuthSocialNetwork _authSocialNetwork = locator<AuthSocialNetwork>();
   final FirestoreUser _firestoreUser = locator<FirestoreUser>();
   final Token _token = locator<Token>();
+  final SecureStorage _secureStorage = locator<SecureStorage>();
 
   void initial() async {
     await validateButtonAppleSignIn();
@@ -96,6 +98,8 @@ class LoginViewModel extends BaseViewModel {
     var packageInfo = await Utils.getPackageInfo();
     try {
       Alert(context: context).loading(Keys.loading.localize());
+
+      await _secureStorage.deleteAll();
 
       await _authSocialNetwork.login(
           user.toString().trim(), password.toString().trim(), authType);

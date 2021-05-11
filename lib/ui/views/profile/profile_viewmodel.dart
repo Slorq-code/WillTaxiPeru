@@ -13,6 +13,7 @@ import 'package:taxiapp/services/api.dart';
 import 'package:taxiapp/services/app_service.dart';
 import 'package:taxiapp/services/auth_social_network_service.dart';
 import 'package:taxiapp/services/firestore_user_service.dart';
+import 'package:taxiapp/services/secure_storage_service.dart';
 import 'package:taxiapp/ui/views/profile/profile_view.dart';
 import 'package:taxiapp/utils/alerts.dart';
 import 'package:taxiapp/utils/utils.dart';
@@ -38,7 +39,7 @@ class ProfileViewModel extends BaseViewModel {
   final Api _api = locator<Api>();
   final FirestoreUser _firestoreUser = locator<FirestoreUser>();
   final Token _token = locator<Token>();
-  
+  final SecureStorage _secureStorage = locator<SecureStorage>();
   int _currentIndex = 0;
   List<RideRequestModel> _userHistorial = [];
   bool _loadingUserHistorial = false;
@@ -112,19 +113,21 @@ class ProfileViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-
   void logout() async {
     setBusy(true);
     await _authSocialNetwork.logout();
     _token.deleteToken();
-    await ExtendedNavigator.root.pushAndRemoveUntil(Routes.loginViewRoute, (route) => false);
+    await _secureStorage.deleteAll();
+    await ExtendedNavigator.root
+        .pushAndRemoveUntil(Routes.loginViewRoute, (route) => false);
     setBusy(false);
   }
 
   void loadHistorialData() async {
     loadingUserHistorial = true;
     try {
-      userHistorial = await _api.getAllUserHistorial(_authSocialNetwork.user.uid);
+      userHistorial =
+          await _api.getAllUserHistorial(_authSocialNetwork.user.uid);
     } catch (err, stackTrace) {
       print(stackTrace);
     } finally {
@@ -160,11 +163,19 @@ class ProfileViewModel extends BaseViewModel {
       if (_appConfigModel != null) {
         await FlutterPhoneDirectCaller.callNumber(_appConfigModel.central);
       } else {
-        Alert(context: context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();
+        Alert(
+                context: context,
+                title: packageInfo.appName,
+                label: Keys.request_not_processed_correctly.localize())
+            .alertMessage();
       }
     } catch (signUpError) {
       print(signUpError);
-      Alert(context: context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();
+      Alert(
+              context: context,
+              title: packageInfo.appName,
+              label: Keys.request_not_processed_correctly.localize())
+          .alertMessage();
     } finally {
       setBusy(false);
     }
@@ -209,21 +220,35 @@ class ProfileViewModel extends BaseViewModel {
         password = '';
         isEditing = false;
         ExtendedNavigator.root.pop();
-        Alert(context: context, title: packageInfo.appName, label: Keys.your_data_updated_correctly.localize()).alertMessage();
+        Alert(
+                context: context,
+                title: packageInfo.appName,
+                label: Keys.your_data_updated_correctly.localize())
+            .alertMessage();
       } else {
         ExtendedNavigator.root.pop();
-        Alert(context: context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();
+        Alert(
+                context: context,
+                title: packageInfo.appName,
+                label: Keys.request_not_processed_correctly.localize())
+            .alertMessage();
       }
     } catch (signUpError) {
       print(signUpError);
       ExtendedNavigator.root.pop();
-      Alert(context: context, title: packageInfo.appName, label: Keys.request_not_processed_correctly.localize()).alertMessage();
+      Alert(
+              context: context,
+              title: packageInfo.appName,
+              label: Keys.request_not_processed_correctly.localize())
+          .alertMessage();
     } finally {
       setBusy(false);
     }
   }
 
   bool get enableBtnContinue =>
-      (!Utils.isNullOrEmpty(phone) && Utils.isValidPhone(phone) && phone.trim().compareTo(user.phone.trim()) != 0) ||
+      (!Utils.isNullOrEmpty(phone) &&
+          Utils.isValidPhone(phone) &&
+          phone.trim().compareTo(user.phone.trim()) != 0) ||
       (!Utils.isNullOrEmpty(password) && Utils.isValidPasswordLength(password));
 }

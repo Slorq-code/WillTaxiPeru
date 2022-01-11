@@ -10,7 +10,7 @@ import FBSDKCoreKit
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    GMSServices.provideAPIKey("AIzaSyDfNFK1JbGsl6QXu6X5CybEjQ0ii8X5Wg8")
+    GMSServices.provideAPIKey("AIzaSyCi5hTVidqSGjI2BKApYZUfzWPYaEEJ9v8")
     GeneratedPluginRegistrant.register(with: self)
     if #available(iOS 10.0, *) {
       UNUserNotificationCenter.current().delegate = self as? UNUserNotificationCenterDelegate

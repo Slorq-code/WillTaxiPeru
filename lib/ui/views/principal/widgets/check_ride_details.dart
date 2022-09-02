@@ -22,7 +22,8 @@ class CheckRideDetails extends ViewModelWidget<PrincipalViewModel> {
         if (model.rideStatus == RideStatus.waitingDriver ||
             model.rideStatus == RideStatus.inProgress)
           const _FloatingMessage(),
-        if (model.rideStatus == RideStatus.inProgress) const _PanicButton(),
+        //if (model.rideStatus == RideStatus.inProgress) const _PanicButton(),
+        //const _PanicButton(),
       ],
     );
   }

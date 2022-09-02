@@ -7,3 +7,5 @@ A new Flutter project.
 
 Run: 
   #  - ./generatedCode.sh
+  # flutter gen-l10n
+

@@ -17,8 +17,8 @@ class DriverRideDetails extends ViewModelWidget<PrincipalViewModel> {
       children: [
         const _RideInformationSection(),
         const _FloatingMessage(),
-        if (model.driverRequestFlow == DriverRequestFlow.inProgress)
-          const _PanicButton(),
+        //if (model.driverRequestFlow == DriverRequestFlow.inProgress)
+        //const _PanicButton(),
       ],
     );
   }

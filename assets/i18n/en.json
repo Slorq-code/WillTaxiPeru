@@ -72,6 +72,7 @@
 	"the_driver_has_canceled": "The driver has canceled!",
 	"request_with_wrong_status": "It is not possible to continue with this request!",
 	"do_you_want_to_confirm_a_panic_alert": "Do you want to confirm a panic alert?",
+	"sure_you_want_to_initiate_a_call": "sure you want to initiate a call with him",
 	"enroll_driver": "Enroll Driver",
 	"user_created_and_error_in_image": "User created successfully, error saving profile image",
 	"document": "Document",

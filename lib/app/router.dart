@@ -13,7 +13,8 @@ import 'package:taxiapp/ui/views/register/register_view.dart';
   AdaptiveRoute(page: LoginView, name: 'loginViewRoute'),
   AdaptiveRoute(page: RegisterView, name: 'registerViewRoute'),
   AdaptiveRoute(page: RegisterDriverView, name: 'registerDriverViewRoute'),
-  AdaptiveRoute(page: RegisterSocialNetworkView, name: 'registerSocialNetworkViewRoute'),
+  AdaptiveRoute(
+      page: RegisterSocialNetworkView, name: 'registerSocialNetworkViewRoute'),
   AdaptiveRoute(page: PrincipalView, name: 'principalViewRoute'),
   AdaptiveRoute(page: ResetPasswordView, name: 'resetPasswordViewRoute'),
   AdaptiveRoute(page: ProfileView, name: 'profileViewRoute'),

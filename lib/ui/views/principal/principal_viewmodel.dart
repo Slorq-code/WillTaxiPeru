@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ffi';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
@@ -44,6 +45,7 @@ import 'package:taxiapp/ui/views/principal/widgets/search_field_bar.dart';
 import 'package:taxiapp/ui/views/principal/widgets/selection_vehicle.dart';
 import 'package:taxiapp/ui/widgets/helpers.dart';
 import 'package:wakelock/wakelock.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PrincipalViewModel extends ReactiveViewModel {
   BuildContext context;
@@ -916,6 +918,36 @@ class PrincipalViewModel extends ReactiveViewModel {
       notifyListeners();
     });
   }
+
+// --------------------------------------------------------------------------------- Andres F. Rodriguez
+
+  //model.user.userType == UserType.Driver
+
+  void initCall() {
+    final numberForCall = _appService.user.userType == UserType.Driver
+        ? _appService.user.phone
+        : driverForRide.phone;
+    // en esta seccion se requiere la informacion del conductor ver user_model.dart dato
+    Alert(
+      context: context,
+      title: packageInfo.appName,
+      label: Keys.sure_you_want_to_initiate_a_call.localize(),
+      action: () => call(numberForCall),
+    ).confirmation(Keys.cancel.localize(), Keys.accept.localize());
+  }
+
+  void call(final phoneNumber) async {
+    final url = 'tel:$phoneNumber';
+    if (await canLaunch(url)) {
+      print(url);
+      await launch(url);
+    } else {
+      // EN ESTA SECCION DEBE DE ESTAR PRESENTE EL PROCESO DE INTERNACIONALIZACION ESTADO: PENDIENTE
+      throw 'error';
+    }
+  }
+
+// --------------------------------------------------------------------------------- Andres F. Rodriguez
 
   void sendTextPanic() {
     Alert(

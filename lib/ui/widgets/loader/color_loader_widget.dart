@@ -9,10 +9,12 @@ class ColorLoaderWidget extends StatefulWidget {
   ColorLoaderWidget({this.colors, this.duration, this.colorBackground});
 
   @override
-  _ColorLoaderState createState() => _ColorLoaderState(colors, duration, colorBackground);
+  _ColorLoaderState createState() =>
+      _ColorLoaderState(colors, duration, colorBackground);
 }
 
-class _ColorLoaderState extends State<ColorLoaderWidget> with SingleTickerProviderStateMixin {
+class _ColorLoaderState extends State<ColorLoaderWidget>
+    with SingleTickerProviderStateMixin {
   List<Color> colors;
   Duration duration;
   Color colorBackground;
@@ -32,7 +34,13 @@ class _ColorLoaderState extends State<ColorLoaderWidget> with SingleTickerProvid
   void initState() {
     super.initState();
 
-    colors ??= [Colors.blue, Colors.amber, Colors.pink, Colors.red, Colors.green];
+    colors ??= [
+      Colors.blue,
+      Colors.amber,
+      Colors.pink,
+      Colors.red,
+      Colors.green
+    ];
     duration ??= const Duration(milliseconds: 1200);
     colorBackground ??= const Color.fromRGBO(0, 0, 0, 0.3);
 
@@ -45,7 +53,8 @@ class _ColorLoaderState extends State<ColorLoaderWidget> with SingleTickerProvid
       tweenAnimations.add(ColorTween(begin: colors[i], end: colors[i + 1]));
     }
 
-    tweenAnimations.add(ColorTween(begin: colors[colors.length - 1], end: colors[0]));
+    tweenAnimations
+        .add(ColorTween(begin: colors[colors.length - 1], end: colors[0]));
 
     for (var i = 0; i < colors.length; i++) {
       var animation = tweenAnimations[i].animate(CurvedAnimation(

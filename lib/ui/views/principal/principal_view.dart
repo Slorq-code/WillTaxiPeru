@@ -19,13 +19,14 @@ class PrincipalView extends StatelessWidget {
       onModelReady: (model) => model.initialize(),
       builder: (context, model, child) => SafeArea(
         child: Scaffold(
-            // floatingActionButton: FloatingActionButton(onPressed: () => model.updateRouteCamera()),
-            backgroundColor: Colors.white,
-            body: model.state == PrincipalState.loading
-                ? const Center(child: CircularProgressIndicator())
-                : model.state == PrincipalState.accessGPSEnable
-                    ? Home(model: model)
-                    : const _ForceEnableGPS()),
+          // floatingActionButton: FloatingActionButton(onPressed: () => model.updateRouteCamera()),
+          backgroundColor: Colors.white,
+          body: model.state == PrincipalState.loading
+              ? const Center(child: CircularProgressIndicator())
+              : model.state == PrincipalState.accessGPSEnable
+                  ? Home(model: model)
+                  : const _ForceEnableGPS(),
+        ),
       ),
     );
   }
@@ -101,6 +102,14 @@ class _HomeMap extends ViewModelWidget<PrincipalViewModel> {
                   ),
                 ),
                 const _PanicButton(),
+
+// --------------------------------------------------------------------------------- Andres F. Rodriguez
+                model.driverRequestFlow == DriverRequestFlow.accept ||
+                        model.rideStatus == RideStatus.waitingDriver
+                    ? const _CallButton() // Agregado _CallButton aqui
+                    : const SizedBox(),
+// --------------------------------------------------------------------------------- Andres F. Rodriguez
+
                 const Positioned(
                   top: 0,
                   child: _Search(),
@@ -168,23 +177,64 @@ class _PanicButton extends ViewModelWidget<PrincipalViewModel> {
       width: size.width,
       height: size.height - 25,
       child: Align(
-          alignment: Alignment.centerRight,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: FloatingActionButton(
-              heroTag: null,
-              elevation: 10,
-              hoverElevation: 10,
-              highlightElevation: 10,
-              isExtended: true,
-              onPressed: () => model.sendTextPanic(),
-              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              child: Image.asset('assets/icons/panic_button.png', height: 65.0),
-            ),
-          )),
+        alignment: Alignment.centerRight,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: FloatingActionButton(
+            heroTag: null,
+            elevation: 10,
+            hoverElevation: 10,
+            highlightElevation: 10,
+            isExtended: true,
+            onPressed: () => model.sendTextPanic(),
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            child: Image.asset('assets/icons/panic_button.png', height: 65.0),
+          ),
+        ),
+      ),
     );
   }
 }
+
+// --------------------------------------------------------------------------------- Andres F. Rodriguez
+
+class _CallButton extends ViewModelWidget<PrincipalViewModel> {
+  const _CallButton({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, PrincipalViewModel model) {
+    var size = MediaQuery.of(context).size;
+
+    return SizedBox(
+      width: size.width,
+      height: size.height - 25,
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: FloatingActionButton(
+            heroTag: null,
+            elevation: 10,
+            hoverElevation: 10,
+            highlightElevation: 10,
+            isExtended: true,
+            onPressed: () {
+              //  "InitCall" funcion inicial
+              model.initCall();
+            },
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            child: const Icon(
+                Icons.phone), // Reemplaza con el icono de teléfono adecuado
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// --------------------------------------------------------------------------------- Andres F. Rodriguez
 
 class _Search extends ViewModelWidget<PrincipalViewModel> {
   const _Search({

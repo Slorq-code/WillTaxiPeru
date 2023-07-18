@@ -74,7 +74,6 @@ class AuthSocialNetwork {
           final facebookCredential =
               FacebookAuthProvider.credential(result.accessToken.token);
           userCredential = await _auth.signInWithCredential(facebookCredential);
-
           break;
         case FacebookLoginStatus.cancelledByUser:
           break;

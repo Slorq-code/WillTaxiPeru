@@ -34,6 +34,7 @@ dependencies:
   retry: ^3.0.1
   esys_flutter_share: ^1.0.2
   shared_preferences: ^0.5.12+4
+  flutter_local_notifications: 4.0.1+2
   package_info: ^0.4.3+2
   url_launcher: ^5.5.0
   permission_handler: ^5.0.1+1

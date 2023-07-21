@@ -63,13 +63,18 @@ class Initialize {
   }
 }
 
-class _MyApp extends StatelessWidget {
+class _MyApp extends StatefulWidget {
   const _MyApp({
     Key key,
     @required this.home,
   }) : super(key: key);
   final String home;
 
+  @override
+  __MyAppState createState() => __MyAppState();
+}
+
+class __MyAppState extends State<_MyApp> {
   @override
   Widget build(BuildContext context) {
     var localizationDelegate = LocalizedApp.of(context).delegate;
@@ -84,7 +89,7 @@ class _MyApp extends StatelessWidget {
         ],
         builder: ExtendedNavigator.builder(
           router: auto_router.Router(),
-          initialRoute: home,
+          initialRoute: widget.home,
           builder: (context, extendedNav) => Theme(
               data: ThemeData(
                   fontFamily: 'Futura',

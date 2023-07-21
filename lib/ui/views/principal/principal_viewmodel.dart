@@ -727,10 +727,7 @@ class PrincipalViewModel extends ReactiveViewModel {
     notifyListeners();
   }
 
-  void push_driverToArrived(Map<String, dynamic> data) async {
-    driverArrived = true;
-    notifyListeners();
-  }
+  // ------------------------------------------------------------------------------------Andres F. Rodriguez
 
   void push_startRide(Map<String, dynamic> data) async {
     if (_rideRequest != null) {
@@ -921,11 +918,19 @@ class PrincipalViewModel extends ReactiveViewModel {
 
 // --------------------------------------------------------------------------------- Andres F. Rodriguez
 
-  //model.user.userType == UserType.Driver
+  void push_driverToArrived(Map<String, dynamic> data) async {
+    driverArrived = true;
+    notifyListeners();
+    Alert(
+      context: context,
+      title: packageInfo.appName,
+      label: Keys.driver_has_arrived.localize(),
+    ).alertMessage();
+  }
 
   void initCall() {
     final numberForCall = _appService.user.userType == UserType.Driver
-        ? _appService.user.phone
+        ? clientForRide.phone
         : driverForRide.phone;
     // en esta seccion se requiere la informacion del conductor ver user_model.dart dato
     Alert(
@@ -942,11 +947,10 @@ class PrincipalViewModel extends ReactiveViewModel {
       print(url);
       await launch(url);
     } else {
-      // EN ESTA SECCION DEBE DE ESTAR PRESENTE EL PROCESO DE INTERNACIONALIZACION ESTADO: PENDIENTE
-      throw 'error';
+      throw Keys.something_went_wrong_with_the_call_please_try_again_later
+          .localize();
     }
   }
-
 // --------------------------------------------------------------------------------- Andres F. Rodriguez
 
   void sendTextPanic() {

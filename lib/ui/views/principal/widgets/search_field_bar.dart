@@ -296,7 +296,7 @@ class _OriginLocationField extends HookViewModelWidget<PrincipalViewModel> {
                   hintText: Keys.origin.localize(),
                   isDense: true,
                   hintStyle:
-                      const TextStyle(color: Color(0xff545253), fontSize: 14),
+                      const TextStyle(color: Color(0xff545253), fontSize: 16),
                 ),
               ),
             ),
@@ -393,7 +393,7 @@ class _DestinationLocationField
                   hintText: Keys.destination.localize(),
                   isDense: true,
                   hintStyle:
-                      const TextStyle(color: Color(0xff545253), fontSize: 14),
+                      const TextStyle(color: Color(0xff545253), fontSize: 16),
                 ),
               ),
             ),

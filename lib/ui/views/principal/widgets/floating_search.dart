@@ -108,7 +108,7 @@ class _ClientSearch extends ViewModelWidget<PrincipalViewModel> {
   Widget build(BuildContext context, PrincipalViewModel model) {
     return Container(
       width: MediaQuery.of(context).size.width * .7,
-      height: 60,
+      height: 80,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10.0),
         color: Colors.white,
@@ -128,7 +128,7 @@ class _ClientSearch extends ViewModelWidget<PrincipalViewModel> {
           children: [
             Padding(
               padding:
-                  const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
+                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
               child: Column(
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -149,15 +149,18 @@ class _ClientSearch extends ViewModelWidget<PrincipalViewModel> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 5.0, vertical: 5.0),
                       child: Row(
                         children: [
                           Expanded(
                             child: Text(
-                                model.originSelected != null
-                                    ? model.originSelected.address
-                                    : Keys.origin.localize(),
-                                overflow: TextOverflow.ellipsis),
+                              model.originSelected != null
+                                  ? model.originSelected.address
+                                  : Keys.origin.localize(),
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(fontSize: 16.0),
+                            ),
                           ),
                           _OriginButton(
                               icon: 'assets/icons/locate_position.svg',
@@ -171,15 +174,18 @@ class _ClientSearch extends ViewModelWidget<PrincipalViewModel> {
                     const Divider(
                         color: Color(0xffe5e5e5), height: 0, thickness: 2.0),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 5.0, vertical: 6.0),
                       child: Row(
                         children: [
                           Expanded(
                             child: Text(
-                                model.destinationSelected != null
-                                    ? model.destinationSelected.address
-                                    : Keys.destination.localize(),
-                                overflow: TextOverflow.ellipsis),
+                              model.destinationSelected != null
+                                  ? model.destinationSelected.address
+                                  : Keys.destination.localize(),
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(fontSize: 16.00),
+                            ),
                           ),
                         ],
                       ),

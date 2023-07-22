@@ -48,8 +48,6 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-
-
 class PrincipalViewModel extends ReactiveViewModel {
   BuildContext context;
   PrincipalViewModel(BuildContext context) {
@@ -211,7 +209,6 @@ class PrincipalViewModel extends ReactiveViewModel {
     notifyListeners();
   }
 
-
   Future<void> _handleNotificationData(Map<String, dynamic> data) async {
     var _datos = Map<String, dynamic>.from(data['data'] ?? data);
     var _notificationType = _datos['type'];
@@ -335,7 +332,7 @@ class PrincipalViewModel extends ReactiveViewModel {
 
   Future<String> getMapTheme() async =>
       rootBundle.loadString('assets/map_theme/map_theme.json');
-
+//------------------------------------------------------------------Andres Rodriguez
   bool onBack() {
     if (_currentDriverRideWidget is DriverRideDetails) {
       _driverRequestFlow = DriverRequestFlow.none;
@@ -345,12 +342,19 @@ class PrincipalViewModel extends ReactiveViewModel {
       return false;
     } else if (_currentRideWidget is SelectionVehicle) {
       updateCurrentRideWidget(RideWidget.clear);
+      // de atras para adelante soy la segunda
       return false;
     } else if (_currentRideWidget is CheckRideDetails) {
       updateCurrentRideWidget(RideWidget.selectionVehicle);
+      _driverRequestFlow = DriverRequestFlow.none;
+      cleanRoute();
+      cancelRide();
+      //  actualizacion datos para corte
+      // de atras para adelante soy la primera
       return false;
     } else if (_currentSearchWidget is SearchFieldBar) {
       updateCurrentSearchWidget(SearchWidget.floatingSearch);
+      // de atras para adelante soy la tercera
       return false;
     } else if (_currentSearchWidget is ManualPickInMap) {
       updateCurrentSearchWidget(SearchWidget.searchFieldBar);
@@ -711,6 +715,7 @@ class PrincipalViewModel extends ReactiveViewModel {
     driverArrived = false;
     onBack();
     notifyListeners();
+    print('Estoy en cancel Ride');
   }
 
   void updateRequest({String requestId, String status, String driverId}) {

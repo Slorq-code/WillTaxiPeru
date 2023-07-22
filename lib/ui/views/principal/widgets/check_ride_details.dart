@@ -6,6 +6,7 @@ import 'package:taxiapp/extensions/string_extension.dart';
 import 'package:taxiapp/localization/keys.dart';
 import 'package:taxiapp/models/enums/ride_status.dart';
 import 'package:taxiapp/models/enums/vehicle_type.dart';
+import 'package:taxiapp/theme/pallete_color.dart';
 import 'package:taxiapp/ui/views/principal/principal_viewmodel.dart';
 import 'package:taxiapp/ui/views/principal/widgets/vehicle_icon.dart';
 import 'package:taxiapp/ui/widgets/avatar_profile/avatar_profile.dart';
@@ -262,21 +263,32 @@ class _FloatingMessage extends ViewModelWidget<PrincipalViewModel> {
                 const Expanded(flex: 1, child: SizedBox()),
                 Expanded(
                   flex: 4,
-                  child: Container(
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10.0),
-                        color: const Color(0xfff0f0f0)),
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 2.0, horizontal: 20.0),
-                    child: Text(
-                      model.rideStatus == RideStatus.waitingDriver
-                          ? (model.driverArrived
-                              ? Keys.driver_has_arrived.localize()
-                              : Keys.comming_ride_message.localize())
-                          : (Keys.enjoy_your_trip.localize()),
-                      textAlign: TextAlign.center,
-                    ),
+                  child: Column(
+                    children: [
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Container(
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10.0),
+                            color: const Color(0xfff0f0f0),
+                            border: Border.all(
+                              color: PalleteColor.actionButtonColor,
+                              width: 2.5,
+                            )),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 2.0, horizontal: 20.0),
+                        child: Text(
+                          model.rideStatus == RideStatus.waitingDriver
+                              ? (model.driverArrived
+                                  ? Keys.driver_has_arrived.localize()
+                                  : Keys.comming_ride_message.localize())
+                              : (Keys.enjoy_your_trip.localize()),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 Expanded(

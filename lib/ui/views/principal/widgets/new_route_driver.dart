@@ -27,11 +27,18 @@ class NewRouteDriver extends ViewModelWidget<PrincipalViewModel> {
                   height: kToolbarHeight,
                   child: AppBar(
                     title: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 3.0),
-                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: const Color(0xfff0f0f0)),
-                        child: Text(Keys.new_destination.localize(), style: const TextStyle(color: Colors.black))),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20.0, vertical: 3.0),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: const Color(0xfff0f0f0)),
+                        child: Text(Keys.new_destination.localize(),
+                            style: const TextStyle(color: Colors.black))),
                     centerTitle: true,
-                    leading: model.driverRequestFlow == DriverRequestFlow.inProgress ? const SizedBox() : PlatformBackButton(onPressed: () => model.onBack()),
+                    leading: model.driverRequestFlow ==
+                            DriverRequestFlow.inProgress
+                        ? const SizedBox()
+                        : PlatformBackButton(onPressed: () => model.onBack()),
                     backgroundColor: Colors.transparent,
                     iconTheme: const IconThemeData(color: Colors.black),
                     elevation: 0,
@@ -40,7 +47,8 @@ class NewRouteDriver extends ViewModelWidget<PrincipalViewModel> {
                 Padding(
                   padding: const EdgeInsets.only(right: 10.0),
                   child: GestureDetector(
-                    onTap: () => ExtendedNavigator.root.push(Routes.profileViewRoute),
+                    onTap: () =>
+                        ExtendedNavigator.root.push(Routes.profileViewRoute),
                     child: AvatarProfile(
                       heroTag: model.user.uid,
                       name: model.user.name,

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ffi';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
@@ -46,6 +45,10 @@ import 'package:taxiapp/ui/views/principal/widgets/selection_vehicle.dart';
 import 'package:taxiapp/ui/widgets/helpers.dart';
 import 'package:wakelock/wakelock.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+
 
 class PrincipalViewModel extends ReactiveViewModel {
   BuildContext context;
@@ -92,12 +95,14 @@ class PrincipalViewModel extends ReactiveViewModel {
     const RideRequestsByClient(),
     const DriverRideDetails()
   ];
+
   static const DRIVER_AT_LOCATION_NOTIFICATION = 'DRIVER_AT_LOCATION';
   static const REQUEST_ACCEPTED_NOTIFICATION = 'REQUEST_ACCEPTED';
   static const TRIP_STARTED_NOTIFICATION = 'TRIP_STARTED';
   static const TRIP_FINISH_NOTIFICATION = 'TRIP_FINISH';
   static const TRIP_CANCEL_NOTIFICATION = 'TRIP_CANCEL';
   static const TRIP_CANCEL_DRIVER_NOTIFICATION = 'TRIP_CANCEL_DRIVER';
+  static const NEW_TRIPS = 'NEW_TRIPS';
 
   GoogleMapController _mapController;
   Widget _currentSearchWidget = const SizedBox();
@@ -206,6 +211,7 @@ class PrincipalViewModel extends ReactiveViewModel {
     notifyListeners();
   }
 
+
   Future<void> _handleNotificationData(Map<String, dynamic> data) async {
     var _datos = Map<String, dynamic>.from(data['data'] ?? data);
     var _notificationType = _datos['type'];
@@ -221,6 +227,8 @@ class PrincipalViewModel extends ReactiveViewModel {
       push_tripCanceledByCustomer(_datos);
     } else if (_notificationType == TRIP_CANCEL_DRIVER_NOTIFICATION) {
       push_tripCanceledByDriver(_datos);
+    } else if (_notificationType == NEW_TRIPS) {
+      updateCurrentDriverRideWidget(DriverRideWidget.rideRequestByClient);
     }
   }
 
@@ -500,10 +508,12 @@ class PrincipalViewModel extends ReactiveViewModel {
     notifyListeners();
   }
 
+//-------------------------------------------------------------------------------Andres
   void updateCurrentDriverRideWidget(DriverRideWidget widget) {
     _currentDriverRideWidget = _switchDriverRideWidgets[widget.index];
     notifyListeners();
   }
+//-------------------------------------------------------------------------------Andres
 
   void clearOriginPosition() {
     _selectOrigin = false;

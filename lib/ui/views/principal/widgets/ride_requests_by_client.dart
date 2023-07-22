@@ -58,12 +58,6 @@ class RideRequestsByClient extends ViewModelWidget<PrincipalViewModel> {
                               child: ListView(
                                 shrinkWrap: true,
                                 physics: const ClampingScrollPhysics(),
-                                /*
-                                children: List.generate(
-                                  20,
-                                  (index) => _RideRequestClientItem(onTap: () => model.selectRideRequest(null, context)),
-                                ),
-                                */
                                 children: model.listRideRequest
                                     .map((e) => _RideRequestClientItem(
                                           onTap: () => model.selectRideRequest(
@@ -91,7 +85,19 @@ class _RideRequestClientItem extends HookWidget {
   final RideRequestModel rideRequestModel;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+    BuildContext context,
+  ) {
+    
+    String calculateArrivalTime(RideRequestModel rideRequestModel) {
+      final now = DateTime.now();
+      final totalMinutes =
+          now.hour * 60 + now.minute + rideRequestModel.secondsArrive ~/ 60;
+      final hours = totalMinutes ~/ 60;
+      final minutes = totalMinutes % 60;
+      return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}';
+    }
+
     return GestureDetector(
       onTap: () => onTap != null ? onTap() : () {},
       child: Container(
@@ -118,14 +124,19 @@ class _RideRequestClientItem extends HookWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      const Padding(
-                        padding: EdgeInsets.only(right: 10.0),
-                        child: Text('3 min', style: TextStyle(fontSize: 12.0)),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 10.0),
+                        child: Text(
+                            '${(rideRequestModel.secondsArrive ~/ 60).toString()}\ min' ??
+                                '3 min',
+                            style: const TextStyle(fontSize: 12.0)),
                       ),
                       SvgPicture.asset('assets/icons/clock.svg', height: 15.0),
-                      const Padding(
-                        padding: EdgeInsets.only(left: 5.0),
-                        child: Text('12:40', style: TextStyle(fontSize: 12.0)),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 5.0),
+                        child: Text(
+                            '${calculateArrivalTime(rideRequestModel)}' ?? '',
+                            style: const TextStyle(fontSize: 12.0)),
                       ),
                     ],
                   )

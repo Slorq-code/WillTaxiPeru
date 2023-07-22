@@ -22,40 +22,7 @@ class CheckRideDetails extends ViewModelWidget<PrincipalViewModel> {
         if (model.rideStatus == RideStatus.waitingDriver ||
             model.rideStatus == RideStatus.inProgress)
           const _FloatingMessage(),
-        //if (model.rideStatus == RideStatus.inProgress) const _PanicButton(),
-        //const _PanicButton(),
       ],
-    );
-  }
-}
-
-class _PanicButton extends ViewModelWidget<PrincipalViewModel> {
-  const _PanicButton({
-    Key key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context, PrincipalViewModel model) {
-    var size = MediaQuery.of(context).size;
-
-    return SizedBox(
-      width: size.width,
-      height: size.height - 25,
-      child: Align(
-          alignment: Alignment.centerRight,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: FloatingActionButton(
-              heroTag: null,
-              elevation: 10,
-              hoverElevation: 10,
-              highlightElevation: 10,
-              isExtended: true,
-              onPressed: () => model.sendTextPanic(),
-              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              child: Image.asset('assets/icons/panic_button.png', height: 65.0),
-            ),
-          )),
     );
   }
 }

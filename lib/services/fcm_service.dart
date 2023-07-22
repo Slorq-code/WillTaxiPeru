@@ -50,8 +50,8 @@ class FCMService {
   }
 
   Future handleOnLaunch(Map<String, dynamic> data) async {
-    final title = data["notification"]["title"] ?? "Notificación";
-    final body = data["notification"]["body"] ?? "Cuerpo de la notificación";
+    final title = data['notification']['title'] ?? 'Notificación';
+    final body = data['notification']['body'] ?? 'Cuerpo de la notificación';
 
     final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
     const initializationSettingsAndroid =
@@ -66,7 +66,7 @@ class FCMService {
         NotificationDetails(android: androidPlatformChannelSpecifics);
     await flutterLocalNotificationsPlugin.show(
       0,
-      title, 
+      title,
       body,
       platformChannelSpecifics,
     );

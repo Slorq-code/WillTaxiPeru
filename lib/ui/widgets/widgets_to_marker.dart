@@ -17,7 +17,8 @@ Future<BitmapDescriptor> getMarkerInicioIcon(int segundos) async {
   return BitmapDescriptor.fromBytes(byteData.buffer.asUint8List());
 }
 
-Future<BitmapDescriptor> getMarkerDestinoIcon(String descripcion, double metros) async {
+Future<BitmapDescriptor> getMarkerDestinoIcon(
+    String descripcion, double metros) async {
   final recorder = ui.PictureRecorder();
   final canvas = ui.Canvas(recorder);
   final size = const ui.Size(350, 150);
@@ -32,7 +33,8 @@ Future<BitmapDescriptor> getMarkerDestinoIcon(String descripcion, double metros)
   return BitmapDescriptor.fromBytes(byteData.buffer.asUint8List());
 }
 
-Future<BitmapDescriptor> bitmapDescriptorFromSvgAsset(BuildContext context, String assetName, double size) async {
+Future<BitmapDescriptor> bitmapDescriptorFromSvgAsset(
+    BuildContext context, String assetName, double size) async {
   // Read SVG file as String
   final svgString = await DefaultAssetBundle.of(context).loadString(assetName);
   // Create DrawableRoot from SVG String
@@ -41,7 +43,8 @@ Future<BitmapDescriptor> bitmapDescriptorFromSvgAsset(BuildContext context, Stri
   // toPicture() and toImage() don't seem to be pixel ratio aware, so we calculate the actual sizes here
   final queryData = MediaQuery.of(context);
   final devicePixelRatio = queryData.devicePixelRatio;
-  final width = size * devicePixelRatio; // where 32 is your SVG's original width
+  final width =
+      size * devicePixelRatio; // where 32 is your SVG's original width
   final height = size * devicePixelRatio; // same thing
 
   // Convert to ui.Picture

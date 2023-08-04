@@ -28,6 +28,7 @@ dependencies:
 
   dio_cookie_manager: ^1.0.0
   dio: ^3.0.10
+  audioplayers: ^0.17.0
   morpheus: ^1.2.2+1
   toast: ^0.1.5
   path_provider: ^1.6.11
@@ -91,6 +92,7 @@ flutter:
     - assets/icons/
     - assets/map_theme/
     - assets/background/
+    - assets/sounds/
 
   fonts:
     - family: Futura

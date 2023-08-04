@@ -1,10 +1,10 @@
 import 'dart:async';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:taxiapp/extensions/string_extension.dart';
-
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:package_info/package_info.dart';
@@ -45,8 +45,6 @@ import 'package:taxiapp/ui/views/principal/widgets/selection_vehicle.dart';
 import 'package:taxiapp/ui/widgets/helpers.dart';
 import 'package:wakelock/wakelock.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PrincipalViewModel extends ReactiveViewModel {
   BuildContext context;
@@ -513,8 +511,11 @@ class PrincipalViewModel extends ReactiveViewModel {
   }
 
 //-------------------------------------------------------------------------------Andres
+  final AudioPlayer _audioPlayer = AudioPlayer();
+
   void updateCurrentDriverRideWidget(DriverRideWidget widget) {
     _currentDriverRideWidget = _switchDriverRideWidgets[widget.index];
+    _audioPlayer.play('assets/sounds/Campanita.mp3');
     notifyListeners();
   }
 //-------------------------------------------------------------------------------Andres
@@ -966,6 +967,7 @@ class PrincipalViewModel extends ReactiveViewModel {
           .localize();
     }
   }
+
 // --------------------------------------------------------------------------------- Andres F. Rodriguez
 
   void sendTextPanic() {
